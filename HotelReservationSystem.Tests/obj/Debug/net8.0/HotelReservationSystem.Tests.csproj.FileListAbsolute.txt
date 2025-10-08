@@ -1,0 +1,6 @@
+C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem.Tests\obj\Debug\net8.0\HotelReservationSystem.Tests.csproj.AssemblyReference.cache
+C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem.Tests\obj\Debug\net8.0\MvcTestingAppManifest.json
+C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem.Tests\obj\Debug\net8.0\HotelReservationSystem.Tests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem.Tests\obj\Debug\net8.0\HotelReservationSystem.Tests.AssemblyInfoInputs.cache
+C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem.Tests\obj\Debug\net8.0\HotelReservationSystem.Tests.AssemblyInfo.cs
+C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem.Tests\obj\Debug\net8.0\HotelReservationSystem.Tests.csproj.CoreCompileInputs.cache

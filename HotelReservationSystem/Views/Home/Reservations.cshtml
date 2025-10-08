@@ -1,0 +1,1155 @@
+@{
+    ViewData["Title"] = "Reservations";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">
+                <i class="bi bi-journal-bookmark"></i>
+                Reservations Management
+            </h1>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#dateBlockingModal">
+                    <i class="bi bi-calendar-x"></i>
+                    Block Dates
+                </button>
+                <button type="button" class="btn btn-primary" id="newReservationBtn" data-bs-toggle="modal" data-bs-target="#reservationModal">
+                    <i class="bi bi-plus-circle"></i>
+                    New Reservation
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row align-items-end">
+            <div class="col-md-2">
+                <label for="dateFromFilter" class="form-label">From Date</label>
+                <input type="date" class="form-control" id="dateFromFilter">
+            </div>
+            <div class="col-md-2">
+                <label for="dateToFilter" class="form-label">To Date</label>
+                <input type="date" class="form-control" id="dateToFilter">
+            </div>
+            <div class="col-md-2">
+                <label for="hotelFilterRes" class="form-label">Hotel</label>
+                <select class="form-select" id="hotelFilterRes">
+                    <option value="">All Hotels</option>
+                    <!-- Options will be populated dynamically -->
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="statusFilterRes" class="form-label">Status</label>
+                <select class="form-select" id="statusFilterRes">
+                    <option value="">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="checkedin">Checked In</option>
+                    <option value="checkedout">Checked Out</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="sourceFilter" class="form-label">Source</label>
+                <select class="form-select" id="sourceFilter">
+                    <option value="">All Sources</option>
+                    <option value="manual">Manual</option>
+                    <option value="booking">Booking.com</option>
+                    <option value="direct">Direct</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-primary" id="applyReservationFilters">
+                        <i class="bi bi-funnel"></i>
+                        Filter
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" id="clearReservationFilters">
+                        <i class="bi bi-x-circle"></i>
+                        Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reservations Table -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="bi bi-list-ul"></i>
+            Reservations List
+        </h5>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-download"></i>
+                Export
+            </button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" id="refreshReservations">
+                <i class="bi bi-arrow-clockwise"></i>
+                Refresh
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover" id="reservationsTable">
+                <thead>
+                    <tr>
+                        <th>Booking Ref</th>
+                        <th>Guest</th>
+                        <th>Hotel</th>
+                        <th>Room</th>
+                        <th>Check-in</th>
+                        <th>Check-out</th>
+                        <th>Guests</th>
+                        <th>Amount</th>
+                        <th>Source</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="11" class="text-center text-muted py-4">
+                            <i class="bi bi-journal-bookmark fs-1"></i>
+                            <p class="mt-2">Loading reservations...</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Reservation Modal -->
+<div class="modal fade" id="reservationModal" tabindex="-1" aria-labelledby="reservationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reservationModalLabel">
+                    <i class="bi bi-plus-circle"></i>
+                    New Reservation
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="reservationForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Hotel Selection -->
+                        <div class="col-md-6 mb-3">
+                            <label for="reservationHotel" class="form-label">Hotel <span class="text-danger">*</span></label>
+                            <select class="form-select" id="reservationHotel" name="hotelId" required>
+                                <option value="">Select Hotel</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Room Selection -->
+                        <div class="col-md-6 mb-3">
+                            <label for="reservationRoom" class="form-label">Room <span class="text-danger">*</span></label>
+                            <select class="form-select" id="reservationRoom" name="roomId" required disabled>
+                                <option value="">Select Room</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <!-- Check-in Date -->
+                        <div class="col-md-6 mb-3">
+                            <label for="checkInDate" class="form-label">Check-in Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="checkInDate" name="checkInDate" required>
+                        </div>
+                        
+                        <!-- Check-out Date -->
+                        <div class="col-md-6 mb-3">
+                            <label for="checkOutDate" class="form-label">Check-out Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="checkOutDate" name="checkOutDate" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Availability Check Results -->
+                    <div id="availabilityResults" class="mb-3" style="display: none;">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            <span id="availabilityMessage"></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Guest Information -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="bi bi-person"></i>
+                                Guest Information
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="guestFirstName" class="form-label">First Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="guestFirstName" name="guestFirstName" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="guestLastName" class="form-label">Last Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="guestLastName" name="guestLastName" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="guestEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="guestEmail" name="guestEmail">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="guestPhone" class="form-label">Phone</label>
+                                    <input type="tel" class="form-control" id="guestPhone" name="guestPhone">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-8 mb-3">
+                                    <label for="guestAddress" class="form-label">Address</label>
+                                    <input type="text" class="form-control" id="guestAddress" name="guestAddress">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="guestDocumentNumber" class="form-label">Document Number</label>
+                                    <input type="text" class="form-control" id="guestDocumentNumber" name="guestDocumentNumber">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Reservation Details -->
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="numberOfGuests" class="form-label">Number of Guests <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="numberOfGuests" name="numberOfGuests" min="1" max="20" value="1" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="totalAmount" class="form-label">Total Amount <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="totalAmount" name="totalAmount" min="0.01" step="0.01" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="reservationStatus" class="form-label">Status</label>
+                            <select class="form-select" id="reservationStatus" name="status">
+                                <option value="0">Pending</option>
+                                <option value="1">Confirmed</option>
+                                <option value="2">Checked In</option>
+                                <option value="3">Checked Out</option>
+                                <option value="4">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="bookingReference" class="form-label">Booking Reference</label>
+                            <input type="text" class="form-control" id="bookingReference" name="bookingReference">
+                        </div>
+                    </div>
+                    
+                    <!-- Special Requests -->
+                    <div class="mb-3">
+                        <label for="specialRequests" class="form-label">Special Requests</label>
+                        <textarea class="form-control" id="specialRequests" name="specialRequests" rows="3" maxlength="1000"></textarea>
+                        <div class="form-text">Maximum 1000 characters</div>
+                    </div>
+                    
+                    <!-- Internal Notes -->
+                    <div class="mb-3">
+                        <label for="internalNotes" class="form-label">Internal Notes</label>
+                        <textarea class="form-control" id="internalNotes" name="internalNotes" rows="3" maxlength="1000"></textarea>
+                        <div class="form-text">Maximum 1000 characters (staff only)</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="checkAvailabilityBtn">
+                        <i class="bi bi-search"></i>
+                        Check Availability
+                    </button>
+                    <button type="submit" class="btn btn-success" id="saveReservationBtn" style="display: none;">
+                        <i class="bi bi-check-circle"></i>
+                        Save Reservation
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Date Blocking Modal -->
+<div class="modal fade" id="dateBlockingModal" tabindex="-1" aria-labelledby="dateBlockingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dateBlockingModalLabel">
+                    <i class="bi bi-calendar-x"></i>
+                    Block Dates for Maintenance
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="dateBlockingForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="blockingHotel" class="form-label">Hotel <span class="text-danger">*</span></label>
+                        <select class="form-select" id="blockingHotel" name="hotelId" required>
+                            <option value="">Select Hotel</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="blockingRoom" class="form-label">Room <span class="text-danger">*</span></label>
+                        <select class="form-select" id="blockingRoom" name="roomId" required disabled>
+                            <option value="">Select Room</option>
+                        </select>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="blockFromDate" class="form-label">From Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="blockFromDate" name="fromDate" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="blockToDate" class="form-label">To Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="blockToDate" name="toDate" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="blockingReason" class="form-label">Reason <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="blockingReason" name="reason" rows="3" required placeholder="e.g., Room maintenance, renovation, etc."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-calendar-x"></i>
+                        Block Dates
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Reservation Details Modal -->
+<div class="modal fade" id="reservationDetailsModal" tabindex="-1" aria-labelledby="reservationDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reservationDetailsModalLabel">
+                    <i class="bi bi-eye"></i>
+                    Reservation Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="reservationDetailsContent">
+                <!-- Content will be populated dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="editReservationFromDetails">
+                    <i class="bi bi-pencil"></i>
+                    Edit Reservation
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Global variables for reservation management
+        let currentReservationId = null;
+        let isEditMode = false;
+        let availableRooms = [];
+        let hotels = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Reservations page loaded');
+            
+            // Initialize event listeners
+            initializeEventListeners();
+            
+            // Set default date range (current month)
+            setDefaultDateRange();
+            
+            // Load initial data
+            loadInitialData();
+        });
+
+        function initializeEventListeners() {
+            // Filter event listeners
+            document.getElementById('applyReservationFilters').addEventListener('click', applyReservationFilters);
+            document.getElementById('clearReservationFilters').addEventListener('click', clearReservationFilters);
+            document.getElementById('refreshReservations').addEventListener('click', () => loadReservationsData());
+            
+            // Modal event listeners
+            document.getElementById('newReservationBtn').addEventListener('click', openNewReservationModal);
+            document.getElementById('checkAvailabilityBtn').addEventListener('click', checkAvailability);
+            document.getElementById('reservationForm').addEventListener('submit', saveReservation);
+            document.getElementById('dateBlockingForm').addEventListener('submit', blockDates);
+            document.getElementById('editReservationFromDetails').addEventListener('click', editReservationFromDetails);
+            
+            // Hotel selection change listeners
+            document.getElementById('reservationHotel').addEventListener('change', onHotelSelectionChange);
+            document.getElementById('blockingHotel').addEventListener('change', onBlockingHotelSelectionChange);
+            
+            // Date change listeners for availability checking
+            document.getElementById('checkInDate').addEventListener('change', onDateChange);
+            document.getElementById('checkOutDate').addEventListener('change', onDateChange);
+            document.getElementById('reservationRoom').addEventListener('change', onDateChange);
+            
+            // Modal reset listeners
+            document.getElementById('reservationModal').addEventListener('hidden.bs.modal', resetReservationModal);
+            document.getElementById('dateBlockingModal').addEventListener('hidden.bs.modal', resetDateBlockingModal);
+        }
+
+        function setDefaultDateRange() {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            
+            document.getElementById('dateFromFilter').value = firstDay.toISOString().split('T')[0];
+            document.getElementById('dateToFilter').value = lastDay.toISOString().split('T')[0];
+            
+            // Set minimum dates for reservation form
+            document.getElementById('checkInDate').min = today.toISOString().split('T')[0];
+            document.getElementById('checkOutDate').min = today.toISOString().split('T')[0];
+            document.getElementById('blockFromDate').min = today.toISOString().split('T')[0];
+            document.getElementById('blockToDate').min = today.toISOString().split('T')[0];
+        }
+
+        async function loadInitialData() {
+            try {
+                // Load hotels for filters and forms
+                await loadHotels();
+                
+                // Load reservations with default filters
+                await loadReservationsData();
+            } catch (error) {
+                console.error('Error loading initial data:', error);
+                UI.showError('Failed to load initial data');
+            }
+        }
+
+        async function loadHotels() {
+            try {
+                hotels = await API.getHotels();
+                
+                // Populate hotel dropdowns
+                const hotelSelects = [
+                    document.getElementById('hotelFilterRes'),
+                    document.getElementById('reservationHotel'),
+                    document.getElementById('blockingHotel')
+                ];
+                
+                hotelSelects.forEach(select => {
+                    // Clear existing options except the first one
+                    while (select.children.length > 1) {
+                        select.removeChild(select.lastChild);
+                    }
+                    
+                    // Add hotel options
+                    hotels.forEach(hotel => {
+                        const option = document.createElement('option');
+                        option.value = hotel.id;
+                        option.textContent = hotel.name;
+                        select.appendChild(option);
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading hotels:', error);
+                UI.showError('Failed to load hotels');
+            }
+        }
+
+        async function loadReservationsData(filters = {}) {
+            try {
+                UI.showLoadingForElement(document.querySelector('#reservationsTable tbody'));
+                
+                // Build query parameters
+                const params = {};
+                if (filters.dateFrom || document.getElementById('dateFromFilter').value) {
+                    params.from = filters.dateFrom || document.getElementById('dateFromFilter').value;
+                }
+                if (filters.dateTo || document.getElementById('dateToFilter').value) {
+                    params.to = filters.dateTo || document.getElementById('dateToFilter').value;
+                }
+                if (filters.hotel || document.getElementById('hotelFilterRes').value) {
+                    params.hotelId = filters.hotel || document.getElementById('hotelFilterRes').value;
+                }
+                if (filters.status || document.getElementById('statusFilterRes').value) {
+                    params.status = mapStatusToEnum(filters.status || document.getElementById('statusFilterRes').value);
+                }
+                
+                const reservations = await API.getReservations(params);
+                
+                // Filter by source if specified (API doesn't support this filter yet)
+                let filteredReservations = reservations;
+                const sourceFilter = filters.source || document.getElementById('sourceFilter').value;
+                if (sourceFilter) {
+                    const sourceEnum = mapSourceToEnum(sourceFilter);
+                    filteredReservations = reservations.filter(r => r.source === sourceEnum);
+                }
+                
+                displayReservations(filteredReservations);
+            } catch (error) {
+                console.error('Error loading reservations:', error);
+                UI.showError('Failed to load reservations');
+                displayReservations([]);
+            } finally {
+                UI.hideLoadingForElement(document.querySelector('#reservationsTable tbody'));
+            }
+        }
+
+        function displayReservations(reservations) {
+            const tbody = document.querySelector('#reservationsTable tbody');
+            
+            if (reservations.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="11" class="text-center text-muted py-4">
+                            <i class="bi bi-journal-bookmark fs-1"></i>
+                            <p class="mt-2">No reservations found</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = reservations.map(reservation => `
+                <tr>
+                    <td>
+                        <span class="fw-medium">${reservation.bookingReference || 'N/A'}</span>
+                    </td>
+                    <td>
+                        <div>
+                            <div class="fw-medium">${reservation.guestName}</div>
+                            <small class="text-muted">${reservation.guestEmail || ''}</small>
+                        </div>
+                    </td>
+                    <td>${reservation.hotelName}</td>
+                    <td>
+                        <span class="badge bg-secondary">${reservation.roomNumber}</span>
+                    </td>
+                    <td>${UI.formatDate(reservation.checkInDate)}</td>
+                    <td>${UI.formatDate(reservation.checkOutDate)}</td>
+                    <td>
+                        <span class="badge bg-info">${reservation.numberOfGuests}</span>
+                    </td>
+                    <td>
+                        <span class="fw-medium">${UI.formatCurrency(reservation.totalAmount)}</span>
+                    </td>
+                    <td>
+                        <span class="badge ${getSourceBadgeClass(reservation.source)}">${getSourceDisplayName(reservation.source)}</span>
+                    </td>
+                    <td>
+                        <span class="badge ${getStatusBadgeClass(reservation.status)}">${getStatusDisplayName(reservation.status)}</span>
+                    </td>
+                    <td>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-outline-primary" onclick="viewReservation(${reservation.id})" title="View Details">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="editReservation(${reservation.id})" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            ${reservation.status !== 4 ? `
+                                <button type="button" class="btn btn-outline-danger" onclick="cancelReservation(${reservation.id})" title="Cancel">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                            ` : ''}
+                            ${reservation.status === 1 ? `
+                                <button type="button" class="btn btn-outline-success" onclick="checkInReservation(${reservation.id})" title="Check In">
+                                    <i class="bi bi-box-arrow-in-right"></i>
+                                </button>
+                            ` : ''}
+                            ${reservation.status === 2 ? `
+                                <button type="button" class="btn btn-outline-warning" onclick="checkOutReservation(${reservation.id})" title="Check Out">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openNewReservationModal() {
+            isEditMode = false;
+            currentReservationId = null;
+            
+            // Update modal title
+            document.getElementById('reservationModalLabel').innerHTML = `
+                <i class="bi bi-plus-circle"></i>
+                New Reservation
+            `;
+            
+            // Reset form
+            resetReservationModal();
+            
+            // Set default check-in date to today
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            document.getElementById('checkInDate').value = today.toISOString().split('T')[0];
+            document.getElementById('checkOutDate').value = tomorrow.toISOString().split('T')[0];
+        }
+
+        async function onHotelSelectionChange() {
+            const hotelId = document.getElementById('reservationHotel').value;
+            const roomSelect = document.getElementById('reservationRoom');
+            
+            // Reset room selection
+            roomSelect.innerHTML = '<option value="">Select Room</option>';
+            roomSelect.disabled = !hotelId;
+            
+            if (hotelId) {
+                try {
+                    const rooms = await API.getRooms(hotelId);
+                    
+                    rooms.forEach(room => {
+                        const option = document.createElement('option');
+                        option.value = room.id;
+                        option.textContent = `${room.roomNumber} - ${getRoomTypeDisplayName(room.type)} (${room.capacity} guests)`;
+                        option.dataset.baseRate = room.baseRate;
+                        roomSelect.appendChild(option);
+                    });
+                    
+                    availableRooms = rooms;
+                } catch (error) {
+                    console.error('Error loading rooms:', error);
+                    UI.showError('Failed to load rooms for selected hotel');
+                }
+            }
+            
+            // Reset availability check
+            hideAvailabilityResults();
+        }
+
+        async function onBlockingHotelSelectionChange() {
+            const hotelId = document.getElementById('blockingHotel').value;
+            const roomSelect = document.getElementById('blockingRoom');
+            
+            // Reset room selection
+            roomSelect.innerHTML = '<option value="">Select Room</option>';
+            roomSelect.disabled = !hotelId;
+            
+            if (hotelId) {
+                try {
+                    const rooms = await API.getRooms(hotelId);
+                    
+                    rooms.forEach(room => {
+                        const option = document.createElement('option');
+                        option.value = room.id;
+                        option.textContent = `${room.roomNumber} - ${getRoomTypeDisplayName(room.type)}`;
+                        roomSelect.appendChild(option);
+                    });
+                } catch (error) {
+                    console.error('Error loading rooms:', error);
+                    UI.showError('Failed to load rooms for selected hotel');
+                }
+            }
+        }
+
+        function onDateChange() {
+            // Reset availability check when dates or room change
+            hideAvailabilityResults();
+            document.getElementById('saveReservationBtn').style.display = 'none';
+            
+            // Update checkout date minimum
+            const checkInDate = document.getElementById('checkInDate').value;
+            if (checkInDate) {
+                const minCheckOut = new Date(checkInDate);
+                minCheckOut.setDate(minCheckOut.getDate() + 1);
+                document.getElementById('checkOutDate').min = minCheckOut.toISOString().split('T')[0];
+            }
+            
+            // Calculate total amount based on room rate and nights
+            calculateTotalAmount();
+        }
+
+        function calculateTotalAmount() {
+            const roomSelect = document.getElementById('reservationRoom');
+            const checkInDate = document.getElementById('checkInDate').value;
+            const checkOutDate = document.getElementById('checkOutDate').value;
+            const numberOfGuests = document.getElementById('numberOfGuests').value || 1;
+            
+            if (roomSelect.value && checkInDate && checkOutDate) {
+                const selectedOption = roomSelect.options[roomSelect.selectedIndex];
+                const baseRate = parseFloat(selectedOption.dataset.baseRate || 0);
+                
+                const checkIn = new Date(checkInDate);
+                const checkOut = new Date(checkOutDate);
+                const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+                
+                if (nights > 0) {
+                    const totalAmount = baseRate * nights * numberOfGuests;
+                    document.getElementById('totalAmount').value = totalAmount.toFixed(2);
+                }
+            }
+        }
+
+        async function checkAvailability() {
+            const roomId = document.getElementById('reservationRoom').value;
+            const checkInDate = document.getElementById('checkInDate').value;
+            const checkOutDate = document.getElementById('checkOutDate').value;
+            
+            if (!roomId || !checkInDate || !checkOutDate) {
+                UI.showError('Please select room and dates before checking availability');
+                return;
+            }
+            
+            try {
+                UI.showLoadingForElement(document.getElementById('checkAvailabilityBtn'));
+                
+                const request = {
+                    roomId: parseInt(roomId),
+                    checkInDate: checkInDate,
+                    checkOutDate: checkOutDate,
+                    excludeReservationId: currentReservationId
+                };
+                
+                const result = await API.post('/reservations/check-availability', request);
+                
+                showAvailabilityResults(result.isAvailable, result.conflicts);
+                
+                if (result.isAvailable) {
+                    document.getElementById('saveReservationBtn').style.display = 'inline-block';
+                }
+            } catch (error) {
+                console.error('Error checking availability:', error);
+                UI.showError('Failed to check availability');
+            } finally {
+                UI.hideLoadingForElement(document.getElementById('checkAvailabilityBtn'));
+            }
+        }
+
+        function showAvailabilityResults(isAvailable, conflicts) {
+            const resultsDiv = document.getElementById('availabilityResults');
+            const messageSpan = document.getElementById('availabilityMessage');
+            const alertDiv = resultsDiv.querySelector('.alert');
+            
+            if (isAvailable) {
+                alertDiv.className = 'alert alert-success';
+                messageSpan.innerHTML = '<i class="bi bi-check-circle me-2"></i>Room is available for the selected dates!';
+            } else {
+                alertDiv.className = 'alert alert-warning';
+                let conflictDetails = '';
+                if (conflicts && conflicts.length > 0) {
+                    conflictDetails = '<br><small>Conflicts: ' + conflicts.map(c => 
+                        `${c.guestName} (${UI.formatDate(c.checkInDate)} - ${UI.formatDate(c.checkOutDate)})`
+                    ).join(', ') + '</small>';
+                }
+                messageSpan.innerHTML = `<i class="bi bi-exclamation-triangle me-2"></i>Room is not available for the selected dates.${conflictDetails}`;
+            }
+            
+            resultsDiv.style.display = 'block';
+        }
+
+        function hideAvailabilityResults() {
+            document.getElementById('availabilityResults').style.display = 'none';
+        }
+
+        async function saveReservation(event) {
+            event.preventDefault();
+            
+            if (!UI.validateFormWithFeedback(document.getElementById('reservationForm'))) {
+                return;
+            }
+            
+            try {
+                UI.showLoadingForElement(document.getElementById('saveReservationBtn'));
+                
+                const formData = new FormData(document.getElementById('reservationForm'));
+                const reservationData = {
+                    hotelId: parseInt(formData.get('hotelId')),
+                    roomId: parseInt(formData.get('roomId')),
+                    checkInDate: formData.get('checkInDate'),
+                    checkOutDate: formData.get('checkOutDate'),
+                    numberOfGuests: parseInt(formData.get('numberOfGuests')),
+                    totalAmount: parseFloat(formData.get('totalAmount')),
+                    status: parseInt(formData.get('status')),
+                    bookingReference: formData.get('bookingReference') || null,
+                    specialRequests: formData.get('specialRequests') || null,
+                    internalNotes: formData.get('internalNotes') || null,
+                    guestFirstName: formData.get('guestFirstName'),
+                    guestLastName: formData.get('guestLastName'),
+                    guestEmail: formData.get('guestEmail') || null,
+                    guestPhone: formData.get('guestPhone') || null,
+                    guestAddress: formData.get('guestAddress') || null,
+                    guestDocumentNumber: formData.get('guestDocumentNumber') || null
+                };
+                
+                let result;
+                if (isEditMode && currentReservationId) {
+                    // For editing, we need to use the update endpoint
+                    // Note: This is a simplified version - in reality, you'd need separate endpoints for guest updates
+                    result = await API.updateReservation(currentReservationId, {
+                        checkInDate: reservationData.checkInDate,
+                        checkOutDate: reservationData.checkOutDate,
+                        numberOfGuests: reservationData.numberOfGuests,
+                        totalAmount: reservationData.totalAmount,
+                        status: reservationData.status,
+                        specialRequests: reservationData.specialRequests,
+                        internalNotes: reservationData.internalNotes
+                    });
+                } else {
+                    result = await API.post('/reservations/manual', reservationData);
+                }
+                
+                UI.showSuccess(isEditMode ? 'Reservation updated successfully!' : 'Reservation created successfully!');
+                
+                // Close modal and refresh data
+                bootstrap.Modal.getInstance(document.getElementById('reservationModal')).hide();
+                await loadReservationsData();
+                
+            } catch (error) {
+                console.error('Error saving reservation:', error);
+                UI.showError(error.message || 'Failed to save reservation');
+            } finally {
+                UI.hideLoadingForElement(document.getElementById('saveReservationBtn'));
+            }
+        }
+
+        async function blockDates(event) {
+            event.preventDefault();
+            
+            if (!UI.validateFormWithFeedback(document.getElementById('dateBlockingForm'))) {
+                return;
+            }
+            
+            try {
+                const formData = new FormData(document.getElementById('dateBlockingForm'));
+                
+                // Create a maintenance reservation to block the dates
+                const blockingData = {
+                    hotelId: parseInt(formData.get('hotelId')),
+                    roomId: parseInt(formData.get('roomId')),
+                    checkInDate: formData.get('fromDate'),
+                    checkOutDate: formData.get('toDate'),
+                    numberOfGuests: 1,
+                    totalAmount: 0,
+                    status: 4, // Cancelled status to indicate blocked
+                    specialRequests: null,
+                    internalNotes: `MAINTENANCE BLOCK: ${formData.get('reason')}`,
+                    guestFirstName: 'MAINTENANCE',
+                    guestLastName: 'BLOCK',
+                    guestEmail: null,
+                    guestPhone: null,
+                    guestAddress: null,
+                    guestDocumentNumber: null
+                };
+                
+                await API.post('/reservations/manual', blockingData);
+                
+                UI.showSuccess('Dates blocked successfully for maintenance!');
+                
+                // Close modal and refresh data
+                bootstrap.Modal.getInstance(document.getElementById('dateBlockingModal')).hide();
+                await loadReservationsData();
+                
+            } catch (error) {
+                console.error('Error blocking dates:', error);
+                UI.showError('Failed to block dates');
+            }
+        }
+
+        async function viewReservation(id) {
+            try {
+                const reservation = await API.getReservation(id);
+                showReservationDetails(reservation);
+            } catch (error) {
+                console.error('Error loading reservation details:', error);
+                UI.showError('Failed to load reservation details');
+            }
+        }
+
+        function showReservationDetails(reservation) {
+            const content = document.getElementById('reservationDetailsContent');
+            
+            content.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Reservation Information</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>Booking Reference:</strong></td><td>${reservation.bookingReference || 'N/A'}</td></tr>
+                            <tr><td><strong>Status:</strong></td><td><span class="badge ${getStatusBadgeClass(reservation.status)}">${getStatusDisplayName(reservation.status)}</span></td></tr>
+                            <tr><td><strong>Source:</strong></td><td><span class="badge ${getSourceBadgeClass(reservation.source)}">${getSourceDisplayName(reservation.source)}</span></td></tr>
+                            <tr><td><strong>Check-in:</strong></td><td>${UI.formatDate(reservation.checkInDate)}</td></tr>
+                            <tr><td><strong>Check-out:</strong></td><td>${UI.formatDate(reservation.checkOutDate)}</td></tr>
+                            <tr><td><strong>Guests:</strong></td><td>${reservation.numberOfGuests}</td></tr>
+                            <tr><td><strong>Total Amount:</strong></td><td>${UI.formatCurrency(reservation.totalAmount)}</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Guest Information</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>Name:</strong></td><td>${reservation.guestName}</td></tr>
+                            <tr><td><strong>Email:</strong></td><td>${reservation.guestEmail || 'N/A'}</td></tr>
+                            <tr><td><strong>Phone:</strong></td><td>${reservation.guestPhone || 'N/A'}</td></tr>
+                        </table>
+                        
+                        <h6>Property Information</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>Hotel:</strong></td><td>${reservation.hotelName}</td></tr>
+                            <tr><td><strong>Room:</strong></td><td>${reservation.roomNumber}</td></tr>
+                        </table>
+                    </div>
+                </div>
+                
+                ${reservation.specialRequests ? `
+                    <div class="mt-3">
+                        <h6>Special Requests</h6>
+                        <p class="text-muted">${reservation.specialRequests}</p>
+                    </div>
+                ` : ''}
+                
+                ${reservation.internalNotes ? `
+                    <div class="mt-3">
+                        <h6>Internal Notes</h6>
+                        <p class="text-muted">${reservation.internalNotes}</p>
+                    </div>
+                ` : ''}
+                
+                <div class="mt-3">
+                    <small class="text-muted">
+                        Created: ${UI.formatDate(reservation.createdAt)} | 
+                        Last Updated: ${UI.formatDate(reservation.updatedAt)}
+                    </small>
+                </div>
+            `;
+            
+            // Store reservation ID for potential editing
+            currentReservationId = reservation.id;
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('reservationDetailsModal'));
+            modal.show();
+        }
+
+        async function editReservation(id) {
+            try {
+                const reservation = await API.getReservation(id);
+                await populateReservationForm(reservation);
+                
+                // Show modal
+                const modal = new bootstrap.Modal(document.getElementById('reservationModal'));
+                modal.show();
+            } catch (error) {
+                console.error('Error loading reservation for editing:', error);
+                UI.showError('Failed to load reservation for editing');
+            }
+        }
+
+        function editReservationFromDetails() {
+            // Close details modal
+            bootstrap.Modal.getInstance(document.getElementById('reservationDetailsModal')).hide();
+            
+            // Open edit modal
+            setTimeout(() => {
+                editReservation(currentReservationId);
+            }, 300);
+        }
+
+        async function populateReservationForm(reservation) {
+            isEditMode = true;
+            currentReservationId = reservation.id;
+            
+            // Update modal title
+            document.getElementById('reservationModalLabel').innerHTML = `
+                <i class="bi bi-pencil"></i>
+                Edit Reservation
+            `;
+            
+            // Populate form fields
+            document.getElementById('reservationHotel').value = reservation.hotelId;
+            await onHotelSelectionChange(); // Load rooms for the hotel
+            
+            // Wait a bit for rooms to load, then set the room
+            setTimeout(() => {
+                document.getElementById('reservationRoom').value = reservation.roomId;
+            }, 100);
+            
+            document.getElementById('checkInDate').value = reservation.checkInDate.split('T')[0];
+            document.getElementById('checkOutDate').value = reservation.checkOutDate.split('T')[0];
+            document.getElementById('numberOfGuests').value = reservation.numberOfGuests;
+            document.getElementById('totalAmount').value = reservation.totalAmount;
+            document.getElementById('reservationStatus').value = reservation.status;
+            document.getElementById('bookingReference').value = reservation.bookingReference || '';
+            document.getElementById('specialRequests').value = reservation.specialRequests || '';
+            document.getElementById('internalNotes').value = reservation.internalNotes || '';
+            
+            // Populate guest information (extract from guestName)
+            const nameParts = reservation.guestName.split(' ');
+            document.getElementById('guestFirstName').value = nameParts[0] || '';
+            document.getElementById('guestLastName').value = nameParts.slice(1).join(' ') || '';
+            document.getElementById('guestEmail').value = reservation.guestEmail || '';
+            document.getElementById('guestPhone').value = reservation.guestPhone || '';
+            
+            // Show save button immediately for editing
+            document.getElementById('saveReservationBtn').style.display = 'inline-block';
+        }
+
+        async function cancelReservation(id) {
+            const reason = prompt('Please enter a reason for cancellation:');
+            if (!reason) return;
+            
+            try {
+                await API.delete(`/reservations/${id}`, { reason });
+                UI.showSuccess('Reservation cancelled successfully!');
+                await loadReservationsData();
+            } catch (error) {
+                console.error('Error cancelling reservation:', error);
+                UI.showError('Failed to cancel reservation');
+            }
+        }
+
+        async function checkInReservation(id) {
+            if (!confirm('Are you sure you want to check in this reservation?')) return;
+            
+            try {
+                await API.post(`/reservations/${id}/checkin`);
+                UI.showSuccess('Guest checked in successfully!');
+                await loadReservationsData();
+            } catch (error) {
+                console.error('Error checking in reservation:', error);
+                UI.showError('Failed to check in reservation');
+            }
+        }
+
+        async function checkOutReservation(id) {
+            if (!confirm('Are you sure you want to check out this reservation?')) return;
+            
+            try {
+                await API.post(`/reservations/${id}/checkout`);
+                UI.showSuccess('Guest checked out successfully!');
+                await loadReservationsData();
+            } catch (error) {
+                console.error('Error checking out reservation:', error);
+                UI.showError('Failed to check out reservation');
+            }
+        }
+
+        function resetReservationModal() {
+            document.getElementById('reservationForm').reset();
+            document.getElementById('reservationRoom').disabled = true;
+            document.getElementById('saveReservationBtn').style.display = 'none';
+            hideAvailabilityResults();
+            
+            // Clear validation states
+            const inputs = document.querySelectorAll('#reservationForm .is-invalid');
+            inputs.forEach(input => UI.clearFieldError(input));
+        }
+
+        function resetDateBlockingModal() {
+            document.getElementById('dateBlockingForm').reset();
+            document.getElementById('blockingRoom').disabled = true;
+            
+            // Clear validation states
+            const inputs = document.querySelectorAll('#dateBlockingForm .is-invalid');
+            inputs.forEach(input => UI.clearFieldError(input));
+        }
+
+        function applyReservationFilters() {
+            const filters = {
+                dateFrom: document.getElementById('dateFromFilter').value,
+                dateTo: document.getElementById('dateToFilter').value,
+                hotel: document.getElementById('hotelFilterRes').value,
+                status: document.getElementById('statusFilterRes').value,
+                source: document.getElementById('sourceFilter').value
+            };
+            
+            loadReservationsData(filters);
+        }
+
+        function clearReservationFilters() {
+            document.getElementById('dateFromFilter').value = '';
+            document.getElementById('dateToFilter').value = '';
+            document.getElementById('hotelFilterRes').value = '';
+            document.getElementById('statusFilterRes').value = '';
+            document.getElementById('sourceFilter').value = '';
+            
+            loadReservationsData();
+        }
+
+        // Utility functions for status and source mapping
+        function getStatusDisplayName(status) {
+            const statusNames = {
+                0: 'Pending',
+                1: 'Confirmed', 
+                2: 'Checked In',
+                3: 'Checked Out',
+                4: 'Cancelled'
+            };
+            return statusNames[status] || 'Unknown';
+        }
+
+        function getStatusBadgeClass(status) {
+            const statusClasses = {
+                0: 'bg-warning',
+                1: 'bg-success',
+                2: 'bg-primary',
+                3: 'bg-info',
+                4: 'bg-danger'
+            };
+            return statusClasses[status] || 'bg-secondary';
+        }
+
+        function getSourceDisplayName(source) {
+            const sourceNames = {
+                0: 'Manual',
+                1: 'Booking.com',
+                2: 'Direct'
+            };
+            return sourceNames[source] || 'Unknown';
+        }
+
+        function getSourceBadgeClass(source) {
+            const sourceClasses = {
+                0: 'bg-secondary',
+                1: 'bg-primary',
+                2: 'bg-success'
+            };
+            return sourceClasses[source] || 'bg-secondary';
+        }
+
+        function getRoomTypeDisplayName(type) {
+            const typeNames = {
+                0: 'Single',
+                1: 'Double',
+                2: 'Twin',
+                3: 'Suite',
+                4: 'Family',
+                5: 'Deluxe'
+            };
+            return typeNames[type] || 'Unknown';
+        }
+
+        function mapStatusToEnum(statusString) {
+            const statusMap = {
+                'pending': 0,
+                'confirmed': 1,
+                'checkedin': 2,
+                'checkedout': 3,
+                'cancelled': 4
+            };
+            return statusMap[statusString];
+        }
+
+        function mapSourceToEnum(sourceString) {
+            const sourceMap = {
+                'manual': 0,
+                'booking': 1,
+                'direct': 2
+            };
+            return sourceMap[sourceString];
+        }
+    </script>
+}

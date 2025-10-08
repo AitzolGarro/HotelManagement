@@ -1,0 +1,147 @@
+@{
+    ViewData["Title"] = "Properties";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">
+                <i class="bi bi-buildings"></i>
+                Properties Management
+            </h1>
+            <button type="button" class="btn btn-primary" data-role="admin">
+                <i class="bi bi-plus-circle"></i>
+                Add Hotel
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Properties List -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-building"></i>
+                    Hotels
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="hotelsTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Address</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Rooms</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    <i class="bi bi-building fs-1"></i>
+                                    <p class="mt-2">Loading hotels...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rooms Section (will show when a hotel is selected) -->
+<div class="row mt-4" id="roomsSection" style="display: none;">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-door-closed"></i>
+                    Rooms - <span id="selectedHotelName"></span>
+                </h5>
+                <button type="button" class="btn btn-primary btn-sm" data-role="manager">
+                    <i class="bi bi-plus-circle"></i>
+                    Add Room
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="roomsTable">
+                        <thead>
+                            <tr>
+                                <th>Room Number</th>
+                                <th>Type</th>
+                                <th>Capacity</th>
+                                <th>Base Rate</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rooms will be loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Properties-specific initialization
+            console.log('Properties page loaded');
+            
+            // Placeholder data loading
+            setTimeout(() => {
+                loadPropertiesData();
+            }, 1000);
+        });
+        
+        function loadPropertiesData() {
+            // Placeholder implementation - will be replaced with actual API calls
+            const tbody = document.querySelector('#hotelsTable tbody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center text-muted">
+                        <p>No hotels found</p>
+                        <p class="small">Hotel management functionality will be implemented in later tasks</p>
+                    </td>
+                </tr>
+            `;
+        }
+        
+        function showHotelRooms(hotelId, hotelName) {
+            document.getElementById('selectedHotelName').textContent = hotelName;
+            document.getElementById('roomsSection').style.display = 'block';
+            
+            // Load rooms for the selected hotel
+            const roomsTableBody = document.querySelector('#roomsTable tbody');
+            roomsTableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-3">
+                        <p>Loading rooms for ${hotelName}...</p>
+                    </td>
+                </tr>
+            `;
+            
+            // Placeholder room loading
+            setTimeout(() => {
+                roomsTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">
+                            <p>No rooms found for this hotel</p>
+                        </td>
+                    </tr>
+                `;
+            }, 500);
+        }
+    </script>
+}

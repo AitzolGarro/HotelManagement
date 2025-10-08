@@ -1,0 +1,232 @@
+@{
+    ViewData["Title"] = "Calendar";
+}
+
+<div class="row">
+    <div class="col-12">
+        <h1 class="h3 mb-4">
+            <i class="bi bi-calendar3"></i>
+            Calendar View
+        </h1>
+    </div>
+</div>
+
+<!-- Calendar Filters -->
+<div class="calendar-filters">
+    <div class="row align-items-end">
+        <div class="col-lg-2 col-md-3 col-sm-6 mb-3">
+            <label for="hotelFilter" class="form-label">Hotel</label>
+            <select class="form-select" id="hotelFilter">
+                <option value="">All Hotels</option>
+                <!-- Options will be populated dynamically -->
+            </select>
+        </div>
+        <div class="col-lg-2 col-md-3 col-sm-6 mb-3">
+            <label for="roomTypeFilter" class="form-label">Room Type</label>
+            <select class="form-select" id="roomTypeFilter">
+                <option value="">All Room Types</option>
+                <option value="single">Single</option>
+                <option value="double">Double</option>
+                <option value="suite">Suite</option>
+                <option value="family">Family</option>
+            </select>
+        </div>
+        <div class="col-lg-2 col-md-3 col-sm-6 mb-3">
+            <label for="statusFilter" class="form-label">Status</label>
+            <select class="form-select" id="statusFilter">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="checkedin">Checked In</option>
+                <option value="checkedout">Checked Out</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-6 mb-3">
+            <label for="dateRangePicker" class="form-label">Date Range</label>
+            <input type="text" class="form-control" id="dateRangePicker" placeholder="Select date range">
+        </div>
+        <div class="col-lg-3 col-md-12 mb-3">
+            <div class="d-flex gap-2 flex-wrap">
+                <button type="button" class="btn btn-primary" id="applyFilters">
+                    <i class="bi bi-funnel"></i>
+                    Apply Filters
+                </button>
+                <button type="button" class="btn btn-outline-secondary" id="clearFilters">
+                    <i class="bi bi-x-circle"></i>
+                    Clear
+                </button>
+                <button type="button" class="btn btn-success" id="addReservationBtn">
+                    <i class="bi bi-plus-circle"></i>
+                    Add Reservation
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Calendar Container -->
+<div class="calendar-container">
+    <div id="calendar"></div>
+</div>
+
+<!-- Reservation Detail Modal -->
+<div class="modal fade" id="reservationModal" tabindex="-1" aria-labelledby="reservationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reservationModalLabel">
+                    <i class="bi bi-journal-bookmark"></i>
+                    Reservation Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="reservationDetails">
+                    <!-- Reservation details will be populated here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="editReservationBtn" style="display: none;">
+                    <i class="bi bi-pencil"></i>
+                    Edit Reservation
+                </button>
+                <button type="button" class="btn btn-danger" id="cancelReservationBtn" style="display: none;">
+                    <i class="bi bi-x-circle"></i>
+                    Cancel Reservation
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Reservation Modal -->
+<div class="modal fade" id="addReservationModal" tabindex="-1" aria-labelledby="addReservationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addReservationModalLabel">
+                    <i class="bi bi-plus-circle"></i>
+                    Add New Reservation
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reservationForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="guestFirstName" class="form-label">First Name *</label>
+                            <input type="text" class="form-control" id="guestFirstName" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="guestLastName" class="form-label">Last Name *</label>
+                            <input type="text" class="form-control" id="guestLastName" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="guestEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="guestEmail">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="guestPhone" class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="guestPhone">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="reservationHotel" class="form-label">Hotel *</label>
+                            <select class="form-select" id="reservationHotel" required>
+                                <option value="">Select Hotel</option>
+                                <!-- Options will be populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="reservationRoom" class="form-label">Room *</label>
+                            <select class="form-select" id="reservationRoom" required>
+                                <option value="">Select Room</option>
+                                <!-- Options will be populated dynamically -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="checkInDate" class="form-label">Check-in Date *</label>
+                            <input type="date" class="form-control" id="checkInDate" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="checkOutDate" class="form-label">Check-out Date *</label>
+                            <input type="date" class="form-control" id="checkOutDate" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="numberOfGuests" class="form-label">Number of Guests *</label>
+                            <input type="number" class="form-control" id="numberOfGuests" min="1" max="10" value="1" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="totalAmount" class="form-label">Total Amount *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="totalAmount" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="specialRequests" class="form-label">Special Requests</label>
+                        <textarea class="form-control" id="specialRequests" rows="3" placeholder="Any special requests or notes..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="internalNotes" class="form-label">Internal Notes</label>
+                        <textarea class="form-control" id="internalNotes" rows="2" placeholder="Internal notes (not visible to guest)..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveReservationBtn">
+                    <i class="bi bi-check-circle"></i>
+                    Save Reservation
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Calendar module -->
+    <script src="~/js/modules/calendar.js" asp-append-version="true"></script>
+    
+    <script>
+        let calendarManager;
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('Calendar page loaded');
+            
+            // Initialize calendar manager
+            calendarManager = new CalendarManager();
+            await calendarManager.initialize();
+        });
+        
+        // Cleanup SignalR connection when page is unloaded
+        window.addEventListener('beforeunload', async function() {
+            if (calendarManager) {
+                await calendarManager.cleanup();
+            }
+        });
+        
+        // Legacy functions for backward compatibility (will be removed in task 9.2)
+        function applyCalendarFilters() {
+            if (calendarManager) {
+                calendarManager.applyFilters();
+            }
+        }
+        
+        function clearCalendarFilters() {
+            if (calendarManager) {
+                calendarManager.clearFilters();
+            }
+        }
+    </script>
+}

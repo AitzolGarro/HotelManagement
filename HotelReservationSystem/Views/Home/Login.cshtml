@@ -1,0 +1,400 @@
+@{
+    ViewData["Title"] = "Login";
+    Layout = null; // Use a different layout for login page
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Hotel Reservation System</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+        }
+        
+        .login-image {
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><rect fill="%23667eea" width="1200" height="800"/><g fill-opacity="0.1"><polygon fill="%23fff" points="1200,800 0,800 0,0 1200,0"/></g></svg>');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 3rem;
+        }
+        
+        .login-form-container {
+            padding: 3rem;
+        }
+        
+        .brand-logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-floating .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .btn-login {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.5rem 1rem rgba(102, 126, 234, 0.3);
+        }
+        
+        .divider {
+            position: relative;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #dee2e6;
+        }
+        
+        .divider span {
+            background: white;
+            padding: 0 1rem;
+            color: #6c757d;
+            font-size: 0.875rem;
+        }
+        
+        @media (max-width: 768px) {
+            .login-container {
+                margin: 1rem;
+            }
+            
+            .login-image {
+                display: none;
+            }
+            
+            .login-form-container {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="mt-2">Signing in...</div>
+        </div>
+    </div>
+
+    <!-- Error alert -->
+    <div id="errorAlert" class="alert alert-danger alert-dismissible fade position-fixed top-0 start-50 translate-middle-x mt-3" role="alert" style="display: none; z-index: 1050;">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span id="errorMessage"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-8">
+                <div class="login-container">
+                    <div class="row g-0">
+                        <!-- Left side - Branding -->
+                        <div class="col-lg-6 login-image">
+                            <div>
+                                <div class="brand-logo">
+                                    <i class="bi bi-building"></i>
+                                </div>
+                                <h2 class="mb-3">Hotel Reservation System</h2>
+                                <p class="lead mb-0">Centralized management for all your hotel reservations</p>
+                                <div class="mt-4">
+                                    <div class="d-flex justify-content-center gap-4 text-center">
+                                        <div>
+                                            <i class="bi bi-calendar-check fs-3"></i>
+                                            <div class="small mt-1">Smart Booking</div>
+                                        </div>
+                                        <div>
+                                            <i class="bi bi-graph-up fs-3"></i>
+                                            <div class="small mt-1">Analytics</div>
+                                        </div>
+                                        <div>
+                                            <i class="bi bi-shield-check fs-3"></i>
+                                            <div class="small mt-1">Secure</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right side - Login Form -->
+                        <div class="col-lg-6">
+                            <div class="login-form-container">
+                                <div class="text-center mb-4">
+                                    <h3 class="fw-bold">Welcome Back</h3>
+                                    <p class="text-muted">Please sign in to your account</p>
+                                </div>
+                                
+                                <form id="loginForm" class="ajax-form login-form" novalidate>
+                                    <div class="form-floating mb-3">
+                                        <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
+                                        <label for="email">
+                                            <i class="bi bi-envelope me-2"></i>Email address
+                                        </label>
+                                        <div class="invalid-feedback">
+                                            Please enter a valid email address.
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-floating mb-3">
+                                        <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                                        <label for="password">
+                                            <i class="bi bi-lock me-2"></i>Password
+                                        </label>
+                                        <div class="invalid-feedback">
+                                            Please enter your password.
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="rememberMe" name="rememberMe">
+                                                <label class="form-check-label" for="rememberMe">
+                                                    Remember me
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 text-end">
+                                            <a href="#" class="text-decoration-none small" id="forgotPasswordLink">
+                                                Forgot password?
+                                            </a>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-grid mb-3">
+                                        <button type="submit" class="btn btn-primary btn-login">
+                                            <i class="bi bi-box-arrow-in-right me-2"></i>
+                                            Sign In
+                                        </button>
+                                    </div>
+                                </form>
+                                
+                                <div class="divider">
+                                    <span>Need help?</span>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <p class="text-muted small mb-0">
+                                        Contact your system administrator for account access
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JavaScript modules -->
+    <script src="~/js/modules/api.js" asp-append-version="true"></script>
+    <script src="~/js/modules/auth.js" asp-append-version="true"></script>
+    <script src="~/js/modules/ui.js" asp-append-version="true"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is already logged in
+            if (Auth.isAuthenticated()) {
+                window.location.href = '/';
+                return;
+            }
+            
+            // Initialize login form
+            initializeLoginForm();
+            
+            // Handle forgot password link
+            document.getElementById('forgotPasswordLink').addEventListener('click', function(e) {
+                e.preventDefault();
+                UI.showError('Password reset functionality will be implemented in a future update. Please contact your administrator.');
+            });
+        });
+        
+        function initializeLoginForm() {
+            const form = document.getElementById('loginForm');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            
+            // Custom validation
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Clear previous validation states
+                clearValidationErrors();
+                
+                // Validate form
+                if (!validateLoginForm()) {
+                    return;
+                }
+                
+                // Get form data
+                const formData = new FormData(form);
+                const credentials = {
+                    email: formData.get('email'),
+                    password: formData.get('password'),
+                    rememberMe: formData.get('rememberMe') === 'on'
+                };
+                
+                // Attempt login
+                try {
+                    UI.showLoading('Signing in...');
+                    const success = await Auth.login(credentials);
+                    
+                    if (success) {
+                        UI.showSuccess('Login successful! Redirecting...');
+                        // Redirect will be handled by Auth.login
+                    }
+                } catch (error) {
+                    UI.showError('Login failed: ' + error.message);
+                } finally {
+                    UI.hideLoading();
+                }
+            });
+            
+            // Real-time validation
+            emailInput.addEventListener('blur', validateEmail);
+            passwordInput.addEventListener('blur', validatePassword);
+            
+            // Clear validation on input
+            emailInput.addEventListener('input', function() {
+                if (this.classList.contains('is-invalid')) {
+                    this.classList.remove('is-invalid');
+                }
+            });
+            
+            passwordInput.addEventListener('input', function() {
+                if (this.classList.contains('is-invalid')) {
+                    this.classList.remove('is-invalid');
+                }
+            });
+            
+            // Handle Enter key
+            form.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    form.dispatchEvent(new Event('submit'));
+                }
+            });
+        }
+        
+        function validateLoginForm() {
+            let isValid = true;
+            
+            if (!validateEmail()) {
+                isValid = false;
+            }
+            
+            if (!validatePassword()) {
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+        
+        function validateEmail() {
+            const emailInput = document.getElementById('email');
+            const email = emailInput.value.trim();
+            
+            if (!email) {
+                showFieldError(emailInput, 'Email address is required');
+                return false;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showFieldError(emailInput, 'Please enter a valid email address');
+                return false;
+            }
+            
+            clearFieldError(emailInput);
+            return true;
+        }
+        
+        function validatePassword() {
+            const passwordInput = document.getElementById('password');
+            const password = passwordInput.value;
+            
+            if (!password) {
+                showFieldError(passwordInput, 'Password is required');
+                return false;
+            }
+            
+            if (password.length < 6) {
+                showFieldError(passwordInput, 'Password must be at least 6 characters long');
+                return false;
+            }
+            
+            clearFieldError(passwordInput);
+            return true;
+        }
+        
+        function showFieldError(input, message) {
+            input.classList.add('is-invalid');
+            const feedback = input.parentNode.querySelector('.invalid-feedback');
+            if (feedback) {
+                feedback.textContent = message;
+            }
+        }
+        
+        function clearFieldError(input) {
+            input.classList.remove('is-invalid');
+        }
+        
+        function clearValidationErrors() {
+            const invalidInputs = document.querySelectorAll('.is-invalid');
+            invalidInputs.forEach(input => {
+                input.classList.remove('is-invalid');
+            });
+        }
+    </script>
+</body>
+</html>

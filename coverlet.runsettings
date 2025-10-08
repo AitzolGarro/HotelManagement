@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat code coverage">
+        <Configuration>
+          <Format>opencover,cobertura,lcov,teamcity,html</Format>
+          <Exclude>[*.Tests]*,[*]*.Program,[*]*.Startup</Exclude>
+          <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
+          <ExcludeByFile>**/Migrations/**/*.cs,**/wwwroot/**/*.cs</ExcludeByFile>
+          <IncludeDirectory>../HotelReservationSystem/</IncludeDirectory>
+          <SingleHit>false</SingleHit>
+          <UseSourceLink>true</UseSourceLink>
+          <IncludeTestAssembly>false</IncludeTestAssembly>
+          <SkipAutoProps>true</SkipAutoProps>
+          <DeterministicReport>true</DeterministicReport>
+          <Threshold>80</Threshold>
+          <ThresholdType>line,branch,method</ThresholdType>
+          <ThresholdStat>minimum</ThresholdStat>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>
