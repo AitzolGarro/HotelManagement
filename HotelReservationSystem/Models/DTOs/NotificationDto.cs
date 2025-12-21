@@ -11,7 +11,10 @@ public enum NotificationType
     ReservationUpdate = 5,
     Conflict = 6,
     SystemAlert = 7,
-    BookingComSync = 8
+    BookingComSync = 8,
+    Critical = 9,
+    Overbooking = 10,
+    MaintenanceConflict = 11
 }
 
 public enum NotificationPriority

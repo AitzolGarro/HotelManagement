@@ -37,12 +37,15 @@ namespace HotelReservationSystem.Middleware
                         endpoint, stopwatch.ElapsedMilliseconds, context.Response.StatusCode);
                 }
 
-                // Add performance headers for debugging
-                if (context.Response.Headers.ContainsKey("X-Response-Time"))
+                // Add performance headers for debugging (only if response hasn't started)
+                if (!context.Response.HasStarted)
                 {
-                    context.Response.Headers.Remove("X-Response-Time");
+                    if (context.Response.Headers.ContainsKey("X-Response-Time"))
+                    {
+                        context.Response.Headers.Remove("X-Response-Time");
+                    }
+                    context.Response.Headers.Add("X-Response-Time", $"{stopwatch.ElapsedMilliseconds}ms");
                 }
-                context.Response.Headers.Add("X-Response-Time", $"{stopwatch.ElapsedMilliseconds}ms");
             }
         }
     }

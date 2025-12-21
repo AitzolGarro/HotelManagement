@@ -151,45 +151,45 @@ public class DashboardService : IDashboardService
             checkOutsQuery = checkOutsQuery.Where(r => r.HotelId == hotelId.Value);
         }
 
-        var checkIns = await checkInsQuery
-            .Select(r => new CheckInOutDto
-            {
-                ReservationId = r.Id,
-                BookingReference = r.BookingReference ?? "",
-                GuestName = $"{r.Guest.FirstName} {r.Guest.LastName}",
-                GuestPhone = r.Guest.Phone ?? "",
-                RoomNumber = r.Room.RoomNumber,
-                HotelName = r.Hotel.Name,
-                CheckInDate = r.CheckInDate,
-                CheckOutDate = r.CheckOutDate,
-                Status = r.Status,
-                SpecialRequests = r.SpecialRequests ?? ""
-            })
-            .OrderBy(c => c.GuestName)
-            .ToListAsync();
+        var checkIns = await checkInsQuery.ToListAsync();
+        
+        // Transform to DTOs after loading from database
+        var checkInDtos = checkIns.Select(r => new CheckInOutDto
+        {
+            ReservationId = r.Id,
+            BookingReference = r.BookingReference ?? "",
+            GuestName = $"{r.Guest?.FirstName ?? ""} {r.Guest?.LastName ?? ""}".Trim(),
+            GuestPhone = r.Guest?.Phone ?? "",
+            RoomNumber = r.Room?.RoomNumber ?? "",
+            HotelName = r.Hotel?.Name ?? "",
+            CheckInDate = r.CheckInDate,
+            CheckOutDate = r.CheckOutDate,
+            Status = r.Status,
+            SpecialRequests = r.SpecialRequests ?? ""
+        }).OrderBy(c => c.GuestName).ToList();
 
-        var checkOuts = await checkOutsQuery
-            .Select(r => new CheckInOutDto
-            {
-                ReservationId = r.Id,
-                BookingReference = r.BookingReference ?? "",
-                GuestName = $"{r.Guest.FirstName} {r.Guest.LastName}",
-                GuestPhone = r.Guest.Phone ?? "",
-                RoomNumber = r.Room.RoomNumber,
-                HotelName = r.Hotel.Name,
-                CheckInDate = r.CheckInDate,
-                CheckOutDate = r.CheckOutDate,
-                Status = r.Status,
-                SpecialRequests = r.SpecialRequests ?? ""
-            })
-            .OrderBy(c => c.GuestName)
-            .ToListAsync();
+        var checkOutsRaw = await checkOutsQuery.ToListAsync();
+        
+        // Transform to DTOs after loading from database
+        var checkOuts = checkOutsRaw.Select(r => new CheckInOutDto
+        {
+            ReservationId = r.Id,
+            BookingReference = r.BookingReference ?? "",
+            GuestName = $"{r.Guest?.FirstName ?? ""} {r.Guest?.LastName ?? ""}".Trim(),
+            GuestPhone = r.Guest?.Phone ?? "",
+            RoomNumber = r.Room?.RoomNumber ?? "",
+            HotelName = r.Hotel?.Name ?? "",
+            CheckInDate = r.CheckInDate,
+            CheckOutDate = r.CheckOutDate,
+            Status = r.Status,
+            SpecialRequests = r.SpecialRequests ?? ""
+        }).OrderBy(c => c.GuestName).ToList();
 
         return new DailyOperationsDto
         {
-            TodayCheckIns = checkIns,
+            TodayCheckIns = checkInDtos,
             TodayCheckOuts = checkOuts,
-            TotalCheckIns = checkIns.Count,
+            TotalCheckIns = checkInDtos.Count,
             TotalCheckOuts = checkOuts.Count
         };
     }
@@ -271,8 +271,13 @@ public class DashboardService : IDashboardService
         query = query.Where(r => r.CheckInDate >= startDate && r.CheckInDate < endDate)
                     .Where(r => r.Status != ReservationStatus.Cancelled);
 
-        var dailyData = await query
-            .GroupBy(r => r.CheckInDate.Date)
+        // SQLite doesn't support Sum on decimal in GroupBy, so we need client-side evaluation
+        var reservations = await query
+            .Select(r => new { r.CheckInDate.Date, r.TotalAmount })
+            .ToListAsync();
+
+        var dailyData = reservations
+            .GroupBy(r => r.Date)
             .Select(g => new DailyRevenueDto
             {
                 Date = g.Key,
@@ -280,7 +285,7 @@ public class DashboardService : IDashboardService
                 ReservationCount = g.Count()
             })
             .OrderBy(d => d.Date)
-            .ToListAsync();
+            .ToList();
 
         return dailyData;
     }
@@ -337,10 +342,14 @@ public class DashboardService : IDashboardService
             query = query.Where(r => r.HotelId == hotelId.Value);
         }
 
-        return await query
+        // SQLite doesn't support Sum on decimal, so we need to use client-side evaluation
+        var reservations = await query
             .Where(r => r.CheckInDate >= startDate && r.CheckInDate < endDate)
             .Where(r => r.Status != ReservationStatus.Cancelled)
-            .SumAsync(r => r.TotalAmount);
+            .Select(r => r.TotalAmount)
+            .ToListAsync();
+
+        return reservations.Sum();
     }
 
     public async Task<List<RecentReservationDto>> GetRecentReservationsAsync(int? hotelId = null, int limit = 10)
@@ -358,14 +367,16 @@ public class DashboardService : IDashboardService
             query = query.Where(r => r.HotelId == hotelId.Value);
         }
 
-        var recentReservations = await query
+        // SQLite can't translate string interpolation, so we need client-side evaluation
+        var recentReservationsData = await query
             .OrderByDescending(r => r.CreatedAt)
             .Take(limit)
-            .Select(r => new RecentReservationDto
+            .Select(r => new 
             {
                 Id = r.Id,
                 BookingReference = r.BookingReference ?? "",
-                GuestName = $"{r.Guest.FirstName} {r.Guest.LastName}",
+                GuestFirstName = r.Guest.FirstName,
+                GuestLastName = r.Guest.LastName,
                 HotelName = r.Hotel.Name,
                 RoomNumber = r.Room.RoomNumber,
                 CheckInDate = r.CheckInDate,
@@ -376,6 +387,23 @@ public class DashboardService : IDashboardService
                 CreatedAt = r.CreatedAt
             })
             .ToListAsync();
+
+        var recentReservations = recentReservationsData
+            .Select(r => new RecentReservationDto
+            {
+                Id = r.Id,
+                BookingReference = r.BookingReference,
+                GuestName = $"{r.GuestFirstName} {r.GuestLastName}",
+                HotelName = r.HotelName,
+                RoomNumber = r.RoomNumber,
+                CheckInDate = r.CheckInDate,
+                CheckOutDate = r.CheckOutDate,
+                Status = r.Status,
+                Source = r.Source,
+                TotalAmount = r.TotalAmount,
+                CreatedAt = r.CreatedAt
+            })
+            .ToList();
 
         return recentReservations;
     }

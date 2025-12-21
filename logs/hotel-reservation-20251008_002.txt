@@ -1,0 +1,893 @@
+2025-10-08 12:34:04.848 +02:00 [INF] Starting Hotel Reservation System
+2025-10-08 12:34:04.917 +02:00 [INF] Database Provider configured as: SqlServer
+2025-10-08 12:34:04.918 +02:00 [INF] Using in-memory cache for demo mode
+2025-10-08 12:34:04.923 +02:00 [FTL] Application terminated unexpectedly
+System.InvalidOperationException: JWT Secret not configured
+   at Program.<Main>$(String[] args)
+2025-10-08 12:39:35.049 +02:00 [INF] Starting Hotel Reservation System
+2025-10-08 12:39:35.120 +02:00 [INF] Database Provider configured as: SqlServer
+2025-10-08 12:39:35.122 +02:00 [INF] Using in-memory cache for demo mode
+2025-10-08 12:39:35.128 +02:00 [FTL] Application terminated unexpectedly
+System.InvalidOperationException: JWT Secret not configured
+   at Program.<Main>$(String[] args)
+2025-10-08 12:44:36.391 +02:00 [INF] Starting Hotel Reservation System
+2025-10-08 12:44:36.466 +02:00 [INF] Database Provider configured as: SqlServer
+2025-10-08 12:44:36.467 +02:00 [INF] Using in-memory cache for demo mode
+2025-10-08 12:44:36.836 +02:00 [WRN] The 'ReservationStatus' property 'Status' on entity type 'Reservation' is configured with a database-generated default, but has no configured sentinel value. The database-generated default will always be used for inserts when the property has the value '0', since this is the CLR default for the 'ReservationStatus' type. Consider using a nullable type, using a nullable backing field, or setting the sentinel value for the property to ensure the database default is used when, and only when, appropriate. See https://aka.ms/efcore-docs-default-values for more information.
+2025-10-08 12:44:36.838 +02:00 [WRN] The 'RoomStatus' property 'Status' on entity type 'Room' is configured with a database-generated default, but has no configured sentinel value. The database-generated default will always be used for inserts when the property has the value '0', since this is the CLR default for the 'RoomStatus' type. Consider using a nullable type, using a nullable backing field, or setting the sentinel value for the property to ensure the database default is used when, and only when, appropriate. See https://aka.ms/efcore-docs-default-values for more information.
+2025-10-08 12:44:36.898 +02:00 [FTL] Application terminated unexpectedly
+System.IO.FileNotFoundException: Could not load file or assembly 'Microsoft.Data.SqlClient, Version=5.0.0.0, Culture=neutral, PublicKeyToken=23ec7fc2d6eaa4a5'. The system cannot find the file specified.
+File name: 'Microsoft.Data.SqlClient, Version=5.0.0.0, Culture=neutral, PublicKeyToken=23ec7fc2d6eaa4a5'
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.<>c__DisplayClass18_0.<Exists>b__0(DateTime giveUp)
+   at Microsoft.EntityFrameworkCore.ExecutionStrategyExtensions.<>c__DisplayClass12_0`2.<Execute>b__0(DbContext _, TState s)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.ExecutionStrategyExtensions.Execute[TState,TResult](IExecutionStrategy strategy, TState state, Func`2 operation, Func`2 verifySucceeded)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.Exists(Boolean retryOnNotExists)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.Exists()
+   at Microsoft.EntityFrameworkCore.Migrations.HistoryRepository.Exists()
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.Migrate(String targetMigration)
+   at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.Migrate(DatabaseFacade databaseFacade)
+   at Program.<Main>$(String[] args)
+2025-10-08 12:45:30.277 +02:00 [INF] Starting Hotel Reservation System
+2025-10-08 12:45:30.348 +02:00 [INF] Database Provider configured as: Sqlite
+2025-10-08 12:45:30.349 +02:00 [INF] Using in-memory cache for demo mode
+2025-10-08 12:45:30.706 +02:00 [WRN] The 'ReservationStatus' property 'Status' on entity type 'Reservation' is configured with a database-generated default, but has no configured sentinel value. The database-generated default will always be used for inserts when the property has the value '0', since this is the CLR default for the 'ReservationStatus' type. Consider using a nullable type, using a nullable backing field, or setting the sentinel value for the property to ensure the database default is used when, and only when, appropriate. See https://aka.ms/efcore-docs-default-values for more information.
+2025-10-08 12:45:30.708 +02:00 [WRN] The 'RoomStatus' property 'Status' on entity type 'Room' is configured with a database-generated default, but has no configured sentinel value. The database-generated default will always be used for inserts when the property has the value '0', since this is the CLR default for the 'RoomStatus' type. Consider using a nullable type, using a nullable backing field, or setting the sentinel value for the property to ensure the database default is used when, and only when, appropriate. See https://aka.ms/efcore-docs-default-values for more information.
+2025-10-08 12:45:30.786 +02:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "name" = '__EFMigrationsHistory' AND "type" = 'table';
+2025-10-08 12:45:30.817 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "__EFMigrationsHistory" (
+    "MigrationId" TEXT NOT NULL CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY,
+    "ProductVersion" TEXT NOT NULL
+);
+2025-10-08 12:45:30.819 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "name" = '__EFMigrationsHistory' AND "type" = 'table';
+2025-10-08 12:45:30.824 +02:00 [INF] No migrations were applied. The database is already up to date.
+2025-10-08 12:45:30.832 +02:00 [INF] User profile is available. Using 'C:\Users\aitzol\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-10-08 12:45:30.843 +02:00 [INF] Reservation synchronization background service started with interval "00:15:00"
+2025-10-08 12:45:30.844 +02:00 [INF] Starting periodic reservation synchronization
+2025-10-08 12:45:30.852 +02:00 [INF] Starting full reservation synchronization
+2025-10-08 12:45:30.945 +02:00 [ERR] Failed executing DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "h"."Id", "h"."Address", "h"."CreatedAt", "h"."Email", "h"."IsActive", "h"."Name", "h"."Phone", "h"."UpdatedAt"
+FROM "Hotels" AS "h"
+WHERE "h"."IsActive"
+ORDER BY "h"."Name"
+2025-10-08 12:45:30.952 +02:00 [ERR] An exception occurred while iterating over the results of a query for context type 'HotelReservationSystem.Data.HotelReservationContext'.
+Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such table: Hotels'.
+   at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such table: Hotels'.
+   at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+2025-10-08 12:45:30.955 +02:00 [ERR] Failed to complete full reservation synchronization
+Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such table: Hotels'.
+   at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at HotelReservationSystem.Data.Repositories.HotelRepository.GetActiveHotelsAsync()
+   at HotelReservationSystem.Services.BookingCom.BookingIntegrationService.SyncReservationsAsync(CancellationToken cancellationToken)
+2025-10-08 12:45:30.958 +02:00 [ERR] Failed to complete periodic reservation synchronization
+Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such table: Hotels'.
+   at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at HotelReservationSystem.Data.Repositories.HotelRepository.GetActiveHotelsAsync()
+   at HotelReservationSystem.Services.BookingCom.BookingIntegrationService.SyncReservationsAsync(CancellationToken cancellationToken)
+   at HotelReservationSystem.Services.BackgroundServices.ReservationSyncBackgroundService.PerformSynchronizationAsync(CancellationToken cancellationToken)
+2025-10-08 12:45:30.969 +02:00 [WRN] The WebRootPath was not found: C:\Users\aitzol\Documents\development\hostelavila\wwwroot. Static files may be unavailable.
+2025-10-08 12:45:30.975 +02:00 [INF] Now listening on: http://localhost:5000
+2025-10-08 12:45:30.976 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-10-08 12:45:30.976 +02:00 [INF] Hosting environment: Production
+2025-10-08 12:45:30.976 +02:00 [INF] Content root path: C:\Users\aitzol\Documents\development\hostelavila
+2025-10-08 12:45:41.212 +02:00 [INF] Application is shutting down...
+2025-10-08 12:45:41.216 +02:00 [INF] Stopping reservation synchronization background service
+2025-10-08 12:45:41.217 +02:00 [INF] Reservation synchronization background service stopped
+2025-10-08 13:39:21.921 +02:00 [INF] Starting Hotel Reservation System
+2025-10-08 13:39:21.992 +02:00 [INF] Database Provider configured as: Sqlite
+2025-10-08 13:39:21.993 +02:00 [INF] Using in-memory cache for demo mode
+2025-10-08 13:39:22.341 +02:00 [WRN] The 'ReservationStatus' property 'Status' on entity type 'Reservation' is configured with a database-generated default, but has no configured sentinel value. The database-generated default will always be used for inserts when the property has the value '0', since this is the CLR default for the 'ReservationStatus' type. Consider using a nullable type, using a nullable backing field, or setting the sentinel value for the property to ensure the database default is used when, and only when, appropriate. See https://aka.ms/efcore-docs-default-values for more information.
+2025-10-08 13:39:22.343 +02:00 [WRN] The 'RoomStatus' property 'Status' on entity type 'Room' is configured with a database-generated default, but has no configured sentinel value. The database-generated default will always be used for inserts when the property has the value '0', since this is the CLR default for the 'RoomStatus' type. Consider using a nullable type, using a nullable backing field, or setting the sentinel value for the property to ensure the database default is used when, and only when, appropriate. See https://aka.ms/efcore-docs-default-values for more information.
+2025-10-08 13:39:22.414 +02:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "name" = '__EFMigrationsHistory' AND "type" = 'table';
+2025-10-08 13:39:22.445 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "__EFMigrationsHistory" (
+    "MigrationId" TEXT NOT NULL CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY,
+    "ProductVersion" TEXT NOT NULL
+);
+2025-10-08 13:39:22.447 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "name" = '__EFMigrationsHistory' AND "type" = 'table';
+2025-10-08 13:39:22.452 +02:00 [INF] No migrations were applied. The database is already up to date.
+2025-10-08 13:39:22.461 +02:00 [INF] User profile is available. Using 'C:\Users\aitzol\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-10-08 13:39:22.471 +02:00 [INF] Reservation synchronization background service started with interval "00:15:00"
+2025-10-08 13:39:22.472 +02:00 [INF] Starting periodic reservation synchronization
+2025-10-08 13:39:22.479 +02:00 [INF] Starting full reservation synchronization
+2025-10-08 13:39:22.573 +02:00 [ERR] Failed executing DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "h"."Id", "h"."Address", "h"."CreatedAt", "h"."Email", "h"."IsActive", "h"."Name", "h"."Phone", "h"."UpdatedAt"
+FROM "Hotels" AS "h"
+WHERE "h"."IsActive"
+ORDER BY "h"."Name"
+2025-10-08 13:39:22.581 +02:00 [ERR] An exception occurred while iterating over the results of a query for context type 'HotelReservationSystem.Data.HotelReservationContext'.
+Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such table: Hotels'.
+   at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such table: Hotels'.
+   at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+2025-10-08 13:39:22.584 +02:00 [ERR] Failed to complete full reservation synchronization
+Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such table: Hotels'.
+   at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at HotelReservationSystem.Data.Repositories.HotelRepository.GetActiveHotelsAsync()
+   at HotelReservationSystem.Services.BookingCom.BookingIntegrationService.SyncReservationsAsync(CancellationToken cancellationToken)
+2025-10-08 13:39:22.587 +02:00 [ERR] Failed to complete periodic reservation synchronization
+Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such table: Hotels'.
+   at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at HotelReservationSystem.Data.Repositories.HotelRepository.GetActiveHotelsAsync()
+   at HotelReservationSystem.Services.BookingCom.BookingIntegrationService.SyncReservationsAsync(CancellationToken cancellationToken)
+   at HotelReservationSystem.Services.BackgroundServices.ReservationSyncBackgroundService.PerformSynchronizationAsync(CancellationToken cancellationToken)
+2025-10-08 13:39:22.599 +02:00 [WRN] The WebRootPath was not found: C:\Users\aitzol\Documents\development\hostelavila\wwwroot. Static files may be unavailable.
+2025-10-08 13:39:22.607 +02:00 [INF] Now listening on: http://localhost:5000
+2025-10-08 13:39:22.608 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-10-08 13:39:22.608 +02:00 [INF] Hosting environment: Development
+2025-10-08 13:39:22.609 +02:00 [INF] Content root path: C:\Users\aitzol\Documents\development\hostelavila
+2025-10-08 13:39:30.256 +02:00 [INF] Application is shutting down...
+2025-10-08 13:39:30.260 +02:00 [INF] Stopping reservation synchronization background service
+2025-10-08 13:39:30.260 +02:00 [INF] Reservation synchronization background service stopped
+2025-10-08 14:07:44.681 +02:00 [INF] Starting Hotel Reservation System
+2025-10-08 14:07:44.754 +02:00 [INF] Database Provider configured as: SqlServer
+2025-10-08 14:07:44.755 +02:00 [INF] Using in-memory cache for demo mode
+2025-10-08 14:07:44.761 +02:00 [WRN] JWT Secret not found in configuration, using default for demo
+2025-10-08 14:07:44.910 +02:00 [INF] User profile is available. Using 'C:\Users\aitzol\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-10-08 14:07:44.912 +02:00 [INF] Starting database initialization...
+2025-10-08 14:07:45.151 +02:00 [WRN] The 'ReservationStatus' property 'Status' on entity type 'Reservation' is configured with a database-generated default, but has no configured sentinel value. The database-generated default will always be used for inserts when the property has the value '0', since this is the CLR default for the 'ReservationStatus' type. Consider using a nullable type, using a nullable backing field, or setting the sentinel value for the property to ensure the database default is used when, and only when, appropriate. See https://aka.ms/efcore-docs-default-values for more information.
+2025-10-08 14:07:45.152 +02:00 [WRN] The 'RoomStatus' property 'Status' on entity type 'Room' is configured with a database-generated default, but has no configured sentinel value. The database-generated default will always be used for inserts when the property has the value '0', since this is the CLR default for the 'RoomStatus' type. Consider using a nullable type, using a nullable backing field, or setting the sentinel value for the property to ensure the database default is used when, and only when, appropriate. See https://aka.ms/efcore-docs-default-values for more information.
+2025-10-08 14:07:45.340 +02:00 [ERR] Database initialization failed
+System.InvalidOperationException: The ConnectionString property has not been initialized.
+   at Microsoft.Data.SqlClient.SqlConnection.PermissionDemand()
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.PermissionDemand(DbConnection outerConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry, SqlConnectionOverrides overrides)
+   at Microsoft.Data.SqlClient.SqlConnection.InternalOpenAsync(CancellationToken cancellationToken)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.<>c__DisplayClass20_0.<<ExistsAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.<>c__DisplayClass20_0.<<ExistsAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureCreatedAsync(CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureCreatedAsync(CancellationToken cancellationToken)
+   at HotelReservationSystem.Services.DatabaseInitializationService.InitializeDatabaseAsync() in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Services\DatabaseInitializationService.cs:line 31
+2025-10-08 14:07:45.348 +02:00 [ERR] Database initialization failed
+System.InvalidOperationException: The ConnectionString property has not been initialized.
+   at Microsoft.Data.SqlClient.SqlConnection.PermissionDemand()
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.PermissionDemand(DbConnection outerConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry, SqlConnectionOverrides overrides)
+   at Microsoft.Data.SqlClient.SqlConnection.InternalOpenAsync(CancellationToken cancellationToken)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.<>c__DisplayClass20_0.<<ExistsAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.<>c__DisplayClass20_0.<<ExistsAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureCreatedAsync(CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureCreatedAsync(CancellationToken cancellationToken)
+   at HotelReservationSystem.Services.DatabaseInitializationService.InitializeDatabaseAsync() in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Services\DatabaseInitializationService.cs:line 31
+   at Program.<Main>$(String[] args) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Program.cs:line 270
+2025-10-08 14:07:45.362 +02:00 [INF] Reservation synchronization background service started with interval "00:15:00"
+2025-10-08 14:07:45.364 +02:00 [INF] Starting periodic reservation synchronization
+2025-10-08 14:07:45.370 +02:00 [INF] Starting full reservation synchronization
+2025-10-08 14:07:45.466 +02:00 [ERR] An error occurred using the connection to database '' on server ''.
+2025-10-08 14:07:45.469 +02:00 [ERR] An exception occurred while iterating over the results of a query for context type 'HotelReservationSystem.Data.HotelReservationContext'.
+System.InvalidOperationException: The ConnectionString property has not been initialized.
+   at Microsoft.Data.SqlClient.SqlConnection.PermissionDemand()
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.PermissionDemand(DbConnection outerConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry, SqlConnectionOverrides overrides)
+   at Microsoft.Data.SqlClient.SqlConnection.InternalOpenAsync(CancellationToken cancellationToken)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+System.InvalidOperationException: The ConnectionString property has not been initialized.
+   at Microsoft.Data.SqlClient.SqlConnection.PermissionDemand()
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.PermissionDemand(DbConnection outerConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry, SqlConnectionOverrides overrides)
+   at Microsoft.Data.SqlClient.SqlConnection.InternalOpenAsync(CancellationToken cancellationToken)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+2025-10-08 14:07:45.472 +02:00 [ERR] Failed to complete full reservation synchronization
+System.InvalidOperationException: The ConnectionString property has not been initialized.
+   at Microsoft.Data.SqlClient.SqlConnection.PermissionDemand()
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.PermissionDemand(DbConnection outerConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry, SqlConnectionOverrides overrides)
+   at Microsoft.Data.SqlClient.SqlConnection.InternalOpenAsync(CancellationToken cancellationToken)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at HotelReservationSystem.Data.Repositories.HotelRepository.GetActiveHotelsAsync() in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Data\Repositories\HotelRepository.cs:line 15
+   at HotelReservationSystem.Services.BookingCom.BookingIntegrationService.SyncReservationsAsync(CancellationToken cancellationToken) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Services\BookingCom\BookingIntegrationService.cs:line 55
+2025-10-08 14:07:45.475 +02:00 [ERR] Failed to complete periodic reservation synchronization
+System.InvalidOperationException: The ConnectionString property has not been initialized.
+   at Microsoft.Data.SqlClient.SqlConnection.PermissionDemand()
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.PermissionDemand(DbConnection outerConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry, SqlConnectionOverrides overrides)
+   at Microsoft.Data.SqlClient.SqlConnection.InternalOpenAsync(CancellationToken cancellationToken)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at HotelReservationSystem.Data.Repositories.HotelRepository.GetActiveHotelsAsync() in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Data\Repositories\HotelRepository.cs:line 15
+   at HotelReservationSystem.Services.BookingCom.BookingIntegrationService.SyncReservationsAsync(CancellationToken cancellationToken) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Services\BookingCom\BookingIntegrationService.cs:line 55
+   at HotelReservationSystem.Services.BackgroundServices.ReservationSyncBackgroundService.PerformSynchronizationAsync(CancellationToken cancellationToken) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Services\BookingCom\ReservationSyncBackgroundService.cs:line 62
+2025-10-08 14:07:45.486 +02:00 [WRN] The WebRootPath was not found: C:\Users\aitzol\Documents\development\hostelavila\wwwroot. Static files may be unavailable.
+2025-10-08 14:07:45.492 +02:00 [INF] Now listening on: http://localhost:5000
+2025-10-08 14:07:45.492 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-10-08 14:07:45.492 +02:00 [INF] Hosting environment: Production
+2025-10-08 14:07:45.493 +02:00 [INF] Content root path: C:\Users\aitzol\Documents\development\hostelavila
+2025-10-08 14:07:48.910 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/ - null null
+2025-10-08 14:07:48.912 +02:00 [WRN] Failed to determine the https port for redirect.
+2025-10-08 14:07:48.939 +02:00 [INF] Executing endpoint 'HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem)'
+2025-10-08 14:07:48.943 +02:00 [INF] Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller HotelReservationSystem.Controllers.HomeController (HotelReservationSystem).
+2025-10-08 14:07:48.951 +02:00 [INF] Executing ViewResult, running view Index.
+2025-10-08 14:07:48.969 +02:00 [INF] Executed ViewResult - view Index executed in 18.0756ms.
+2025-10-08 14:07:48.971 +02:00 [INF] Executed action HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem) in 27.1944ms
+2025-10-08 14:07:48.972 +02:00 [INF] Executed endpoint 'HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem)'
+2025-10-08 14:07:48.975 +02:00 [ERR] An unhandled exception occurred while processing the request
+System.InvalidOperationException: Headers are read-only, response has already started.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.ThrowHeadersReadOnlyException()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.System.Collections.Generic.IDictionary<System.String,Microsoft.Extensions.Primitives.StringValues>.Add(String key, StringValues value)
+   at HotelReservationSystem.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context, IPerformanceMonitoringService performanceMonitoring) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\PerformanceMonitoringMiddleware.cs:line 45
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 24
+2025-10-08 14:07:48.979 +02:00 [ERR] Connection id "0HNG6CD68OMKF", Request id "0HNG6CD68OMKF:00000001": An unhandled exception was thrown by the application.
+System.InvalidOperationException: Headers are read-only, response has already started.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.ThrowHeadersReadOnlyException()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpResponseHeaders.Microsoft.AspNetCore.Http.IHeaderDictionary.set_ContentType(StringValues value)
+   at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 35
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 29
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpProtocol.ProcessRequests[TContext](IHttpApplication`1 application)
+2025-10-08 14:07:48.980 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json - null null
+2025-10-08 14:07:48.981 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/css/site.css - null null
+2025-10-08 14:07:48.981 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/api.js - null null
+2025-10-08 14:07:48.982 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/ - 200 null text/html; charset=utf-8 72.8927ms
+2025-10-08 14:07:48.983 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/ui.js - null null
+2025-10-08 14:07:48.983 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/auth.js - null null
+2025-10-08 14:07:48.985 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json - 404 0 null 4.9479ms
+2025-10-08 14:07:48.985 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/css/site.css - 404 0 null 3.4688ms
+2025-10-08 14:07:48.985 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/api.js - 404 0 null 3.6716ms
+2025-10-08 14:07:48.988 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/dashboard.js - null null
+2025-10-08 14:07:48.988 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/ui.js - 404 0 null 5.4642ms
+2025-10-08 14:07:48.990 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/auth.js - 404 0 null 7.2678ms
+2025-10-08 14:07:48.991 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json, Response status code: 404
+2025-10-08 14:07:48.992 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/css/site.css, Response status code: 404
+2025-10-08 14:07:48.993 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/api.js, Response status code: 404
+2025-10-08 14:07:48.995 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/dashboard.js - 404 0 null 6.5752ms
+2025-10-08 14:07:48.996 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/ui.js, Response status code: 404
+2025-10-08 14:07:48.998 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/auth.js, Response status code: 404
+2025-10-08 14:07:48.999 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/signalr.js - null null
+2025-10-08 14:07:48.999 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/notifications.js - null null
+2025-10-08 14:07:49.000 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/site.js - null null
+2025-10-08 14:07:49.002 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/dashboard.js, Response status code: 404
+2025-10-08 14:07:49.006 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/signalr.js - 404 0 null 7.4924ms
+2025-10-08 14:07:49.007 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/notifications.js - 404 0 null 7.8863ms
+2025-10-08 14:07:49.008 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/site.js - 404 0 null 8.0036ms
+2025-10-08 14:07:49.010 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/signalr.js, Response status code: 404
+2025-10-08 14:07:49.012 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/notifications.js, Response status code: 404
+2025-10-08 14:07:49.013 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/site.js, Response status code: 404
+2025-10-08 14:07:52.450 +02:00 [INF] Application is shutting down...
+2025-10-08 14:07:52.455 +02:00 [INF] Stopping reservation synchronization background service
+2025-10-08 14:07:52.455 +02:00 [INF] Reservation synchronization background service stopped
+2025-10-08 14:08:02.596 +02:00 [INF] Starting Hotel Reservation System
+2025-10-08 14:08:02.664 +02:00 [INF] Database Provider configured as: SqlServer
+2025-10-08 14:08:02.665 +02:00 [INF] Using in-memory cache for demo mode
+2025-10-08 14:08:02.671 +02:00 [WRN] JWT Secret not found in configuration, using default for demo
+2025-10-08 14:08:02.805 +02:00 [INF] User profile is available. Using 'C:\Users\aitzol\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-10-08 14:08:02.807 +02:00 [INF] Starting database initialization...
+2025-10-08 14:08:03.032 +02:00 [WRN] The 'ReservationStatus' property 'Status' on entity type 'Reservation' is configured with a database-generated default, but has no configured sentinel value. The database-generated default will always be used for inserts when the property has the value '0', since this is the CLR default for the 'ReservationStatus' type. Consider using a nullable type, using a nullable backing field, or setting the sentinel value for the property to ensure the database default is used when, and only when, appropriate. See https://aka.ms/efcore-docs-default-values for more information.
+2025-10-08 14:08:03.033 +02:00 [WRN] The 'RoomStatus' property 'Status' on entity type 'Room' is configured with a database-generated default, but has no configured sentinel value. The database-generated default will always be used for inserts when the property has the value '0', since this is the CLR default for the 'RoomStatus' type. Consider using a nullable type, using a nullable backing field, or setting the sentinel value for the property to ensure the database default is used when, and only when, appropriate. See https://aka.ms/efcore-docs-default-values for more information.
+2025-10-08 14:08:03.120 +02:00 [ERR] Database initialization failed
+System.InvalidOperationException: The ConnectionString property has not been initialized.
+   at Microsoft.Data.SqlClient.SqlConnection.PermissionDemand()
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.PermissionDemand(DbConnection outerConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry, SqlConnectionOverrides overrides)
+   at Microsoft.Data.SqlClient.SqlConnection.InternalOpenAsync(CancellationToken cancellationToken)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.<>c__DisplayClass20_0.<<ExistsAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.<>c__DisplayClass20_0.<<ExistsAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureCreatedAsync(CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureCreatedAsync(CancellationToken cancellationToken)
+   at HotelReservationSystem.Services.DatabaseInitializationService.InitializeDatabaseAsync() in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Services\DatabaseInitializationService.cs:line 31
+2025-10-08 14:08:03.128 +02:00 [ERR] Database initialization failed
+System.InvalidOperationException: The ConnectionString property has not been initialized.
+   at Microsoft.Data.SqlClient.SqlConnection.PermissionDemand()
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.PermissionDemand(DbConnection outerConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry, SqlConnectionOverrides overrides)
+   at Microsoft.Data.SqlClient.SqlConnection.InternalOpenAsync(CancellationToken cancellationToken)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.<>c__DisplayClass20_0.<<ExistsAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.<>c__DisplayClass20_0.<<ExistsAsync>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureCreatedAsync(CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureCreatedAsync(CancellationToken cancellationToken)
+   at HotelReservationSystem.Services.DatabaseInitializationService.InitializeDatabaseAsync() in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Services\DatabaseInitializationService.cs:line 31
+   at Program.<Main>$(String[] args) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Program.cs:line 270
+2025-10-08 14:08:03.142 +02:00 [INF] Reservation synchronization background service started with interval "00:15:00"
+2025-10-08 14:08:03.144 +02:00 [INF] Starting periodic reservation synchronization
+2025-10-08 14:08:03.150 +02:00 [INF] Starting full reservation synchronization
+2025-10-08 14:08:03.246 +02:00 [ERR] An error occurred using the connection to database '' on server ''.
+2025-10-08 14:08:03.249 +02:00 [ERR] An exception occurred while iterating over the results of a query for context type 'HotelReservationSystem.Data.HotelReservationContext'.
+System.InvalidOperationException: The ConnectionString property has not been initialized.
+   at Microsoft.Data.SqlClient.SqlConnection.PermissionDemand()
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.PermissionDemand(DbConnection outerConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry, SqlConnectionOverrides overrides)
+   at Microsoft.Data.SqlClient.SqlConnection.InternalOpenAsync(CancellationToken cancellationToken)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+System.InvalidOperationException: The ConnectionString property has not been initialized.
+   at Microsoft.Data.SqlClient.SqlConnection.PermissionDemand()
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.PermissionDemand(DbConnection outerConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry, SqlConnectionOverrides overrides)
+   at Microsoft.Data.SqlClient.SqlConnection.InternalOpenAsync(CancellationToken cancellationToken)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+2025-10-08 14:08:03.252 +02:00 [ERR] Failed to complete full reservation synchronization
+System.InvalidOperationException: The ConnectionString property has not been initialized.
+   at Microsoft.Data.SqlClient.SqlConnection.PermissionDemand()
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.PermissionDemand(DbConnection outerConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry, SqlConnectionOverrides overrides)
+   at Microsoft.Data.SqlClient.SqlConnection.InternalOpenAsync(CancellationToken cancellationToken)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at HotelReservationSystem.Data.Repositories.HotelRepository.GetActiveHotelsAsync() in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Data\Repositories\HotelRepository.cs:line 15
+   at HotelReservationSystem.Services.BookingCom.BookingIntegrationService.SyncReservationsAsync(CancellationToken cancellationToken) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Services\BookingCom\BookingIntegrationService.cs:line 55
+2025-10-08 14:08:03.254 +02:00 [ERR] Failed to complete periodic reservation synchronization
+System.InvalidOperationException: The ConnectionString property has not been initialized.
+   at Microsoft.Data.SqlClient.SqlConnection.PermissionDemand()
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.PermissionDemand(DbConnection outerConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at Microsoft.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry, SqlConnectionOverrides overrides)
+   at Microsoft.Data.SqlClient.SqlConnection.InternalOpenAsync(CancellationToken cancellationToken)
+--- End of stack trace from previous location ---
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at HotelReservationSystem.Data.Repositories.HotelRepository.GetActiveHotelsAsync() in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Data\Repositories\HotelRepository.cs:line 15
+   at HotelReservationSystem.Services.BookingCom.BookingIntegrationService.SyncReservationsAsync(CancellationToken cancellationToken) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Services\BookingCom\BookingIntegrationService.cs:line 55
+   at HotelReservationSystem.Services.BackgroundServices.ReservationSyncBackgroundService.PerformSynchronizationAsync(CancellationToken cancellationToken) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Services\BookingCom\ReservationSyncBackgroundService.cs:line 62
+2025-10-08 14:08:03.264 +02:00 [WRN] The WebRootPath was not found: C:\Users\aitzol\Documents\development\hostelavila\wwwroot. Static files may be unavailable.
+2025-10-08 14:08:03.270 +02:00 [INF] Now listening on: http://localhost:5000
+2025-10-08 14:08:03.270 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-10-08 14:08:03.271 +02:00 [INF] Hosting environment: Production
+2025-10-08 14:08:03.271 +02:00 [INF] Content root path: C:\Users\aitzol\Documents\development\hostelavila
+2025-10-08 14:08:21.448 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/ - null null
+2025-10-08 14:08:21.451 +02:00 [WRN] Failed to determine the https port for redirect.
+2025-10-08 14:08:21.484 +02:00 [INF] Executing endpoint 'HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem)'
+2025-10-08 14:08:21.489 +02:00 [INF] Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller HotelReservationSystem.Controllers.HomeController (HotelReservationSystem).
+2025-10-08 14:08:21.498 +02:00 [INF] Executing ViewResult, running view Index.
+2025-10-08 14:08:21.517 +02:00 [INF] Executed ViewResult - view Index executed in 19.69ms.
+2025-10-08 14:08:21.520 +02:00 [INF] Executed action HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem) in 30.1813ms
+2025-10-08 14:08:21.521 +02:00 [INF] Executed endpoint 'HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem)'
+2025-10-08 14:08:21.524 +02:00 [ERR] An unhandled exception occurred while processing the request
+System.InvalidOperationException: Headers are read-only, response has already started.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.ThrowHeadersReadOnlyException()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.System.Collections.Generic.IDictionary<System.String,Microsoft.Extensions.Primitives.StringValues>.Add(String key, StringValues value)
+   at HotelReservationSystem.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context, IPerformanceMonitoringService performanceMonitoring) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\PerformanceMonitoringMiddleware.cs:line 45
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 24
+2025-10-08 14:08:21.527 +02:00 [ERR] Connection id "0HNG6CDFV1NCV", Request id "0HNG6CDFV1NCV:00000001": An unhandled exception was thrown by the application.
+System.InvalidOperationException: Headers are read-only, response has already started.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.ThrowHeadersReadOnlyException()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpResponseHeaders.Microsoft.AspNetCore.Http.IHeaderDictionary.set_ContentType(StringValues value)
+   at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 35
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 29
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpProtocol.ProcessRequests[TContext](IHttpApplication`1 application)
+2025-10-08 14:08:21.529 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/css/site.css - null null
+2025-10-08 14:08:21.530 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/ - 200 null text/html; charset=utf-8 83.3697ms
+2025-10-08 14:08:21.532 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/auth.js - null null
+2025-10-08 14:08:21.532 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/api.js - null null
+2025-10-08 14:08:21.532 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/ui.js - null null
+2025-10-08 14:08:21.532 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/signalr.js - null null
+2025-10-08 14:08:21.533 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/css/site.css - 404 0 null 3.6486ms
+2025-10-08 14:08:21.535 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/auth.js - 404 0 null 3.2823ms
+2025-10-08 14:08:21.535 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/api.js - 404 0 null 3.5ms
+2025-10-08 14:08:21.536 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/notifications.js - null null
+2025-10-08 14:08:21.536 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/ui.js - 404 0 null 4.673ms
+2025-10-08 14:08:21.539 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/signalr.js - 404 0 null 6.583ms
+2025-10-08 14:08:21.540 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/css/site.css, Response status code: 404
+2025-10-08 14:08:21.541 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/auth.js, Response status code: 404
+2025-10-08 14:08:21.543 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/api.js, Response status code: 404
+2025-10-08 14:08:21.544 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/notifications.js - 404 0 null 7.8974ms
+2025-10-08 14:08:21.545 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/ui.js, Response status code: 404
+2025-10-08 14:08:21.546 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/signalr.js, Response status code: 404
+2025-10-08 14:08:21.547 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/site.js - null null
+2025-10-08 14:08:21.548 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/dashboard.js - null null
+2025-10-08 14:08:21.549 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json - null null
+2025-10-08 14:08:21.551 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/notifications.js, Response status code: 404
+2025-10-08 14:08:21.554 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/site.js - 404 0 null 6.7762ms
+2025-10-08 14:08:21.555 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/dashboard.js - 404 0 null 7.252ms
+2025-10-08 14:08:21.556 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json - 404 0 null 7.3677ms
+2025-10-08 14:08:21.559 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/site.js, Response status code: 404
+2025-10-08 14:08:21.560 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/dashboard.js, Response status code: 404
+2025-10-08 14:08:21.562 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json, Response status code: 404
+2025-10-08 14:08:23.610 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/ - null null
+2025-10-08 14:08:23.612 +02:00 [INF] Executing endpoint 'HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem)'
+2025-10-08 14:08:23.612 +02:00 [INF] Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller HotelReservationSystem.Controllers.HomeController (HotelReservationSystem).
+2025-10-08 14:08:23.614 +02:00 [INF] Executing ViewResult, running view Index.
+2025-10-08 14:08:23.616 +02:00 [INF] Executed ViewResult - view Index executed in 2.5447ms.
+2025-10-08 14:08:23.617 +02:00 [INF] Executed action HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem) in 3.4934ms
+2025-10-08 14:08:23.618 +02:00 [INF] Executed endpoint 'HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem)'
+2025-10-08 14:08:23.618 +02:00 [ERR] An unhandled exception occurred while processing the request
+System.InvalidOperationException: Headers are read-only, response has already started.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.ThrowHeadersReadOnlyException()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.System.Collections.Generic.IDictionary<System.String,Microsoft.Extensions.Primitives.StringValues>.Add(String key, StringValues value)
+   at HotelReservationSystem.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context, IPerformanceMonitoringService performanceMonitoring) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\PerformanceMonitoringMiddleware.cs:line 45
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 24
+2025-10-08 14:08:23.620 +02:00 [ERR] Connection id "0HNG6CDFV1ND1", Request id "0HNG6CDFV1ND1:00000003": An unhandled exception was thrown by the application.
+System.InvalidOperationException: Headers are read-only, response has already started.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.ThrowHeadersReadOnlyException()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpResponseHeaders.Microsoft.AspNetCore.Http.IHeaderDictionary.set_ContentType(StringValues value)
+   at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 35
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 29
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpProtocol.ProcessRequests[TContext](IHttpApplication`1 application)
+2025-10-08 14:08:23.622 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/ - 200 null text/html; charset=utf-8 11.7821ms
+2025-10-08 14:08:23.626 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json - null null
+2025-10-08 14:08:23.626 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/css/site.css - null null
+2025-10-08 14:08:23.627 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json - 404 0 null 1.2612ms
+2025-10-08 14:08:23.628 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/api.js - null null
+2025-10-08 14:08:23.628 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/css/site.css - 404 0 null 2.0405ms
+2025-10-08 14:08:23.628 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/auth.js - null null
+2025-10-08 14:08:23.628 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/ui.js - null null
+2025-10-08 14:08:23.630 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json, Response status code: 404
+2025-10-08 14:08:23.630 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/signalr.js - null null
+2025-10-08 14:08:23.631 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/api.js - 404 0 null 2.8055ms
+2025-10-08 14:08:23.632 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/css/site.css, Response status code: 404
+2025-10-08 14:08:23.634 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/auth.js - 404 0 null 5.3071ms
+2025-10-08 14:08:23.635 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/ui.js - 404 0 null 6.3899ms
+2025-10-08 14:08:23.636 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/notifications.js - null null
+2025-10-08 14:08:23.637 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/signalr.js - 404 0 null 7.247ms
+2025-10-08 14:08:23.639 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/api.js, Response status code: 404
+2025-10-08 14:08:23.639 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/site.js - null null
+2025-10-08 14:08:23.641 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/auth.js, Response status code: 404
+2025-10-08 14:08:23.642 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/ui.js, Response status code: 404
+2025-10-08 14:08:23.643 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/notifications.js - 404 0 null 7.4953ms
+2025-10-08 14:08:23.645 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/signalr.js, Response status code: 404
+2025-10-08 14:08:23.646 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/dashboard.js - null null
+2025-10-08 14:08:23.647 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/site.js - 404 0 null 7.3374ms
+2025-10-08 14:08:23.651 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/notifications.js, Response status code: 404
+2025-10-08 14:08:23.653 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/dashboard.js - 404 0 null 7.0819ms
+2025-10-08 14:08:23.654 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/site.js, Response status code: 404
+2025-10-08 14:08:23.656 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/dashboard.js, Response status code: 404
+2025-10-08 14:08:47.948 +02:00 [INF] Request starting HTTP/1.1 HEAD http://localhost:5000/js/modules/calendar.js - null null
+2025-10-08 14:08:47.949 +02:00 [INF] Request finished HTTP/1.1 HEAD http://localhost:5000/js/modules/calendar.js - 404 null null 1.1295ms
+2025-10-08 14:08:47.950 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: HEAD http://localhost:5000/js/modules/calendar.js, Response status code: 404
+2025-10-08 14:09:00.453 +02:00 [INF] Request starting HTTP/1.1 HEAD http://localhost:5000/js/site.js - null null
+2025-10-08 14:09:00.454 +02:00 [INF] Request finished HTTP/1.1 HEAD http://localhost:5000/js/site.js - 404 null null 1.2282ms
+2025-10-08 14:09:00.456 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: HEAD http://localhost:5000/js/site.js, Response status code: 404
+2025-10-08 14:09:51.299 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/ - null null
+2025-10-08 14:09:51.300 +02:00 [INF] Executing endpoint 'HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem)'
+2025-10-08 14:09:51.301 +02:00 [INF] Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller HotelReservationSystem.Controllers.HomeController (HotelReservationSystem).
+2025-10-08 14:09:51.302 +02:00 [INF] Executing ViewResult, running view Index.
+2025-10-08 14:09:51.302 +02:00 [INF] Executed ViewResult - view Index executed in 0.8906ms.
+2025-10-08 14:09:51.303 +02:00 [INF] Executed action HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem) in 1.6891ms
+2025-10-08 14:09:51.304 +02:00 [INF] Executed endpoint 'HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem)'
+2025-10-08 14:09:51.304 +02:00 [ERR] An unhandled exception occurred while processing the request
+System.InvalidOperationException: Headers are read-only, response has already started.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.ThrowHeadersReadOnlyException()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.System.Collections.Generic.IDictionary<System.String,Microsoft.Extensions.Primitives.StringValues>.Add(String key, StringValues value)
+   at HotelReservationSystem.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context, IPerformanceMonitoringService performanceMonitoring) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\PerformanceMonitoringMiddleware.cs:line 45
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 24
+2025-10-08 14:09:51.306 +02:00 [ERR] Connection id "0HNG6CDFV1ND5", Request id "0HNG6CDFV1ND5:00000004": An unhandled exception was thrown by the application.
+System.InvalidOperationException: Headers are read-only, response has already started.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.ThrowHeadersReadOnlyException()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpResponseHeaders.Microsoft.AspNetCore.Http.IHeaderDictionary.set_ContentType(StringValues value)
+   at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 35
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 29
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpProtocol.ProcessRequests[TContext](IHttpApplication`1 application)
+2025-10-08 14:09:51.307 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/ - 200 null text/html; charset=utf-8 8.3445ms
+2025-10-08 14:09:51.315 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/css/site.css - null null
+2025-10-08 14:09:51.315 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/api.js - null null
+2025-10-08 14:09:51.315 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/auth.js - null null
+2025-10-08 14:09:51.315 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/notifications.js - null null
+2025-10-08 14:09:51.315 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/ui.js - null null
+2025-10-08 14:09:51.315 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/signalr.js - null null
+2025-10-08 14:09:51.316 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/css/site.css - 404 0 null 1.4451ms
+2025-10-08 14:09:51.317 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/api.js - 404 0 null 2.3265ms
+2025-10-08 14:09:51.318 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/auth.js - 404 0 null 3.4384ms
+2025-10-08 14:09:51.319 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/notifications.js - 404 0 null 3.9909ms
+2025-10-08 14:09:51.320 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/ui.js - 404 0 null 5.1778ms
+2025-10-08 14:09:51.321 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/signalr.js - 404 0 null 6.0419ms
+2025-10-08 14:09:51.323 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/css/site.css, Response status code: 404
+2025-10-08 14:09:51.324 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/api.js, Response status code: 404
+2025-10-08 14:09:51.326 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/auth.js, Response status code: 404
+2025-10-08 14:09:51.327 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/notifications.js, Response status code: 404
+2025-10-08 14:09:51.329 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/ui.js, Response status code: 404
+2025-10-08 14:09:51.330 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/signalr.js, Response status code: 404
+2025-10-08 14:09:51.331 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/site.js - null null
+2025-10-08 14:09:51.332 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/dashboard.js - null null
+2025-10-08 14:09:51.334 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json - null null
+2025-10-08 14:09:51.336 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/site.js - 404 0 null 5.1341ms
+2025-10-08 14:09:51.337 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/dashboard.js - 404 0 null 5.3706ms
+2025-10-08 14:09:51.338 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json - 404 0 null 3.9124ms
+2025-10-08 14:09:51.340 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/site.js, Response status code: 404
+2025-10-08 14:09:51.342 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/dashboard.js, Response status code: 404
+2025-10-08 14:09:51.343 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json, Response status code: 404
+2025-10-08 14:09:53.763 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/ - null null
+2025-10-08 14:09:53.764 +02:00 [INF] Executing endpoint 'HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem)'
+2025-10-08 14:09:53.765 +02:00 [INF] Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller HotelReservationSystem.Controllers.HomeController (HotelReservationSystem).
+2025-10-08 14:09:53.765 +02:00 [INF] Executing ViewResult, running view Index.
+2025-10-08 14:09:53.766 +02:00 [INF] Executed ViewResult - view Index executed in 0.982ms.
+2025-10-08 14:09:53.767 +02:00 [INF] Executed action HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem) in 1.9429ms
+2025-10-08 14:09:53.768 +02:00 [INF] Executed endpoint 'HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem)'
+2025-10-08 14:09:53.769 +02:00 [ERR] An unhandled exception occurred while processing the request
+System.InvalidOperationException: Headers are read-only, response has already started.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.ThrowHeadersReadOnlyException()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.System.Collections.Generic.IDictionary<System.String,Microsoft.Extensions.Primitives.StringValues>.Add(String key, StringValues value)
+   at HotelReservationSystem.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context, IPerformanceMonitoringService performanceMonitoring) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\PerformanceMonitoringMiddleware.cs:line 45
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 24
+2025-10-08 14:09:53.770 +02:00 [ERR] Connection id "0HNG6CDFV1ND3", Request id "0HNG6CDFV1ND3:00000005": An unhandled exception was thrown by the application.
+System.InvalidOperationException: Headers are read-only, response has already started.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.ThrowHeadersReadOnlyException()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpResponseHeaders.Microsoft.AspNetCore.Http.IHeaderDictionary.set_ContentType(StringValues value)
+   at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 35
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 29
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpProtocol.ProcessRequests[TContext](IHttpApplication`1 application)
+2025-10-08 14:09:53.771 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/ - 200 null text/html; charset=utf-8 8.2835ms
+2025-10-08 14:09:53.778 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/css/site.css - null null
+2025-10-08 14:09:53.779 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/api.js - null null
+2025-10-08 14:09:53.779 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/auth.js - null null
+2025-10-08 14:09:53.779 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/ui.js - null null
+2025-10-08 14:09:53.779 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/css/site.css - 404 0 null 1.2001ms
+2025-10-08 14:09:53.779 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/signalr.js - null null
+2025-10-08 14:09:53.780 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/api.js - 404 0 null 1.3063ms
+2025-10-08 14:09:53.780 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/notifications.js - null null
+2025-10-08 14:09:53.781 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/auth.js - 404 0 null 2.2221ms
+2025-10-08 14:09:53.782 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/ui.js - 404 0 null 2.8044ms
+2025-10-08 14:09:53.783 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/css/site.css, Response status code: 404
+2025-10-08 14:09:53.784 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/signalr.js - 404 0 null 5.2284ms
+2025-10-08 14:09:53.785 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/api.js, Response status code: 404
+2025-10-08 14:09:53.787 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/notifications.js - 404 0 null 6.561ms
+2025-10-08 14:09:53.788 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/auth.js, Response status code: 404
+2025-10-08 14:09:53.789 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/ui.js, Response status code: 404
+2025-10-08 14:09:53.790 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/site.js - null null
+2025-10-08 14:09:53.791 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/signalr.js, Response status code: 404
+2025-10-08 14:09:53.792 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/dashboard.js - null null
+2025-10-08 14:09:53.793 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/notifications.js, Response status code: 404
+2025-10-08 14:09:53.795 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json - null null
+2025-10-08 14:09:53.796 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/site.js - 404 0 null 6.0238ms
+2025-10-08 14:09:53.798 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/dashboard.js - 404 0 null 5.8845ms
+2025-10-08 14:09:53.800 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json - 404 0 null 5.026ms
+2025-10-08 14:09:53.802 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/site.js, Response status code: 404
+2025-10-08 14:09:53.803 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/dashboard.js, Response status code: 404
+2025-10-08 14:09:53.804 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json, Response status code: 404
+2025-10-08 14:09:55.049 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/Home/calendar - null null
+2025-10-08 14:09:55.050 +02:00 [INF] Executing endpoint 'HotelReservationSystem.Controllers.HomeController.Calendar (HotelReservationSystem)'
+2025-10-08 14:09:55.052 +02:00 [INF] Route matched with {action = "Calendar", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Calendar() on controller HotelReservationSystem.Controllers.HomeController (HotelReservationSystem).
+2025-10-08 14:09:55.053 +02:00 [INF] Executing ViewResult, running view Calendar.
+2025-10-08 14:09:55.055 +02:00 [INF] Executed ViewResult - view Calendar executed in 2.9839ms.
+2025-10-08 14:09:55.056 +02:00 [INF] Executed action HotelReservationSystem.Controllers.HomeController.Calendar (HotelReservationSystem) in 3.6138ms
+2025-10-08 14:09:55.057 +02:00 [INF] Executed endpoint 'HotelReservationSystem.Controllers.HomeController.Calendar (HotelReservationSystem)'
+2025-10-08 14:09:55.057 +02:00 [ERR] An unhandled exception occurred while processing the request
+System.InvalidOperationException: Headers are read-only, response has already started.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.ThrowHeadersReadOnlyException()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.System.Collections.Generic.IDictionary<System.String,Microsoft.Extensions.Primitives.StringValues>.Add(String key, StringValues value)
+   at HotelReservationSystem.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context, IPerformanceMonitoringService performanceMonitoring) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\PerformanceMonitoringMiddleware.cs:line 45
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 24
+2025-10-08 14:09:55.058 +02:00 [ERR] Connection id "0HNG6CDFV1ND8", Request id "0HNG6CDFV1ND8:00000004": An unhandled exception was thrown by the application.
+System.InvalidOperationException: Headers are read-only, response has already started.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.ThrowHeadersReadOnlyException()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpResponseHeaders.Microsoft.AspNetCore.Http.IHeaderDictionary.set_ContentType(StringValues value)
+   at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 35
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 29
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpProtocol.ProcessRequests[TContext](IHttpApplication`1 application)
+2025-10-08 14:09:55.060 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/Home/calendar - 200 null text/html; charset=utf-8 10.4792ms
+2025-10-08 14:09:55.066 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json - null null
+2025-10-08 14:09:55.067 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json - 404 0 null 1.0881ms
+2025-10-08 14:09:55.069 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json, Response status code: 404
+2025-10-08 14:09:55.072 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/css/site.css - null null
+2025-10-08 14:09:55.073 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/css/site.css - 404 0 null 0.9967ms
+2025-10-08 14:09:55.073 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/api.js - null null
+2025-10-08 14:09:55.073 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/auth.js - null null
+2025-10-08 14:09:55.074 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/ui.js - null null
+2025-10-08 14:09:55.077 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/ui.js - 404 0 null 3.6049ms
+2025-10-08 14:09:55.079 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/ui.js, Response status code: 404
+2025-10-08 14:09:55.075 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/notifications.js - null null
+2025-10-08 14:09:55.075 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/api.js - 404 0 null 2.257ms
+2025-10-08 14:09:55.076 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/auth.js - 404 0 null 3.0435ms
+2025-10-08 14:09:55.074 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/signalr.js - null null
+2025-10-08 14:09:55.074 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/css/site.css, Response status code: 404
+2025-10-08 14:09:55.083 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/notifications.js - 404 0 null 8.1796ms
+2025-10-08 14:09:55.084 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/api.js, Response status code: 404
+2025-10-08 14:09:55.085 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/auth.js, Response status code: 404
+2025-10-08 14:09:55.086 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/signalr.js - 404 0 null 12.1216ms
+2025-10-08 14:09:55.087 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/site.js - null null
+2025-10-08 14:09:55.088 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/notifications.js, Response status code: 404
+2025-10-08 14:09:55.091 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/signalr.js, Response status code: 404
+2025-10-08 14:09:55.092 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/site.js - 404 0 null 5.0826ms
+2025-10-08 14:09:55.095 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/site.js, Response status code: 404
+2025-10-08 14:09:56.267 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/Home/properties - null null
+2025-10-08 14:09:56.269 +02:00 [INF] Executing endpoint 'HotelReservationSystem.Controllers.HomeController.Properties (HotelReservationSystem)'
+2025-10-08 14:09:56.270 +02:00 [INF] Route matched with {action = "Properties", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Properties() on controller HotelReservationSystem.Controllers.HomeController (HotelReservationSystem).
+2025-10-08 14:09:56.271 +02:00 [INF] Executing ViewResult, running view Properties.
+2025-10-08 14:09:56.273 +02:00 [INF] Executed ViewResult - view Properties executed in 2.0968ms.
+2025-10-08 14:09:56.273 +02:00 [INF] Executed action HotelReservationSystem.Controllers.HomeController.Properties (HotelReservationSystem) in 2.6779ms
+2025-10-08 14:09:56.274 +02:00 [INF] Executed endpoint 'HotelReservationSystem.Controllers.HomeController.Properties (HotelReservationSystem)'
+2025-10-08 14:09:56.275 +02:00 [ERR] An unhandled exception occurred while processing the request
+System.InvalidOperationException: Headers are read-only, response has already started.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.ThrowHeadersReadOnlyException()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.System.Collections.Generic.IDictionary<System.String,Microsoft.Extensions.Primitives.StringValues>.Add(String key, StringValues value)
+   at HotelReservationSystem.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context, IPerformanceMonitoringService performanceMonitoring) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\PerformanceMonitoringMiddleware.cs:line 45
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 24
+2025-10-08 14:09:56.276 +02:00 [ERR] Connection id "0HNG6CDFV1ND0", Request id "0HNG6CDFV1ND0:0000000C": An unhandled exception was thrown by the application.
+System.InvalidOperationException: Headers are read-only, response has already started.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.ThrowHeadersReadOnlyException()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpResponseHeaders.Microsoft.AspNetCore.Http.IHeaderDictionary.set_ContentType(StringValues value)
+   at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 35
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 29
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpProtocol.ProcessRequests[TContext](IHttpApplication`1 application)
+2025-10-08 14:09:56.277 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/Home/properties - 200 null text/html; charset=utf-8 10.0174ms
+2025-10-08 14:09:56.284 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json - null null
+2025-10-08 14:09:56.286 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json - 404 0 null 1.102ms
+2025-10-08 14:09:56.287 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/.well-known/appspecific/com.chrome.devtools.json, Response status code: 404
+2025-10-08 14:09:56.290 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/css/site.css - null null
+2025-10-08 14:09:56.291 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/api.js - null null
+2025-10-08 14:09:56.291 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/auth.js - null null
+2025-10-08 14:09:56.291 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/css/site.css - 404 0 null 1.2412ms
+2025-10-08 14:09:56.291 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/ui.js - null null
+2025-10-08 14:09:56.291 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/signalr.js - null null
+2025-10-08 14:09:56.292 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/notifications.js - null null
+2025-10-08 14:09:56.292 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/api.js - 404 0 null 1.2746ms
+2025-10-08 14:09:56.293 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/auth.js - 404 0 null 2.2385ms
+2025-10-08 14:09:56.294 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/css/site.css, Response status code: 404
+2025-10-08 14:09:56.296 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/ui.js - 404 0 null 4.5328ms
+2025-10-08 14:09:56.297 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/signalr.js - 404 0 null 5.834ms
+2025-10-08 14:09:56.298 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/notifications.js - 404 0 null 6.2895ms
+2025-10-08 14:09:56.300 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/api.js, Response status code: 404
+2025-10-08 14:09:56.301 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/auth.js, Response status code: 404
+2025-10-08 14:09:56.302 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/site.js - null null
+2025-10-08 14:09:56.303 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/ui.js, Response status code: 404
+2025-10-08 14:09:56.304 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/signalr.js, Response status code: 404
+2025-10-08 14:09:56.305 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/notifications.js, Response status code: 404
+2025-10-08 14:09:56.308 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/site.js - 404 0 null 6.3346ms
+2025-10-08 14:09:56.312 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/site.js, Response status code: 404
+2025-10-08 14:10:01.892 +02:00 [INF] Request starting HTTP/1.1 HEAD http://localhost:5000/ - null null
+2025-10-08 14:10:01.893 +02:00 [INF] Executing endpoint 'HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem)'
+2025-10-08 14:10:01.894 +02:00 [INF] Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller HotelReservationSystem.Controllers.HomeController (HotelReservationSystem).
+2025-10-08 14:10:01.895 +02:00 [INF] Executing ViewResult, running view Index.
+2025-10-08 14:10:01.895 +02:00 [INF] Executed ViewResult - view Index executed in 0.9196ms.
+2025-10-08 14:10:01.896 +02:00 [INF] Executed action HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem) in 1.5309ms
+2025-10-08 14:10:01.896 +02:00 [INF] Executed endpoint 'HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem)'
+2025-10-08 14:10:01.897 +02:00 [ERR] An unhandled exception occurred while processing the request
+System.InvalidOperationException: Headers are read-only, response has already started.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.ThrowHeadersReadOnlyException()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.System.Collections.Generic.IDictionary<System.String,Microsoft.Extensions.Primitives.StringValues>.Add(String key, StringValues value)
+   at HotelReservationSystem.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context, IPerformanceMonitoringService performanceMonitoring) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\PerformanceMonitoringMiddleware.cs:line 45
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 24
+2025-10-08 14:10:01.898 +02:00 [ERR] Connection id "0HNG6CDFV1ND7", Request id "0HNG6CDFV1ND7:00000003": An unhandled exception was thrown by the application.
+System.InvalidOperationException: Headers are read-only, response has already started.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.ThrowHeadersReadOnlyException()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpResponseHeaders.Microsoft.AspNetCore.Http.IHeaderDictionary.set_ContentType(StringValues value)
+   at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 35
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 29
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpProtocol.ProcessRequests[TContext](IHttpApplication`1 application)
+2025-10-08 14:10:01.900 +02:00 [INF] Request finished HTTP/1.1 HEAD http://localhost:5000/ - 200 null text/html; charset=utf-8 7.6805ms
+2025-10-08 14:10:09.832 +02:00 [INF] Request starting HTTP/1.1 HEAD http://localhost:5000/css/site.css - null null
+2025-10-08 14:10:09.833 +02:00 [INF] Request finished HTTP/1.1 HEAD http://localhost:5000/css/site.css - 404 null null 1.0769ms
+2025-10-08 14:10:09.834 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: HEAD http://localhost:5000/css/site.css, Response status code: 404
+2025-10-08 14:10:20.862 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/ - null null
+2025-10-08 14:10:20.863 +02:00 [INF] Executing endpoint 'HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem)'
+2025-10-08 14:10:20.864 +02:00 [INF] Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller HotelReservationSystem.Controllers.HomeController (HotelReservationSystem).
+2025-10-08 14:10:20.865 +02:00 [INF] Executing ViewResult, running view Index.
+2025-10-08 14:10:20.866 +02:00 [INF] Executed ViewResult - view Index executed in 0.7872ms.
+2025-10-08 14:10:20.867 +02:00 [INF] Executed action HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem) in 1.6087ms
+2025-10-08 14:10:20.868 +02:00 [INF] Executed endpoint 'HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem)'
+2025-10-08 14:10:20.869 +02:00 [ERR] An unhandled exception occurred while processing the request
+System.InvalidOperationException: Headers are read-only, response has already started.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.ThrowHeadersReadOnlyException()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.System.Collections.Generic.IDictionary<System.String,Microsoft.Extensions.Primitives.StringValues>.Add(String key, StringValues value)
+   at HotelReservationSystem.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context, IPerformanceMonitoringService performanceMonitoring) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\PerformanceMonitoringMiddleware.cs:line 45
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 24
+2025-10-08 14:10:20.870 +02:00 [ERR] Connection id "0HNG6CDFV1NDD", Request id "0HNG6CDFV1NDD:00000001": An unhandled exception was thrown by the application.
+System.InvalidOperationException: Headers are read-only, response has already started.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.ThrowHeadersReadOnlyException()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpResponseHeaders.Microsoft.AspNetCore.Http.IHeaderDictionary.set_ContentType(StringValues value)
+   at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.HandleExceptionAsync(HttpContext context, Exception exception) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 35
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in C:\Users\aitzol\Documents\development\hostelavila\HotelReservationSystem\Middleware\GlobalExceptionHandlingMiddleware.cs:line 29
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpProtocol.ProcessRequests[TContext](IHttpApplication`1 application)
+2025-10-08 14:10:20.871 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/ - 200 null text/html; charset=utf-8 9.527ms
+2025-10-08 14:10:20.878 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/css/site.css - null null
+2025-10-08 14:10:20.879 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/css/site.css - 404 0 null 1.2199ms
+2025-10-08 14:10:20.880 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/css/site.css, Response status code: 404
+2025-10-08 14:10:20.880 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/api.js - null null
+2025-10-08 14:10:20.881 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/auth.js - null null
+2025-10-08 14:10:20.881 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/ui.js - null null
+2025-10-08 14:10:20.881 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/signalr.js - null null
+2025-10-08 14:10:20.881 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/notifications.js - null null
+2025-10-08 14:10:20.882 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/api.js - 404 0 null 1.9694ms
+2025-10-08 14:10:20.883 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/site.js - null null
+2025-10-08 14:10:20.884 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/auth.js - 404 0 null 2.889ms
+2025-10-08 14:10:20.885 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/ui.js - 404 0 null 3.9159ms
+2025-10-08 14:10:20.886 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/signalr.js - 404 0 null 5.06ms
+2025-10-08 14:10:20.887 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/notifications.js - 404 0 null 5.9045ms
+2025-10-08 14:10:20.888 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/api.js, Response status code: 404
+2025-10-08 14:10:20.895 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5000/js/modules/dashboard.js - null null
+2025-10-08 14:10:20.891 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/auth.js, Response status code: 404
+2025-10-08 14:10:20.892 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/ui.js, Response status code: 404
+2025-10-08 14:10:20.893 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/signalr.js, Response status code: 404
+2025-10-08 14:10:20.895 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/notifications.js, Response status code: 404
+2025-10-08 14:10:20.889 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/site.js - 404 0 null 6.2191ms
+2025-10-08 14:10:20.896 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5000/js/modules/dashboard.js - 404 0 null 0.9212ms
+2025-10-08 14:10:20.901 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/site.js, Response status code: 404
+2025-10-08 14:10:20.902 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5000/js/modules/dashboard.js, Response status code: 404

@@ -15,6 +15,8 @@ using HotelReservationSystem.Hubs;
 using HotelReservationSystem.Middleware;
 using Polly;
 using Polly.Extensions.Http;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using StackExchange.Redis;
 using FluentValidation;
 
@@ -40,8 +42,6 @@ try
     builder.Services.AddSwaggerGen();
     
     // Add FluentValidation
-    builder.Services.AddFluentValidationAutoValidation();
-    builder.Services.AddFluentValidationClientsideAdapters();
     builder.Services.AddValidatorsFromAssemblyContaining<Program>();
     
     // Add SignalR
@@ -50,33 +50,55 @@ try
     // Add caching services
     builder.Services.AddMemoryCache();
     
-    // Configure Redis (if connection string is provided)
+    // Configure Entity Framework with provider switching
+    var usesSqlite = builder.Configuration.GetValue<bool>("UseSqlite");
+    var databaseProvider = usesSqlite ? "Sqlite" : "SqlServer";
+    Log.Information("Database Provider configured as: {DatabaseProvider}", databaseProvider);
+    
+    // Configure Redis (gracefully handle missing Redis for demo)
     var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
-    if (!string.IsNullOrEmpty(redisConnectionString))
+    var isDemoMode = usesSqlite;
+    
+    if (!isDemoMode && !string.IsNullOrEmpty(redisConnectionString))
     {
-        builder.Services.AddStackExchangeRedisCache(options =>
+        try
         {
-            options.Configuration = redisConnectionString;
-            options.InstanceName = "HotelReservationSystem";
-        });
-        
-        builder.Services.AddSingleton<IConnectionMultiplexer>(provider =>
-            ConnectionMultiplexer.Connect(redisConnectionString));
+            builder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = redisConnectionString;
+                options.InstanceName = "HotelReservationSystem";
+            });
+            
+            builder.Services.AddSingleton<IConnectionMultiplexer>(provider =>
+                ConnectionMultiplexer.Connect(redisConnectionString));
+            
+            Log.Information("Redis cache configured successfully");
+        }
+        catch (Exception ex)
+        {
+            Log.Warning("Redis not available, falling back to in-memory cache: {Error}", ex.Message);
+            builder.Services.AddDistributedMemoryCache();
+        }
     }
     else
     {
-        // Fallback to in-memory distributed cache if Redis is not configured
+        // Use in-memory cache for demo mode
         builder.Services.AddDistributedMemoryCache();
-        builder.Services.AddSingleton<IConnectionMultiplexer>(provider =>
-        {
-            // Mock connection multiplexer for development
-            return ConnectionMultiplexer.Connect("localhost:6379");
-        });
+        Log.Information("Using in-memory cache for demo mode");
     }
 
-    // Configure Entity Framework
+    // Database configuration - supports both SQL Server and SQLite
     builder.Services.AddDbContext<HotelReservationContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    {
+        if (usesSqlite)
+        {
+            options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection"));
+        }
+        else
+        {
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+        }
+    });
 
     // Configure Identity
     builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
@@ -103,7 +125,13 @@ try
 
     // Configure JWT Authentication
     var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-    var key = Encoding.ASCII.GetBytes(jwtSettings["Secret"] ?? throw new InvalidOperationException("JWT Secret not configured"));
+    var jwtSecret = jwtSettings["Secret"];
+    if (string.IsNullOrEmpty(jwtSecret))
+    {
+        Log.Warning("JWT Secret not found in configuration, using default for demo");
+        jwtSecret = "HotelReservationSystemSecretKeyForJWTTokenGeneration2024!";
+    }
+    var key = Encoding.ASCII.GetBytes(jwtSecret);
 
     builder.Services.AddAuthentication(options =>
     {
@@ -125,6 +153,24 @@ try
             ValidateLifetime = true,
             ClockSkew = TimeSpan.Zero
         };
+
+        // Configure SignalR JWT authentication
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+                
+                // If the request is for our hub and we have a token, use it
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/reservationHub"))
+                {
+                    context.Token = accessToken;
+                }
+                
+                return Task.CompletedTask;
+            }
+        };
     });
 
     // Register repositories
@@ -135,7 +181,14 @@ try
     builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 
     // Register caching and performance services
-    builder.Services.AddScoped<ICacheService, CacheService>();
+    builder.Services.AddScoped<ICacheService>(provider =>
+    {
+        var distributedCache = provider.GetRequiredService<IDistributedCache>();
+        var memoryCache = provider.GetRequiredService<IMemoryCache>();
+        var logger = provider.GetRequiredService<ILogger<CacheService>>();
+        var redis = provider.GetService<IConnectionMultiplexer>(); // GetService returns null if not registered
+        return new CacheService(distributedCache, memoryCache, logger, redis);
+    });
     builder.Services.AddSingleton<IPerformanceMonitoringService, PerformanceMonitoringService>();
     builder.Services.AddScoped<IStaticDataCacheService, StaticDataCacheService>();
 
@@ -143,7 +196,7 @@ try
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<IReservationService, ReservationService>();
     builder.Services.AddScoped<IPropertyService, PropertyService>();
-    builder.Services.AddScoped<IBookingIntegrationService, BookingIntegrationService>();
+    builder.Services.AddScoped<HotelReservationSystem.Services.BookingCom.IBookingIntegrationService, HotelReservationSystem.Services.BookingCom.BookingIntegrationService>();
     builder.Services.AddScoped<INotificationService, NotificationService>();
     builder.Services.AddScoped<IDashboardService, DashboardService>();
     builder.Services.AddScoped<IReportingService, ReportingService>();
@@ -191,6 +244,33 @@ try
     app.UseAuthorization();
     
     app.MapControllers();
+    
+    // Add specific routes for common pages
+    app.MapControllerRoute(
+        name: "login",
+        pattern: "login",
+        defaults: new { controller = "Home", action = "Login" });
+    
+    app.MapControllerRoute(
+        name: "calendar",
+        pattern: "calendar",
+        defaults: new { controller = "Home", action = "Calendar" });
+    
+    app.MapControllerRoute(
+        name: "properties",
+        pattern: "properties",
+        defaults: new { controller = "Home", action = "Properties" });
+    
+    app.MapControllerRoute(
+        name: "reservations",
+        pattern: "reservations",
+        defaults: new { controller = "Home", action = "Reservations" });
+    
+    app.MapControllerRoute(
+        name: "reports",
+        pattern: "reports",
+        defaults: new { controller = "Home", action = "Reports" });
+    
     app.MapControllerRoute(
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}");
@@ -198,11 +278,25 @@ try
     // Map SignalR hubs
     app.MapHub<ReservationHub>("/reservationHub");
 
-    // Apply database migrations
+    // Initialize database with proper error handling
     using (var scope = app.Services.CreateScope())
     {
         var context = scope.ServiceProvider.GetRequiredService<HotelReservationContext>();
-        context.Database.Migrate();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<DatabaseInitializationService>>();
+        
+        var dbInitService = new DatabaseInitializationService(context, userManager, logger);
+        
+        try
+        {
+            await dbInitService.InitializeDatabaseAsync();
+            Log.Information("Database initialization completed successfully");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Database initialization failed");
+            // Don't stop the application, but log the error
+        }
     }
 
     app.Run();

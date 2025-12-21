@@ -1,6 +1,6 @@
 @{
-    ViewData["Title"] = "Login";
-    Layout = null; // Use a different layout for login page
+    ViewData["Title"] = "Sign In";
+    Layout = null; // Use a different layout for sign in page
 }
 
 <!DOCTYPE html>
@@ -99,7 +99,7 @@
             font-size: 0.875rem;
         }
         
-        @media (max-width: 768px) {
+        @@media (max-width: 768px) {
             .login-container {
                 margin: 1rem;
             }
@@ -290,11 +290,11 @@
                     const success = await Auth.login(credentials);
                     
                     if (success) {
-                        UI.showSuccess('Login successful! Redirecting...');
+                        UI.showSuccess('Sign in successful! Redirecting...');
                         // Redirect will be handled by Auth.login
                     }
                 } catch (error) {
-                    UI.showError('Login failed: ' + error.message);
+                    UI.showError('Sign in failed: ' + error.message);
                 } finally {
                     UI.hideLoading();
                 }
@@ -349,8 +349,9 @@
                 return false;
             }
             
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
+            // Basic email validation - just check for at symbol
+            var atSymbol = String.fromCharCode(64); // at symbol
+            if (email.indexOf(atSymbol) === -1) {
                 showFieldError(emailInput, 'Please enter a valid email address');
                 return false;
             }

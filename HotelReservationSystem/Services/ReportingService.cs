@@ -379,8 +379,8 @@ public class ReportingService : IReportingService
                 Source = g.Key,
                 SourceName = g.Key.ToString(),
                 ReservationCount = g.Count(),
-                AverageLeadTime = g.Average(r => EF.Functions.DateDiffDay(r.CreatedAt, r.CheckInDate)),
-                AverageStayDuration = g.Average(r => EF.Functions.DateDiffDay(r.CheckInDate, r.CheckOutDate)),
+                AverageLeadTime = (decimal)g.Average(r => EF.Functions.DateDiffDay(r.CreatedAt, r.CheckInDate)),
+                AverageStayDuration = (decimal)g.Average(r => EF.Functions.DateDiffDay(r.CheckInDate, r.CheckOutDate)),
                 AverageRevenue = g.Average(r => r.TotalAmount)
             })
             .ToListAsync();
@@ -450,7 +450,7 @@ public class ReportingService : IReportingService
                 MonthName = new DateTime(2023, g.Key, 1).ToString("MMMM"),
                 ReservationCount = g.Count(),
                 AverageRevenue = Math.Round(g.Average(r => r.TotalAmount), 2),
-                AverageStayDuration = Math.Round(g.Average(r => EF.Functions.DateDiffDay(r.CheckInDate, r.CheckOutDate)), 2)
+                AverageStayDuration = Math.Round((decimal)g.Average(r => EF.Functions.DateDiffDay(r.CheckInDate, r.CheckOutDate)), 2)
             })
             .OrderBy(sp => sp.Month)
             .ToListAsync();
@@ -496,7 +496,7 @@ public class ReportingService : IReportingService
                 TotalRevenue = g.Sum(r => r.TotalAmount),
                 FirstStay = g.Min(r => r.CheckInDate),
                 LastStay = g.Max(r => r.CheckInDate),
-                AverageStayDuration = Math.Round(g.Average(r => EF.Functions.DateDiffDay(r.CheckInDate, r.CheckOutDate)), 2),
+                AverageStayDuration = Math.Round((decimal)g.Average(r => EF.Functions.DateDiffDay(r.CheckInDate, r.CheckOutDate)), 2),
                 PreferredRoomType = g.GroupBy(r => r.Room.Type)
                     .OrderByDescending(rt => rt.Count())
                     .Select(rt => rt.Key.ToString())

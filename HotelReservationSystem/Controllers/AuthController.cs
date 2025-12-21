@@ -160,6 +160,13 @@ public class AuthController : ControllerBase
         }
     }
 
+    [HttpPost("keep-alive")]
+    [Authorize]
+    public IActionResult KeepAlive()
+    {
+        return Ok(new { message = "Session active", timestamp = DateTime.UtcNow });
+    }
+
     [HttpPost("change-password")]
     [Authorize]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)

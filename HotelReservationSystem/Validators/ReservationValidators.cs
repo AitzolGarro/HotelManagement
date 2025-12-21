@@ -37,10 +37,9 @@ namespace HotelReservationSystem.Validators
                 .GreaterThan(0)
                 .WithMessage("Total amount must be greater than 0");
 
-            RuleFor(x => x.Guest)
-                .NotNull()
-                .WithMessage("Guest information is required")
-                .SetValidator(new GuestDtoValidator());
+            RuleFor(x => x.GuestId)
+                .GreaterThan(0)
+                .WithMessage("Guest ID must be a valid positive number");
 
             RuleFor(x => x.SpecialRequests)
                 .MaximumLength(1000)
@@ -58,27 +57,23 @@ namespace HotelReservationSystem.Validators
         {
             RuleFor(x => x.CheckInDate)
                 .NotEmpty()
-                .WithMessage("Check-in date is required")
-                .When(x => x.CheckInDate.HasValue);
+                .WithMessage("Check-in date is required");
 
             RuleFor(x => x.CheckOutDate)
                 .NotEmpty()
                 .WithMessage("Check-out date is required")
                 .GreaterThan(x => x.CheckInDate)
-                .WithMessage("Check-out date must be after check-in date")
-                .When(x => x.CheckOutDate.HasValue && x.CheckInDate.HasValue);
+                .WithMessage("Check-out date must be after check-in date");
 
             RuleFor(x => x.NumberOfGuests)
                 .GreaterThan(0)
                 .WithMessage("Number of guests must be at least 1")
                 .LessThanOrEqualTo(10)
-                .WithMessage("Number of guests cannot exceed 10")
-                .When(x => x.NumberOfGuests.HasValue);
+                .WithMessage("Number of guests cannot exceed 10");
 
             RuleFor(x => x.TotalAmount)
                 .GreaterThan(0)
-                .WithMessage("Total amount must be greater than 0")
-                .When(x => x.TotalAmount.HasValue);
+                .WithMessage("Total amount must be greater than 0");
 
             RuleFor(x => x.SpecialRequests)
                 .MaximumLength(1000)

@@ -31,11 +31,13 @@ class AuthManager {
             const response = await API.login(credentials);
             
             if (response.token) {
+                console.log('Login successful, storing token'); // Debug log
                 this.setToken(response.token);
                 if (response.refreshToken) {
                     this.setRefreshToken(response.refreshToken);
                 }
                 if (response.user) {
+                    console.log('Storing user data:', response.user); // Debug log
                     this.setUser(response.user);
                 }
                 
@@ -50,7 +52,10 @@ class AuthManager {
                 this.startTokenRefreshTimer();
                 this.resetSessionTimeout();
                 
-                UI.showSuccess('Login successful!');
+                // Initialize SignalR after successful authentication
+                this.initializeSignalRAfterAuth();
+                
+                UI.showSuccess('Sign in successful!');
                 
                 // Small delay to show success message
                 setTimeout(() => {
@@ -74,16 +79,32 @@ class AuthManager {
 
     // Logout method
     logout() {
+        // Disconnect SignalR before clearing tokens
+        this.disconnectSignalR();
+        
         this.clearTokens();
         this.clearUser();
         this.updateUIForUnauthenticatedUser();
         this.clearSessionTimeout();
         
-        UI.showSuccess('Logged out successfully');
+        UI.showSuccess('Signed out successfully');
         
         // Redirect to login page if not already there
         if (!window.location.pathname.includes('/login')) {
             window.location.href = '/login';
+        }
+    }
+
+    // Disconnect SignalR connection
+    async disconnectSignalR() {
+        try {
+            if (window.signalRManager) {
+                await window.signalRManager.disconnect();
+                window.signalRManager = null;
+                console.log('SignalR disconnected on logout');
+            }
+        } catch (error) {
+            console.error('Error disconnecting SignalR on logout:', error);
         }
     }
 
@@ -378,17 +399,25 @@ class AuthManager {
         }
 
         const userRole = user.role || user.roles;
+        console.log('User role for UI update:', userRole, 'User object:', user); // Debug log
+        
+        // Normalize role to handle both string and numeric values
+        const normalizedRole = this.normalizeRole(userRole);
         
         // Handle admin-only elements
         const adminElements = document.querySelectorAll('[data-role="admin"]');
         adminElements.forEach(element => {
-            element.style.display = (userRole === 'Admin') ? '' : 'none';
+            const shouldShow = this.hasRoleAccess(normalizedRole, 'Admin');
+            element.style.display = shouldShow ? '' : 'none';
+            console.log('Admin element:', element, 'Show:', shouldShow); // Debug log
         });
 
         // Handle manager-only elements (admin and manager can see)
         const managerElements = document.querySelectorAll('[data-role="manager"]');
         managerElements.forEach(element => {
-            element.style.display = (userRole === 'Admin' || userRole === 'Manager') ? '' : 'none';
+            const shouldShow = this.hasRoleAccess(normalizedRole, 'Manager');
+            element.style.display = shouldShow ? '' : 'none';
+            console.log('Manager element:', element, 'Show:', shouldShow); // Debug log
         });
 
         // Handle staff-only elements (all authenticated users can see)
@@ -400,8 +429,45 @@ class AuthManager {
         // Update user role display in UI
         const userRoleElements = document.querySelectorAll('[data-user-role]');
         userRoleElements.forEach(element => {
-            element.textContent = userRole;
+            element.textContent = normalizedRole;
         });
+    }
+
+    // Normalize role to handle different formats
+    normalizeRole(role) {
+        if (typeof role === 'number') {
+            const roleMap = { 1: 'Staff', 2: 'Manager', 3: 'Admin' };
+            return roleMap[role] || 'Staff';
+        }
+        return role || 'Staff';
+    }
+
+    // Check if user has access to features for a specific role level
+    hasRoleAccess(userRole, requiredRole) {
+        const roleHierarchy = { 'Staff': 1, 'Manager': 2, 'Admin': 3 };
+        const userLevel = roleHierarchy[userRole] || 1;
+        const requiredLevel = roleHierarchy[requiredRole] || 1;
+        return userLevel >= requiredLevel;
+    }
+
+    // Initialize SignalR after successful authentication
+    async initializeSignalRAfterAuth() {
+        try {
+            if (typeof SignalRManager !== 'undefined') {
+                // Disconnect existing connection if any
+                if (window.signalRManager) {
+                    await window.signalRManager.disconnect();
+                }
+                
+                // Create new SignalR connection with fresh token
+                window.signalRManager = new SignalRManager();
+                await window.signalRManager.initialize();
+                console.log('SignalR initialized after authentication');
+            }
+        } catch (error) {
+            console.error('Failed to initialize SignalR after authentication:', error);
+            // Don't block the login process if SignalR fails
+        }
     }
 
     getUserRoles(user) {
@@ -668,9 +734,12 @@ class AuthManager {
         try {
             UI.showLoading('Changing password...');
             
-            const response = await API.post('/auth/change-password', {
-                currentPassword,
-                newPassword
+            const response = await API.request('/auth/change-password', {
+                method: 'POST',
+                body: JSON.stringify({
+                    currentPassword,
+                    newPassword
+                })
             });
 
             modal.hide();

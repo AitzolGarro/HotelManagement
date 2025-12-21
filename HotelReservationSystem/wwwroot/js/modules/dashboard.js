@@ -72,22 +72,22 @@ class DashboardManager {
 
     async loadKpiData() {
         const params = this.currentHotelId ? `?hotelId=${this.currentHotelId}` : '';
-        return await this.apiClient.get(`/api/dashboard/kpi${params}`);
+        return await this.apiClient.get(`/dashboard/kpi${params}`);
     }
 
     async loadDailyOperations() {
         const params = this.currentHotelId ? `?hotelId=${this.currentHotelId}` : '';
-        return await this.apiClient.get(`/api/dashboard/daily-operations${params}`);
+        return await this.apiClient.get(`/dashboard/daily-operations${params}`);
     }
 
     async loadNotifications() {
         const params = this.currentHotelId ? `?hotelId=${this.currentHotelId}` : '';
-        return await this.apiClient.get(`/api/dashboard/notifications${params}`);
+        return await this.apiClient.get(`/dashboard/notifications${params}`);
     }
 
     async loadRecentReservations() {
         const params = this.currentHotelId ? `?hotelId=${this.currentHotelId}` : '';
-        return await this.apiClient.get(`/api/dashboard/recent-reservations${params}`);
+        return await this.apiClient.get(`/dashboard/recent-reservations${params}`);
     }
 
     updateKpiWidgets(kpiData) {

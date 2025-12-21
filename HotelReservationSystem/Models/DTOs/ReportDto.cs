@@ -43,6 +43,15 @@ public class DailyOccupancyDto
     public int ReservationCount { get; set; }
 }
 
+public class DailyRevenueDto
+{
+    public DateTime Date { get; set; }
+    public decimal Revenue { get; set; }
+    public int ReservationCount { get; set; }
+    public decimal AverageRate { get; set; }
+    public decimal AverageRevenuePerReservation { get; set; }
+}
+
 public class RoomTypeOccupancyDto
 {
     public RoomType RoomType { get; set; }
@@ -82,14 +91,6 @@ public class RevenueReportDto
     public List<MonthlyRevenueDto> MonthlyRevenue { get; set; } = new();
     public List<RevenueSourceDto> RevenueBySource { get; set; } = new();
     public List<RoomTypeRevenueDto> RevenueByRoomType { get; set; } = new();
-}
-
-public class DailyRevenueDto
-{
-    public DateTime Date { get; set; }
-    public decimal Revenue { get; set; }
-    public int ReservationCount { get; set; }
-    public decimal AverageRevenuePerReservation { get; set; }
 }
 
 public class MonthlyRevenueDto

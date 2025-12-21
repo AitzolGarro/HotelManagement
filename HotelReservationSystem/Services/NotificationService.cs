@@ -321,4 +321,34 @@ public class NotificationService : INotificationService
             _ => NotificationPriority.Normal
         };
     }
+
+    public async Task NotifyReservationCreatedAsync(int reservationId, int hotelId)
+    {
+        await CreateNotificationAsync(
+            NotificationType.ReservationUpdate,
+            "New Reservation Created",
+            $"A new reservation has been created (ID: {reservationId})",
+            "Reservation",
+            reservationId);
+    }
+
+    public async Task NotifyReservationUpdatedAsync(int reservationId, int hotelId)
+    {
+        await CreateNotificationAsync(
+            NotificationType.ReservationUpdate,
+            "Reservation Updated",
+            $"Reservation has been updated (ID: {reservationId})",
+            "Reservation",
+            reservationId);
+    }
+
+    public async Task NotifyReservationCancelledAsync(int reservationId, int hotelId)
+    {
+        await CreateNotificationAsync(
+            NotificationType.Warning,
+            "Reservation Cancelled",
+            $"Reservation has been cancelled (ID: {reservationId})",
+            "Reservation",
+            reservationId);
+    }
 }

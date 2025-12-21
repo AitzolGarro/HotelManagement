@@ -30,8 +30,8 @@ public class HotelReservationContext : IdentityDbContext<User, IdentityRole<int>
             entity.Property(e => e.Phone).HasMaxLength(20);
             entity.Property(e => e.Email).HasMaxLength(100);
             entity.Property(e => e.IsActive).HasDefaultValue(true);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("datetime('now')");
         });
 
         // Configure Room entity
@@ -44,8 +44,8 @@ public class HotelReservationContext : IdentityDbContext<User, IdentityRole<int>
             entity.Property(e => e.BaseRate).HasColumnType("decimal(10,2)");
             entity.Property(e => e.Status).HasDefaultValue(RoomStatus.Available);
             entity.Property(e => e.Description).HasMaxLength(1000);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("datetime('now')");
 
             entity.HasOne(e => e.Hotel)
                   .WithMany(h => h.Rooms)
@@ -65,8 +65,8 @@ public class HotelReservationContext : IdentityDbContext<User, IdentityRole<int>
             entity.Property(e => e.Phone).HasMaxLength(20);
             entity.Property(e => e.Address).HasMaxLength(500);
             entity.Property(e => e.DocumentNumber).HasMaxLength(50);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("datetime('now')");
         });
 
         // Configure Reservation entity
@@ -82,8 +82,8 @@ public class HotelReservationContext : IdentityDbContext<User, IdentityRole<int>
             entity.Property(e => e.Status).HasDefaultValue(ReservationStatus.Pending);
             entity.Property(e => e.SpecialRequests).HasMaxLength(1000);
             entity.Property(e => e.InternalNotes).HasMaxLength(1000);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("datetime('now')");
 
             entity.HasOne(e => e.Hotel)
                   .WithMany(h => h.Reservations)
@@ -108,15 +108,15 @@ public class HotelReservationContext : IdentityDbContext<User, IdentityRole<int>
             entity.Property(e => e.LastName).IsRequired().HasMaxLength(100);
             entity.Property(e => e.Role).IsRequired();
             entity.Property(e => e.IsActive).HasDefaultValue(true);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("datetime('now')");
         });
 
         // Configure UserHotelAccess entity
         modelBuilder.Entity<UserHotelAccess>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
 
             entity.HasOne(e => e.User)
                   .WithMany(u => u.HotelAccess)

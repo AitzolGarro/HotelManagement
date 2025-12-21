@@ -1,110 +1,594 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reservation Interface Test</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <title>Hotel Reservation System - Interactive Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .nav-tab:hover {
+            background: #e9ecef;
+        }
+
+        .nav-tab.active {
+            background: white;
+            border-bottom: 3px solid #667eea;
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 2rem;
+            min-height: 500px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+        }
+
+        .card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .result-area {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            min-height: 200px;
+            border: 1px solid #dee2e6;
+        }
+
+        .result-area h4 {
+            color: #495057;
+            margin-bottom: 1rem;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .table th {
+            background: #667eea;
+            color: white;
+            font-weight: 500;
+        }
+
+        .table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-available {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-booked {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-confirmed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .notification {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .notification.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .notification.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
 </head>
+
 <body>
-    <div class="container mt-4">
-        <h2>Reservation Management Interface Test</h2>
-        
-        <!-- Test the modal structure -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reservationModal">
-            Test New Reservation Modal
-        </button>
-        
-        <!-- Simplified reservation modal for testing -->
-        <div class="modal fade" id="reservationModal" tabindex="-1">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">New Reservation</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div class="container">
+        <div class="header">
+            <h1>🏨 Hotel Reservation System</h1>
+            <p>Interactive Demo - Experience the Features</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('search')">🔍 Search Rooms</button>
+            <button class="nav-tab" onclick="showTab('reservations')">📋 Reservations</button>
+            <button class="nav-tab" onclick="showTab('temporal')">🕐 Temporal Queries</button>
+            <button class="nav-tab" onclick="showTab('dashboard')">📊 Dashboard</button>
+        </div>
+
+        <!-- Search Rooms Tab -->
+        <div id="search" class="tab-content active">
+            <div class="card">
+                <h3>🔍 Room Availability Search</h3>
+                <div class="grid">
+                    <div class="form-group">
+                        <label>Check-in Date</label>
+                        <input type="date" class="form-control" id="checkin" value="2024-10-15">
                     </div>
-                    <div class="modal-body">
-                        <form id="reservationForm">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="reservationHotel" class="form-label">Hotel</label>
-                                    <select class="form-select" id="reservationHotel" required>
-                                        <option value="">Select Hotel</option>
-                                        <option value="1">Test Hotel 1</option>
-                                        <option value="2">Test Hotel 2</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="reservationRoom" class="form-label">Room</label>
-                                    <select class="form-select" id="reservationRoom" required>
-                                        <option value="">Select Room</option>
-                                        <option value="1">Room 101</option>
-                                        <option value="2">Room 102</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="checkInDate" class="form-label">Check-in Date</label>
-                                    <input type="date" class="form-control" id="checkInDate" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="checkOutDate" class="form-label">Check-out Date</label>
-                                    <input type="date" class="form-control" id="checkOutDate" required>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="guestFirstName" class="form-label">Guest First Name</label>
-                                    <input type="text" class="form-control" id="guestFirstName" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="guestLastName" class="form-label">Guest Last Name</label>
-                                    <input type="text" class="form-control" id="guestLastName" required>
-                                </div>
-                            </div>
-                        </form>
+                    <div class="form-group">
+                        <label>Check-out Date</label>
+                        <input type="date" class="form-control" id="checkout" value="2024-10-18">
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" onclick="testValidation()">Test Validation</button>
+                    <div class="form-group">
+                        <label>Number of Guests</label>
+                        <select class="form-control" id="guests">
+                            <option value="1">1 Guest</option>
+                            <option value="2" selected>2 Guests</option>
+                            <option value="3">3 Guests</option>
+                            <option value="4">4 Guests</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Hotel</label>
+                        <select class="form-control" id="hotel">
+                            <option value="1">Grand Plaza Hotel</option>
+                            <option value="2">Seaside Resort</option>
+                            <option value="3">Mountain View Lodge</option>
+                        </select>
                     </div>
                 </div>
+                <button class="btn btn-primary" onclick="searchRooms()">🔍 Search Available Rooms</button>
+            </div>
+
+            <div class="result-area" id="searchResults">
+                <h4>Available Rooms</h4>
+                <p>Click "Search Available Rooms" to see available options for your dates.</p>
+            </div>
+        </div>
+
+        <!-- Reservations Tab -->
+        <div id="reservations" class="tab-content">
+            <div class="card">
+                <h3>📋 Current Reservations</h3>
+                <button class="btn btn-info" onclick="loadReservations()">🔄 Load Current Reservations</button>
+                <button class="btn btn-success" onclick="createSampleReservation()">➕ Create Sample Reservation</button>
+            </div>
+
+            <div class="result-area" id="reservationResults">
+                <h4>Reservation List</h4>
+                <p>Click "Load Current Reservations" to view existing bookings.</p>
+            </div>
+        </div>
+
+        <!-- Temporal Queries Tab -->
+        <div id="temporal" class="tab-content">
+            <div class="card">
+                <h3>🕐 Temporal Database Queries</h3>
+                <p>Explore historical data and audit trails from our temporal database demo.</p>
+                <button class="btn btn-primary" onclick="showEmployeeHistory()">👥 Employee History</button>
+                <button class="btn btn-primary" onclick="showPriceHistory()">💰 Price Changes</button>
+                <button class="btn btn-primary" onclick="showCustomerTiers()">🏆 Customer Tiers</button>
+                <button class="btn btn-info" onclick="showAuditTrail()">🛡️ Audit Trail</button>
+            </div>
+
+            <div class="result-area" id="temporalResults">
+                <h4>Temporal Query Results</h4>
+                <p>Select a query type above to explore historical data and audit trails.</p>
+            </div>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content">
+            <div class="card">
+                <h3>📊 Hotel Management Dashboard</h3>
+                <button class="btn btn-success" onclick="showOccupancyStats()">🏨 Occupancy Stats</button>
+                <button class="btn btn-info" onclick="showRevenueAnalytics()">💰 Revenue Analytics</button>
+                <button class="btn btn-primary" onclick="showPerformanceMetrics()">📈 Performance Metrics</button>
+            </div>
+
+            <div class="result-area" id="dashboardResults">
+                <h4>Dashboard Analytics</h4>
+                <p>Select a dashboard view above to see hotel performance metrics and analytics.</p>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Simple validation test
-        function testValidation() {
-            const form = document.getElementById('reservationForm');
-            const inputs = form.querySelectorAll('input[required], select[required]');
-            let isValid = true;
-            
-            inputs.forEach(input => {
-                if (!input.value.trim()) {
-                    input.classList.add('is-invalid');
-                    isValid = false;
-                } else {
-                    input.classList.remove('is-invalid');
-                }
+        // Sample data for demo
+        const sampleRooms = [
+            { id: 1, number: '101', type: 'Single', capacity: 1, rate: 89.99, hotel: 'Grand Plaza Hotel' },
+            { id: 2, number: '102', type: 'Double', capacity: 2, rate: 129.99, hotel: 'Grand Plaza Hotel' },
+            { id: 3, number: '201', type: 'Suite', capacity: 4, rate: 249.99, hotel: 'Grand Plaza Hotel' },
+            { id: 4, number: 'A101', type: 'Double', capacity: 2, rate: 159.99, hotel: 'Seaside Resort' },
+            { id: 5, number: 'A102', type: 'Family', capacity: 6, rate: 329.99, hotel: 'Seaside Resort' }
+        ];
+
+        const sampleReservations = [
+            { id: 1, guest: 'John Smith', room: '101', checkin: '2024-10-15', checkout: '2024-10-18', status: 'Confirmed' },
+            { id: 2, guest: 'Sarah Johnson', room: '102', checkin: '2024-10-20', checkout: '2024-10-23', status: 'Confirmed' },
+            { id: 3, guest: 'Michael Brown', room: 'A101', checkin: '2024-10-25', checkout: '2024-10-28', status: 'Pending' }
+        ];
+
+        const temporalData = {
+            employees: [
+                { name: 'John Smith', oldSalary: 75000, newSalary: 85000, change: '+$10,000', date: '2024-10-08' },
+                { name: 'Michael Brown', oldSalary: 95000, newSalary: 110000, change: '+$15,000', date: '2024-10-08' },
+                { name: 'Sarah Johnson', oldSalary: 85000, newSalary: 95000, change: '+$10,000', date: '2024-10-08' }
+            ],
+            prices: [
+                { product: 'Wireless Headphones', oldPrice: 199.99, newPrice: 229.99, change: '+$30.00', date: '2024-10-08' },
+                { product: 'Laptop Stand', oldPrice: 79.99, newPrice: 59.99, change: '-$20.00', date: '2024-10-08' },
+                { product: 'Water Bottle', oldPrice: 24.99, newPrice: 29.99, change: '+$5.00', date: '2024-10-08' }
+            ],
+            customers: [
+                { name: 'Alice Cooper', oldTier: 'Gold', newTier: 'Platinum', date: '2024-10-08' },
+                { name: 'Bob Miller', oldTier: 'Silver', newTier: 'Gold', date: '2024-10-08' }
+            ]
+        };
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
             });
-            
-            if (isValid) {
-                alert('Form validation passed!');
-            } else {
-                alert('Please fill in all required fields');
-            }
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
         }
-        
-        // Set minimum dates
-        document.addEventListener('DOMContentLoaded', function() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('checkInDate').min = today;
-            document.getElementById('checkOutDate').min = today;
+
+        function searchRooms() {
+            const checkin = document.getElementById('checkin').value;
+            const checkout = document.getElementById('checkout').value;
+            const guests = document.getElementById('guests').value;
+            const hotel = document.getElementById('hotel').value;
+
+            const hotelNames = { '1': 'Grand Plaza Hotel', '2': 'Seaside Resort', '3': 'Mountain View Lodge' };
+            const selectedHotel = hotelNames[hotel];
+
+            const availableRooms = sampleRooms.filter(room =>
+                room.hotel === selectedHotel && room.capacity >= parseInt(guests)
+            );
+
+            let html = '<h4>🔍 Available Rooms</h4>';
+            html += '<div class="notification success" style="display: block;">Found ' + availableRooms.length + ' available rooms for your dates!</div>';
+
+            if (availableRooms.length > 0) {
+                html += '<table class="table"><thead><tr><th>Room</th><th>Type</th><th>Capacity</th><th>Rate/Night</th><th>Action</th></tr></thead><tbody>';
+
+                availableRooms.forEach(room => {
+                    html += '<tr>';
+                    html += '<td>' + room.number + '</td>';
+                    html += '<td>' + room.type + '</td>';
+                    html += '<td>' + room.capacity + ' guests</td>';
+                    html += '<td>$' + room.rate.toFixed(2) + '</td>';
+                    html += '<td><button class="btn btn-success" onclick="bookRoom(\'' + room.number + '\')">📅 Book Now</button></td>';
+                    html += '</tr>';
+                });
+
+                html += '</tbody></table>';
+            } else {
+                html += '<p>No rooms available for the selected criteria. Please try different dates or guest count.</p>';
+            }
+
+            document.getElementById('searchResults').innerHTML = html;
+        }
+
+        function bookRoom(roomNumber) {
+            const notification = '<div class="notification success" style="display: block;">✅ Room ' + roomNumber + ' has been reserved! Confirmation email sent.</div>';
+            document.getElementById('searchResults').innerHTML = notification + document.getElementById('searchResults').innerHTML;
+        }
+
+        function loadReservations() {
+            let html = '<h4>📋 Current Reservations</h4>';
+            html += '<table class="table"><thead><tr><th>Guest</th><th>Room</th><th>Check-in</th><th>Check-out</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+
+            sampleReservations.forEach(reservation => {
+                html += '<tr>';
+                html += '<td>' + reservation.guest + '</td>';
+                html += '<td>' + reservation.room + '</td>';
+                html += '<td>' + reservation.checkin + '</td>';
+                html += '<td>' + reservation.checkout + '</td>';
+                html += '<td><span class="status-badge status-confirmed">' + reservation.status + '</span></td>';
+                html += '<td><button class="btn btn-info" onclick="viewReservation(' + reservation.id + ')">👁️ View</button></td>';
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            document.getElementById('reservationResults').innerHTML = html;
+        }
+
+        function createSampleReservation() {
+            const newReservation = {
+                id: sampleReservations.length + 1,
+                guest: 'Demo Guest',
+                room: '203',
+                checkin: '2024-10-30',
+                checkout: '2024-11-02',
+                status: 'Confirmed'
+            };
+
+            sampleReservations.push(newReservation);
+
+            const notification = '<div class="notification success" style="display: block;">✅ New reservation created for Demo Guest in room 203!</div>';
+            document.getElementById('reservationResults').innerHTML = notification;
+
+            setTimeout(() => {
+                loadReservations();
+            }, 2000);
+        }
+
+        function viewReservation(id) {
+            alert('Viewing reservation #' + id + '\\n\\nThis would open a detailed view with:\\n• Guest information\\n• Room details\\n• Payment status\\n• Special requests\\n• Check-in/out history');
+        }
+
+        function showEmployeeHistory() {
+            let html = '<h4>👥 Employee Salary History</h4>';
+            html += '<div class="notification info" style="display: block;">📊 Data from temporal database demo - showing recent salary changes</div>';
+            html += '<table class="table"><thead><tr><th>Employee</th><th>Previous Salary</th><th>New Salary</th><th>Change</th><th>Date</th></tr></thead><tbody>';
+
+            temporalData.employees.forEach(emp => {
+                html += '<tr>';
+                html += '<td>' + emp.name + '</td>';
+                html += '<td>$' + emp.oldSalary.toLocaleString() + '</td>';
+                html += '<td>$' + emp.newSalary.toLocaleString() + '</td>';
+                html += '<td style="color: green; font-weight: bold;">' + emp.change + '</td>';
+                html += '<td>' + emp.date + '</td>';
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            document.getElementById('temporalResults').innerHTML = html;
+        }
+
+        function showPriceHistory() {
+            let html = '<h4>💰 Product Price History</h4>';
+            html += '<div class="notification info" style="display: block;">📊 Data from temporal database demo - showing recent price changes</div>';
+            html += '<table class="table"><thead><tr><th>Product</th><th>Previous Price</th><th>New Price</th><th>Change</th><th>Date</th></tr></thead><tbody>';
+
+            temporalData.prices.forEach(price => {
+                const changeColor = price.change.startsWith('+') ? 'red' : 'green';
+                html += '<tr>';
+                html += '<td>' + price.product + '</td>';
+                html += '<td>$' + price.oldPrice.toFixed(2) + '</td>';
+                html += '<td>$' + price.newPrice.toFixed(2) + '</td>';
+                html += '<td style="color: ' + changeColor + '; font-weight: bold;">' + price.change + '</td>';
+                html += '<td>' + price.date + '</td>';
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            document.getElementById('temporalResults').innerHTML = html;
+        }
+
+        function showCustomerTiers() {
+            let html = '<h4>🏆 Customer Tier Progression</h4>';
+            html += '<div class="notification info" style="display: block;">📊 Data from temporal database demo - showing customer upgrades</div>';
+            html += '<table class="table"><thead><tr><th>Customer</th><th>Previous Tier</th><th>New Tier</th><th>Upgrade Date</th></tr></thead><tbody>';
+
+            temporalData.customers.forEach(customer => {
+                html += '<tr>';
+                html += '<td>' + customer.name + '</td>';
+                html += '<td>' + customer.oldTier + '</td>';
+                html += '<td style="color: gold; font-weight: bold;">' + customer.newTier + '</td>';
+                html += '<td>' + customer.date + '</td>';
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            document.getElementById('temporalResults').innerHTML = html;
+        }
+
+        function showAuditTrail() {
+            let html = '<h4>🛡️ Complete Audit Trail</h4>';
+            html += '<div class="notification info" style="display: block;">📊 Comprehensive audit trail from temporal database - 52 historical records tracked</div>';
+            html += '<div class="grid">';
+            html += '<div class="card"><h3>📈 Statistics</h3><ul><li>Total Records: 34 current + 52 historical</li><li>Tables Tracked: 4 (Employees, Products, Customers, Config)</li><li>Changes Recorded: 18 operations</li><li>Compliance: SOX, GDPR, HIPAA ready</li></ul></div>';
+            html += '<div class="card"><h3>🔍 Recent Changes</h3><ul><li>Employee promotions and salary increases</li><li>Product price adjustments</li><li>Customer tier upgrades</li><li>System configuration updates</li></ul></div>';
+            html += '</div>';
+
+            document.getElementById('temporalResults').innerHTML = html;
+        }
+
+        function showOccupancyStats() {
+            let html = '<h4>🏨 Hotel Occupancy Statistics</h4>';
+            html += '<div class="grid">';
+            html += '<div class="card"><h3>📊 Current Occupancy</h3><p style="font-size: 2rem; color: #667eea; font-weight: bold;">78%</p><p>Above average for this time of year</p></div>';
+            html += '<div class="card"><h3>🏆 Top Performing Hotel</h3><p style="font-size: 1.5rem; color: #28a745; font-weight: bold;">Seaside Resort</p><p>92% occupancy rate</p></div>';
+            html += '<div class="card"><h3>📈 Trend</h3><p style="color: #28a745;">↗️ +12% vs last month</p><p>Seasonal increase expected</p></div>';
+            html += '</div>';
+
+            document.getElementById('dashboardResults').innerHTML = html;
+        }
+
+        function showRevenueAnalytics() {
+            let html = '<h4>💰 Revenue Analytics</h4>';
+            html += '<div class="grid">';
+            html += '<div class="card"><h3>💵 Monthly Revenue</h3><p style="font-size: 2rem; color: #667eea; font-weight: bold;">$284,750</p><p>+18% vs last month</p></div>';
+            html += '<div class="card"><h3>💳 Average Daily Rate</h3><p style="font-size: 1.5rem; color: #17a2b8; font-weight: bold;">$156.80</p><p>Optimal pricing achieved</p></div>';
+            html += '<div class="card"><h3>📊 Revenue per Room</h3><p style="font-size: 1.5rem; color: #28a745; font-weight: bold;">$122.40</p><p>Above industry average</p></div>';
+            html += '</div>';
+
+            document.getElementById('dashboardResults').innerHTML = html;
+        }
+
+        function showPerformanceMetrics() {
+            let html = '<h4>📈 Performance Metrics</h4>';
+            html += '<div class="grid">';
+            html += '<div class="card"><h3>⭐ Guest Satisfaction</h3><p style="font-size: 2rem; color: #ffc107; font-weight: bold;">4.7/5</p><p>Based on 1,247 reviews</p></div>';
+            html += '<div class="card"><h3>🔄 Booking Conversion</h3><p style="font-size: 1.5rem; color: #28a745; font-weight: bold;">23.4%</p><p>+5.2% improvement</p></div>';
+            html += '<div class="card"><h3>⚡ System Performance</h3><p style="color: #28a745;">✅ All systems operational</p><p>99.8% uptime this month</p></div>';
+            html += '</div>';
+
+            document.getElementById('dashboardResults').innerHTML = html;
+        }
+
+        // Initialize with current date
+        document.addEventListener('DOMContentLoaded', function () {
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const dayAfter = new Date(today);
+            dayAfter.setDate(dayAfter.getDate() + 3);
+
+            document.getElementById('checkin').value = tomorrow.toISOString().split('T')[0];
+            document.getElementById('checkout').value = dayAfter.toISOString().split('T')[0];
         });
     </script>
 </body>
+
 </html>

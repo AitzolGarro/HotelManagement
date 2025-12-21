@@ -24,7 +24,11 @@ public enum RoomType
     Double = 2,
     Suite = 3,
     Family = 4,
-    Deluxe = 5
+    Deluxe = 5,
+    Twin = 6,
+    Triple = 7,
+    Quad = 8,
+    Standard = 9
 }
 
 public enum RoomStatus
@@ -32,5 +36,7 @@ public enum RoomStatus
     Available = 1,
     Maintenance = 2,
     Blocked = 3,
-    OutOfOrder = 4
+    OutOfOrder = 4,
+    Occupied = 5,
+    Cleaning = 6
 }

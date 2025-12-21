@@ -32,6 +32,13 @@ namespace HotelReservationSystem.Middleware
 
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
+            // Only modify response if it hasn't started
+            if (context.Response.HasStarted)
+            {
+                _logger.LogWarning("Cannot handle exception, response has already started");
+                return;
+            }
+            
             context.Response.ContentType = "application/json";
             
             var response = exception switch
@@ -178,18 +185,18 @@ namespace HotelReservationSystem.Middleware
                     TraceId = context.TraceIdentifier
                 },
                 
-                // Generic exceptions
-                ArgumentException => new ErrorResponseDto
-                {
-                    StatusCode = (int)HttpStatusCode.BadRequest,
-                    Message = exception.Message,
-                    TraceId = context.TraceIdentifier
-                },
+                // Generic exceptions (more specific first)
                 ArgumentNullException => new ErrorResponseDto
                 {
                     StatusCode = (int)HttpStatusCode.BadRequest,
                     Message = "Required parameter is missing",
                     Details = exception.Message,
+                    TraceId = context.TraceIdentifier
+                },
+                ArgumentException => new ErrorResponseDto
+                {
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    Message = exception.Message,
                     TraceId = context.TraceIdentifier
                 },
                 

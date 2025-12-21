@@ -18,22 +18,22 @@ class CalendarManager {
             // Load initial data
             await this.loadHotels();
             await this.loadRooms();
-            
+
             // Initialize calendar
             this.initializeCalendar();
-            
+
             // Initialize date range picker
             this.initializeDateRangePicker();
-            
+
             // Setup event listeners
             this.setupEventListeners();
-            
+
             // Initialize SignalR for real-time updates
             await this.initializeSignalR();
-            
+
             // Load reservations
             await this.loadReservations();
-            
+
             console.log('Calendar initialized successfully');
         } catch (error) {
             console.error('Error initializing calendar:', error);
@@ -65,10 +65,10 @@ class CalendarManager {
     async loadReservations() {
         try {
             UI.showLoading();
-            
+
             // Build query parameters based on current filters
             const params = new URLSearchParams();
-            
+
             // Use date range filter if set, otherwise use calendar view range
             if (this.currentFilters.dateRange) {
                 params.append('from', this.currentFilters.dateRange.start);
@@ -79,21 +79,21 @@ class CalendarManager {
                 params.append('from', view.activeStart.toISOString().split('T')[0]);
                 params.append('to', view.activeEnd.toISOString().split('T')[0]);
             }
-            
+
             if (this.currentFilters.hotel) {
                 params.append('hotelId', this.currentFilters.hotel);
             }
-            
+
             const response = await API.get(`/api/reservations?${params.toString()}`);
             this.reservations = response.data || [];
-            
+
             // Convert reservations to calendar events
             const events = this.convertReservationsToEvents(this.reservations);
-            
+
             // Update calendar with new events
             this.calendar.removeAllEvents();
             this.calendar.addEventSource(events);
-            
+
         } catch (error) {
             console.error('Error loading reservations:', error);
             UI.showError('Failed to load reservations');
@@ -104,7 +104,7 @@ class CalendarManager {
 
     initializeCalendar() {
         const calendarEl = document.getElementById('calendar');
-        
+
         this.calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'resourceTimelineWeek',
             headerToolbar: {
@@ -113,59 +113,59 @@ class CalendarManager {
                 right: 'resourceTimelineWeek,resourceTimelineMonth,dayGridMonth'
             },
             height: 'auto',
-            
+
             // Timeline specific settings
             resourceAreaHeaderContent: 'Rooms',
             resourceAreaWidth: '200px',
             resourceOrder: 'title',
-            
+
             // Resources (rooms) will be loaded dynamically
             resources: this.getRoomResources.bind(this),
-            
+
             // Event rendering
             eventDisplay: 'block',
             eventContent: this.renderEventContent.bind(this),
-            
+
             // Event interactions
             eventClick: this.handleEventClick.bind(this),
             eventMouseEnter: this.handleEventMouseEnter.bind(this),
             eventMouseLeave: this.handleEventMouseLeave.bind(this),
-            
+
             // Date navigation
             datesSet: this.handleDatesSet.bind(this),
-            
+
             // Styling
             eventClassNames: this.getEventClassNames.bind(this),
-            
+
             // Responsive
             windowResize: this.handleWindowResize.bind(this),
-            
+
             // Resource rendering
             resourceLabelContent: this.renderResourceLabel.bind(this),
-            
+
             // Timeline view settings
             slotMinTime: '00:00:00',
             slotMaxTime: '24:00:00',
             slotDuration: '01:00:00',
             slotLabelInterval: '06:00:00',
-            
+
             // Allow events to overlap
             slotEventOverlap: false,
-            
+
             // Business hours (optional)
             businessHours: {
                 startTime: '06:00',
                 endTime: '22:00'
             },
-            
+
             // Scrolling
             scrollTime: '08:00:00',
-            
+
             // Selection (for creating new reservations)
             selectable: true,
             selectMirror: true,
             select: this.handleDateSelect.bind(this),
-            
+
             // Event resizing and dragging
             editable: false, // Disable for now, can be enabled later
             eventResizableFromStart: false,
@@ -179,25 +179,25 @@ class CalendarManager {
 
     getFilteredRooms() {
         let filtered = [...this.rooms];
-        
+
         if (this.currentFilters.hotel) {
             filtered = filtered.filter(room => room.hotelId.toString() === this.currentFilters.hotel);
         }
-        
+
         if (this.currentFilters.roomType) {
             filtered = filtered.filter(room => room.type.toLowerCase() === this.currentFilters.roomType.toLowerCase());
         }
-        
+
         return filtered;
     }
 
     convertReservationsToEvents(reservations) {
         const filteredReservations = this.getFilteredReservations(reservations);
-        
+
         return filteredReservations.map(reservation => {
             const room = this.rooms.find(r => r.id === reservation.roomId);
             const hotel = this.hotels.find(h => h.id === reservation.hotelId);
-            
+
             return {
                 id: reservation.id.toString(),
                 resourceId: reservation.roomId.toString(), // Assign event to room resource
@@ -220,11 +220,11 @@ class CalendarManager {
 
     getFilteredReservations(reservations) {
         let filtered = [...reservations];
-        
+
         if (this.currentFilters.status) {
             filtered = filtered.filter(res => res.status.toLowerCase() === this.currentFilters.status.toLowerCase());
         }
-        
+
         return filtered;
     }
 
@@ -232,7 +232,7 @@ class CalendarManager {
         const reservation = eventInfo.event.extendedProps.reservation;
         const roomNumber = eventInfo.event.extendedProps.roomNumber;
         const hotelName = eventInfo.event.extendedProps.hotelName;
-        
+
         return {
             html: `
                 <div class="calendar-event-content">
@@ -251,11 +251,11 @@ class CalendarManager {
     getEventClassNames(eventInfo) {
         const status = eventInfo.event.extendedProps.status.toLowerCase();
         const source = eventInfo.event.extendedProps.source.toLowerCase();
-        
+
         const classes = ['calendar-event'];
         classes.push(`status-${status}`);
         classes.push(`source-${source}`);
-        
+
         return classes;
     }
 
@@ -276,7 +276,7 @@ class CalendarManager {
     showTooltip(element, reservation) {
         // Remove existing tooltip
         this.hideTooltip();
-        
+
         const tooltip = document.createElement('div');
         tooltip.className = 'calendar-tooltip';
         tooltip.innerHTML = `
@@ -294,9 +294,9 @@ class CalendarManager {
                 ${reservation.specialRequests ? `<div><i class="bi bi-chat-text"></i> ${reservation.specialRequests}</div>` : ''}
             </div>
         `;
-        
+
         document.body.appendChild(tooltip);
-        
+
         // Position tooltip
         const rect = element.getBoundingClientRect();
         tooltip.style.position = 'fixed';
@@ -304,7 +304,7 @@ class CalendarManager {
         tooltip.style.top = `${rect.top - 10}px`;
         tooltip.style.transform = 'translateX(-50%) translateY(-100%)';
         tooltip.style.zIndex = '9999';
-        
+
         this.currentTooltip = tooltip;
     }
 
@@ -332,7 +332,7 @@ class CalendarManager {
             // Use timeline month view on desktop
             this.calendar.changeView('resourceTimelineMonth');
         }
-        
+
         // Adjust resource area width based on screen size
         const resourceAreaWidth = window.innerWidth < 768 ? '150px' : '200px';
         this.calendar.setOption('resourceAreaWidth', resourceAreaWidth);
@@ -340,7 +340,7 @@ class CalendarManager {
 
     initializeDateRangePicker() {
         const dateRangePicker = $('#dateRangePicker');
-        
+
         dateRangePicker.daterangepicker({
             opens: 'left',
             drops: 'down',
@@ -378,39 +378,39 @@ class CalendarManager {
         document.getElementById('applyFilters').addEventListener('click', () => {
             this.applyFilters();
         });
-        
+
         document.getElementById('clearFilters').addEventListener('click', () => {
             this.clearFilters();
         });
-        
+
         // Add reservation button
         document.getElementById('addReservationBtn').addEventListener('click', () => {
             this.showAddReservationModal();
         });
-        
+
         // Modal event listeners
         document.getElementById('saveReservationBtn').addEventListener('click', () => {
             this.saveReservation();
         });
-        
+
         document.getElementById('editReservationBtn').addEventListener('click', () => {
             this.editCurrentReservation();
         });
-        
+
         document.getElementById('cancelReservationBtn').addEventListener('click', () => {
             this.cancelCurrentReservation();
         });
-        
+
         // Hotel selection change in reservation modal
         document.getElementById('reservationHotel').addEventListener('change', () => {
             this.updateRoomOptions();
         });
-        
+
         // Filter change events
         document.getElementById('hotelFilter').addEventListener('change', () => {
             this.currentFilters.hotel = document.getElementById('hotelFilter').value;
             this.updateRoomResources();
-            
+
             // Update SignalR hotel group subscription
             this.updateSignalRHotelSubscription();
         });
@@ -458,7 +458,7 @@ class CalendarManager {
         try {
             // Leave all hotel groups first (we'll rejoin the current one)
             // Note: In a real implementation, you might want to track which groups you're in
-            
+
             // Join the current hotel group if a hotel is selected
             if (this.currentFilters.hotel) {
                 await this.signalRManager.joinHotelGroup(this.currentFilters.hotel);
@@ -484,7 +484,7 @@ class CalendarManager {
         this.currentFilters.roomType = document.getElementById('roomTypeFilter').value;
         this.currentFilters.status = document.getElementById('statusFilter').value;
         // dateRange is already set by the date range picker event handlers
-        
+
         this.updateRoomResources();
         this.loadReservations();
     }
@@ -496,23 +496,23 @@ class CalendarManager {
             status: '',
             dateRange: null
         };
-        
+
         // Reset filter controls
         document.getElementById('hotelFilter').value = '';
         document.getElementById('roomTypeFilter').value = '';
         document.getElementById('statusFilter').value = '';
         document.getElementById('dateRangePicker').value = '';
-        
+
         this.updateRoomResources();
         this.loadReservations();
     }
 
     getRoomResources() {
         const filteredRooms = this.getFilteredRooms();
-        
+
         return filteredRooms.map(room => {
             const hotel = this.hotels.find(h => h.id === room.hotelId);
-            
+
             return {
                 id: room.id.toString(),
                 title: `${room.roomNumber} (${this.getRoomTypeDisplay(room.type)})`,
@@ -531,7 +531,7 @@ class CalendarManager {
     renderResourceLabel(resourceInfo) {
         const room = resourceInfo.resource.extendedProps.room;
         const hotelName = resourceInfo.resource.extendedProps.hotelName;
-        
+
         return {
             html: `
                 <div class="resource-label">
@@ -552,7 +552,7 @@ class CalendarManager {
     handleDateSelect(selectInfo) {
         // Handle date selection for creating new reservations
         const resourceId = selectInfo.resource ? selectInfo.resource.id : null;
-        
+
         if (resourceId) {
             // Pre-fill the add reservation modal with selected room and dates
             this.showAddReservationModal(resourceId, selectInfo.start, selectInfo.end);
@@ -560,7 +560,7 @@ class CalendarManager {
             // Show general add reservation modal
             this.showAddReservationModal();
         }
-        
+
         // Clear the selection
         this.calendar.unselect();
     }
@@ -573,12 +573,12 @@ class CalendarManager {
 
     populateHotelFilter() {
         const hotelFilter = document.getElementById('hotelFilter');
-        
+
         // Clear existing options (except "All Hotels")
         while (hotelFilter.children.length > 1) {
             hotelFilter.removeChild(hotelFilter.lastChild);
         }
-        
+
         // Add hotel options
         this.hotels.forEach(hotel => {
             const option = document.createElement('option');
@@ -590,7 +590,7 @@ class CalendarManager {
 
     showReservationModal(reservation) {
         this.currentReservation = reservation;
-        
+
         // Populate reservation details
         const detailsHtml = `
             <div class="row">
@@ -639,13 +639,13 @@ class CalendarManager {
                 </div>
             ` : ''}
         `;
-        
+
         document.getElementById('reservationDetails').innerHTML = detailsHtml;
-        
+
         // Show/hide action buttons based on reservation status
         const editBtn = document.getElementById('editReservationBtn');
         const cancelBtn = document.getElementById('cancelReservationBtn');
-        
+
         if (reservation.status.toLowerCase() === 'cancelled') {
             editBtn.style.display = 'none';
             cancelBtn.style.display = 'none';
@@ -653,7 +653,7 @@ class CalendarManager {
             editBtn.style.display = 'inline-block';
             cancelBtn.style.display = reservation.status.toLowerCase() !== 'checkedout' ? 'inline-block' : 'none';
         }
-        
+
         // Show modal
         const modal = new bootstrap.Modal(document.getElementById('reservationModal'));
         modal.show();
@@ -662,13 +662,13 @@ class CalendarManager {
     showAddReservationModal(preSelectedRoomId = null, startDate = null, endDate = null) {
         // Reset form
         document.getElementById('reservationForm').reset();
-        
+
         // Populate hotel options
         this.populateReservationHotelOptions();
-        
+
         // Set dates - use provided dates or defaults
         let checkInDate, checkOutDate;
-        
+
         if (startDate && endDate) {
             checkInDate = startDate.toISOString().split('T')[0];
             checkOutDate = endDate.toISOString().split('T')[0];
@@ -677,31 +677,31 @@ class CalendarManager {
             const today = new Date();
             const tomorrow = new Date(today);
             tomorrow.setDate(tomorrow.getDate() + 1);
-            
+
             checkInDate = today.toISOString().split('T')[0];
             checkOutDate = tomorrow.toISOString().split('T')[0];
         }
-        
+
         document.getElementById('checkInDate').value = checkInDate;
         document.getElementById('checkOutDate').value = checkOutDate;
-        
+
         // Pre-select room if provided
         if (preSelectedRoomId) {
             const room = this.rooms.find(r => r.id.toString() === preSelectedRoomId);
             if (room) {
                 // Select the hotel first
                 document.getElementById('reservationHotel').value = room.hotelId.toString();
-                
+
                 // Trigger hotel change to populate rooms
                 this.updateRoomOptions();
-                
+
                 // Then select the room
                 setTimeout(() => {
                     document.getElementById('reservationRoom').value = preSelectedRoomId;
                 }, 100);
             }
         }
-        
+
         // Show modal
         const modal = new bootstrap.Modal(document.getElementById('addReservationModal'));
         modal.show();
@@ -709,12 +709,12 @@ class CalendarManager {
 
     populateReservationHotelOptions() {
         const hotelSelect = document.getElementById('reservationHotel');
-        
+
         // Clear existing options (except first one)
         while (hotelSelect.children.length > 1) {
             hotelSelect.removeChild(hotelSelect.lastChild);
         }
-        
+
         // Add hotel options
         this.hotels.forEach(hotel => {
             const option = document.createElement('option');
@@ -727,15 +727,15 @@ class CalendarManager {
     updateRoomOptions() {
         const hotelId = document.getElementById('reservationHotel').value;
         const roomSelect = document.getElementById('reservationRoom');
-        
+
         // Clear existing options (except first one)
         while (roomSelect.children.length > 1) {
             roomSelect.removeChild(roomSelect.lastChild);
         }
-        
+
         if (hotelId) {
             const hotelRooms = this.rooms.filter(room => room.hotelId.toString() === hotelId);
-            
+
             hotelRooms.forEach(room => {
                 const option = document.createElement('option');
                 option.value = room.id.toString();
@@ -747,15 +747,15 @@ class CalendarManager {
 
     async saveReservation() {
         const form = document.getElementById('reservationForm');
-        
+
         if (!form.checkValidity()) {
             form.reportValidity();
             return;
         }
-        
+
         try {
             UI.showLoading();
-            
+
             const reservationData = {
                 guestFirstName: document.getElementById('guestFirstName').value,
                 guestLastName: document.getElementById('guestLastName').value,
@@ -770,22 +770,22 @@ class CalendarManager {
                 specialRequests: document.getElementById('specialRequests').value,
                 internalNotes: document.getElementById('internalNotes').value
             };
-            
+
             const response = await API.post('/api/reservations/manual', reservationData);
-            
+
             if (response.success) {
                 UI.showSuccess('Reservation created successfully');
-                
+
                 // Close modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('addReservationModal'));
                 modal.hide();
-                
+
                 // Refresh calendar
                 this.loadReservations();
             } else {
                 UI.showError(response.message || 'Failed to create reservation');
             }
-            
+
         } catch (error) {
             console.error('Error saving reservation:', error);
             UI.showError('Failed to create reservation');
@@ -799,7 +799,7 @@ class CalendarManager {
             // Close current modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('reservationModal'));
             modal.hide();
-            
+
             // Show edit modal (for now, just show info)
             UI.showInfo('Edit reservation functionality will be implemented in a future update');
         }
@@ -807,31 +807,31 @@ class CalendarManager {
 
     async cancelCurrentReservation() {
         if (!this.currentReservation) return;
-        
+
         const confirmed = confirm(`Are you sure you want to cancel the reservation for ${this.currentReservation.guest.firstName} ${this.currentReservation.guest.lastName}?`);
-        
+
         if (!confirmed) return;
-        
+
         try {
             UI.showLoading();
-            
+
             const response = await API.delete(`/api/reservations/${this.currentReservation.id}`, {
                 reason: 'Cancelled by staff'
             });
-            
+
             if (response.success) {
                 UI.showSuccess('Reservation cancelled successfully');
-                
+
                 // Close modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('reservationModal'));
                 modal.hide();
-                
+
                 // Refresh calendar
                 this.loadReservations();
             } else {
                 UI.showError(response.message || 'Failed to cancel reservation');
             }
-            
+
         } catch (error) {
             console.error('Error cancelling reservation:', error);
             UI.showError('Failed to cancel reservation');
@@ -908,7 +908,7 @@ class CalendarManager {
         if (this.signalRManager) {
             await this.signalRManager.disconnect();
         }
-        
+
         if (this.updateTimeout) {
             clearTimeout(this.updateTimeout);
         }

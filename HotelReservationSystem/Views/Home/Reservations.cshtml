@@ -580,6 +580,47 @@
             `).join('');
         }
 
+        // Utility functions for status and source display
+        function getStatusBadgeClass(status) {
+            switch (status) {
+                case 0: return 'bg-warning text-dark'; // Pending
+                case 1: return 'bg-success'; // Confirmed
+                case 2: return 'bg-primary'; // Checked In
+                case 3: return 'bg-info text-dark'; // Checked Out
+                case 4: return 'bg-danger'; // Cancelled
+                default: return 'bg-secondary';
+            }
+        }
+
+        function getStatusDisplayName(status) {
+            switch (status) {
+                case 0: return 'Pending';
+                case 1: return 'Confirmed';
+                case 2: return 'Checked In';
+                case 3: return 'Checked Out';
+                case 4: return 'Cancelled';
+                default: return 'Unknown';
+            }
+        }
+
+        function getSourceBadgeClass(source) {
+            switch (source) {
+                case 1: return 'bg-secondary'; // Manual
+                case 2: return 'bg-info'; // Booking.com
+                case 3: return 'bg-success'; // Direct
+                default: return 'bg-light text-dark';
+            }
+        }
+
+        function getSourceDisplayName(source) {
+            switch (source) {
+                case 1: return 'Manual';
+                case 2: return 'Booking.com';
+                case 3: return 'Direct';
+                default: return 'Unknown';
+            }
+        }
+
         function openNewReservationModal() {
             isEditMode = false;
             currentReservationId = null;

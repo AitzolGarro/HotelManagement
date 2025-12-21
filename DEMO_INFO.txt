@@ -1,0 +1,76 @@
+🏨 HOTEL RESERVATION SYSTEM - DEMO INFORMATION
+=============================================
+
+📊 DEMO DATABASE: SQLite (hotel_reservation_demo.db)
+🔄 EASY SWITCH: Change UseSqlite to false in appsettings.json for SQL Server
+
+👥 LOGIN CREDENTIALS:
+   • Admin: admin / password123
+   • Manager: manager1 / password123  
+   • Demo User: demo / password123
+
+🏨 SAMPLE HOTELS:
+   • Grand Plaza Hotel (Downtown)
+   • Seaside Resort & Spa (Miami Beach)
+   • Mountain View Lodge (Aspen)
+   • Business Center Hotel (Chicago)
+
+🛏️  SAMPLE ROOMS: 16 rooms across all hotels
+👤 SAMPLE GUESTS: 8 registered guests
+📅 SAMPLE RESERVATIONS: 10 reservations (current + historical)
+
+🌐 ACCESS URLS:
+   • HTTPS: https://localhost:7001
+   • HTTP: http://localhost:5000
+
+🎯 DEMO FEATURES:
+   ✅ Complete hotel and room management
+   ✅ Full reservation system with calendar
+   ✅ User authentication and role-based access
+   ✅ Real-time notifications via SignalR
+   ✅ Dashboard with analytics and KPIs
+   ✅ Comprehensive reporting system
+   ✅ Audit trails and change tracking
+   ✅ Responsive design for all devices
+
+🔧 TECHNICAL FEATURES:
+   ✅ SQLite database (no SQL Server required)
+   ✅ Entity Framework Core with migrations
+   ✅ ASP.NET Core 8.0 with MVC and Web API
+   ✅ SignalR for real-time updates
+   ✅ JWT authentication and authorization
+   ✅ Comprehensive unit and integration tests
+   ✅ Clean architecture with repository pattern
+   ✅ Responsive Bootstrap UI
+
+📱 MOBILE FRIENDLY:
+   ✅ Responsive design works on tablets and phones
+   ✅ Touch-friendly interface
+   ✅ Optimized for various screen sizes
+
+🚀 GETTING STARTED:
+   1. Run this setup script: .\setup-hotel-demo.ps1
+   2. Start the application: .\run-hotel-demo-sqlite.ps1
+   3. Open browser to https://localhost:7001
+   4. Login with any of the credentials above
+   5. Explore all the features!
+
+💡 PERFECT FOR:
+   • Client demonstrations
+   • Sales presentations
+   • Feature showcases
+   • Training sessions
+   • Development testing
+
+⚠️  PRODUCTION NOTES:
+   • Switch to SQL Server for production (set UseSqlite: false)
+   • Update connection strings in appsettings.Production.json
+   • Configure proper authentication secrets
+   • Set up proper logging and monitoring
+   • Configure email settings for notifications
+
+📞 SUPPORT:
+   • Full source code included
+   • Comprehensive documentation
+   • Easy to customize and extend
+   • Production-ready architecture

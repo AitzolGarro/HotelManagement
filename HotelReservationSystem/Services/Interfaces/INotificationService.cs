@@ -22,4 +22,9 @@ public interface INotificationService
     
     // Browser notifications
     Task SendBrowserNotificationAsync(BrowserNotificationRequest request, string? userId = null, int? hotelId = null);
+    
+    // Reservation-specific notifications
+    Task NotifyReservationCreatedAsync(int reservationId, int hotelId);
+    Task NotifyReservationUpdatedAsync(int reservationId, int hotelId);
+    Task NotifyReservationCancelledAsync(int reservationId, int hotelId);
 }

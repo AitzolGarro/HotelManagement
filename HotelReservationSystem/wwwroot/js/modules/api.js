@@ -10,6 +10,7 @@ class ApiClient {
     // Get authorization header with JWT token
     getAuthHeaders() {
         const token = localStorage.getItem('jwt_token');
+        console.log('JWT Token for API request:', token ? 'Token exists' : 'No token found'); // Debug log
         return token ? { ...this.defaultHeaders, 'Authorization': `Bearer ${token}` } : this.defaultHeaders;
     }
 

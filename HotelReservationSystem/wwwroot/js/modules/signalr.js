@@ -11,9 +11,14 @@ class SignalRManager {
 
     async initialize() {
         try {
-            // Create SignalR connection
+            // Get JWT token for authentication
+            const token = localStorage.getItem('jwt_token');
+            
+            // Create SignalR connection with authentication
             this.connection = new signalR.HubConnectionBuilder()
-                .withUrl("/reservationHub")
+                .withUrl("/reservationHub", {
+                    accessTokenFactory: () => token
+                })
                 .withAutomaticReconnect({
                     nextRetryDelayInMilliseconds: retryContext => {
                         if (retryContext.previousRetryCount < 3) {

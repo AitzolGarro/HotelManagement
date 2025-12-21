@@ -109,27 +109,23 @@ namespace HotelReservationSystem.Validators
 
             RuleFor(x => x.Type)
                 .IsInEnum()
-                .WithMessage("Please select a valid room type")
-                .When(x => x.Type.HasValue);
+                .WithMessage("Please select a valid room type");
 
             RuleFor(x => x.Capacity)
                 .GreaterThan(0)
                 .WithMessage("Room capacity must be at least 1")
                 .LessThanOrEqualTo(20)
-                .WithMessage("Room capacity cannot exceed 20")
-                .When(x => x.Capacity.HasValue);
+                .WithMessage("Room capacity cannot exceed 20");
 
             RuleFor(x => x.BaseRate)
                 .GreaterThan(0)
                 .WithMessage("Base rate must be greater than 0")
                 .LessThan(10000)
-                .WithMessage("Base rate cannot exceed $10,000")
-                .When(x => x.BaseRate.HasValue);
+                .WithMessage("Base rate cannot exceed $10,000");
 
             RuleFor(x => x.Status)
                 .IsInEnum()
-                .WithMessage("Please select a valid room status")
-                .When(x => x.Status.HasValue);
+                .WithMessage("Please select a valid room status");
 
             RuleFor(x => x.Description)
                 .MaximumLength(1000)

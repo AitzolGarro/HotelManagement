@@ -43,18 +43,15 @@ class ReportsModule {
 
     async loadHotels() {
         try {
-            const response = await fetch('/api/hotels');
-            if (response.ok) {
-                const hotels = await response.json();
-                const hotelSelect = document.getElementById('hotelFilter');
-                
-                hotels.forEach(hotel => {
-                    const option = document.createElement('option');
-                    option.value = hotel.id;
-                    option.textContent = hotel.name;
-                    hotelSelect.appendChild(option);
-                });
-            }
+            const hotels = await API.getHotels();
+            const hotelSelect = document.getElementById('hotelFilter');
+            
+            hotels.forEach(hotel => {
+                const option = document.createElement('option');
+                option.value = hotel.id;
+                option.textContent = hotel.name;
+                hotelSelect.appendChild(option);
+            });
         } catch (error) {
             console.error('Error loading hotels:', error);
         }
@@ -105,13 +102,13 @@ class ReportsModule {
             let endpoint = '';
             switch (reportType) {
                 case 'occupancy':
-                    endpoint = '/api/reports/occupancy';
+                    endpoint = '/reports/occupancy';
                     break;
                 case 'revenue':
-                    endpoint = '/api/reports/revenue';
+                    endpoint = '/reports/revenue';
                     break;
                 case 'guestPattern':
-                    endpoint = '/api/reports/guest-patterns';
+                    endpoint = '/reports/guest-patterns';
                     break;
                 default:
                     throw new Error('Invalid report type');
@@ -126,17 +123,7 @@ class ReportsModule {
                 params.append('hotelId', hotelId);
             }
 
-            const response = await fetch(`${endpoint}?${params}`, {
-                headers: {
-                    'Authorization': `Bearer ${Auth.getToken()}`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const reportData = await response.json();
+            const reportData = await API.get(`${endpoint}?${params}`);
             this.currentReportData = reportData;
             this.renderReport(reportType, reportData);
 
@@ -471,12 +458,8 @@ class ReportsModule {
                 exportFormat: this.getExportFormatEnum(exportFormat)
             };
 
-            const response = await fetch('/api/reports/export', {
+            const response = await API.request('/reports/export', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${Auth.getToken()}`
-                },
                 body: JSON.stringify(exportRequest)
             });
 

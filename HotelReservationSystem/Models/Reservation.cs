@@ -29,7 +29,12 @@ public enum ReservationSource
     Manual = 1,
     BookingCom = 2,
     Direct = 3,
-    Other = 4
+    Other = 4,
+    Booking = 5,
+    Phone = 6,
+    WalkIn = 7,
+    Email = 8,
+    Website = 9
 }
 
 public enum ReservationStatus

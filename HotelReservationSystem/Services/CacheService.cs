@@ -10,15 +10,15 @@ namespace HotelReservationSystem.Services
     {
         private readonly IDistributedCache _distributedCache;
         private readonly IMemoryCache _memoryCache;
-        private readonly IConnectionMultiplexer _redis;
+        private readonly IConnectionMultiplexer? _redis;
         private readonly ILogger<CacheService> _logger;
         private readonly JsonSerializerOptions _jsonOptions;
 
         public CacheService(
             IDistributedCache distributedCache,
             IMemoryCache memoryCache,
-            IConnectionMultiplexer redis,
-            ILogger<CacheService> logger)
+            ILogger<CacheService> logger,
+            IConnectionMultiplexer? redis = null)
         {
             _distributedCache = distributedCache;
             _memoryCache = memoryCache;
@@ -113,14 +113,23 @@ namespace HotelReservationSystem.Services
         {
             try
             {
-                var database = _redis.GetDatabase();
-                var server = _redis.GetServer(_redis.GetEndPoints().First());
-                
-                var keys = server.Keys(pattern: pattern);
-                foreach (var key in keys)
+                if (_redis != null)
                 {
-                    await database.KeyDeleteAsync(key);
-                    _memoryCache.Remove(key.ToString());
+                    var database = _redis.GetDatabase();
+                    var server = _redis.GetServer(_redis.GetEndPoints().First());
+                    
+                    var keys = server.Keys(pattern: pattern);
+                    foreach (var key in keys)
+                    {
+                        await database.KeyDeleteAsync(key);
+                        _memoryCache.Remove(key.ToString());
+                    }
+                }
+                else
+                {
+                    // When Redis is not available, we can't efficiently remove by pattern
+                    // This is a limitation of in-memory cache mode
+                    _logger.LogWarning("Cannot remove by pattern {Pattern} - Redis not available", pattern);
                 }
                 
                 _logger.LogDebug("Removed cache entries matching pattern: {Pattern}", pattern);

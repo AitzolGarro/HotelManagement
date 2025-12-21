@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeApp() {
+    // Initialize global modules first
+    initializeGlobalModules();
+    
     // Initialize error monitoring and connection monitoring
     UI.initializeErrorBoundary();
     UI.initializeConnectionMonitoring();
@@ -15,6 +18,11 @@ function initializeApp() {
     // Initialize global event listeners
     initializeGlobalEventListeners();
     
+    // Initialize SignalR connection for real-time updates (only if authenticated)
+    if (Auth && Auth.isAuthenticated && Auth.isAuthenticated()) {
+        initializeSignalR();
+    }
+    
     // Initialize page-specific functionality
     initializePageSpecificFeatures();
     
@@ -22,11 +30,41 @@ function initializeApp() {
     setupPeriodicChecks();
 }
 
+async function initializeSignalR() {
+    try {
+        // Initialize SignalR manager if it exists
+        if (typeof SignalRManager !== 'undefined') {
+            window.signalRManager = new SignalRManager();
+            await window.signalRManager.initialize();
+            console.log('SignalR initialized successfully');
+        }
+    } catch (error) {
+        console.error('Failed to initialize SignalR:', error);
+        // Don't block the app if SignalR fails
+    }
+}
+
+// Initialize global modules
+function initializeGlobalModules() {
+    // Initialize Auth module
+    if (typeof AuthManager !== 'undefined') {
+        window.Auth = new AuthManager();
+        console.log('Auth module initialized');
+    }
+    
+    // Initialize API client
+    if (typeof ApiClient !== 'undefined') {
+        window.API = new ApiClient();
+        console.log('API client initialized');
+    }
+}
+
 function initializeGlobalEventListeners() {
     // Handle navigation clicks
     document.addEventListener('click', function(e) {
         // Handle navigation links
         if (e.target.matches('.nav-link[data-section]')) {
+            e.preventDefault(); // Prevent default link navigation
             const section = e.target.getAttribute('data-section');
             navigateToSection(section);
         }
@@ -114,23 +152,35 @@ function initializePageSpecificFeatures() {
 }
 
 function navigateToSection(section) {
+    console.log('Navigating to section:', section);
+    
     const routes = {
         'dashboard': '/',
-        'calendar': '/calendar',
-        'properties': '/properties',
-        'reservations': '/reservations'
+        'calendar': '/Home/Calendar',
+        'properties': '/Home/Properties',
+        'reservations': '/Home/Reservations',
+        'reports': '/Home/Reports'
     };
     
     const url = routes[section];
+    console.log('Target URL:', url);
+    
     if (url) {
         // Check authentication for protected routes
-        if (section !== 'login' && !Auth.isAuthenticated()) {
+        const isAuth = Auth && Auth.isAuthenticated ? Auth.isAuthenticated() : true;
+        console.log('Is authenticated:', isAuth);
+        
+        if (section !== 'login' && !isAuth) {
+            console.log('Not authenticated, redirecting to login');
             sessionStorage.setItem('intended_url', url);
             window.location.href = '/login';
             return;
         }
         
+        console.log('Navigating to:', url);
         window.location.href = url;
+    } else {
+        console.log('No route found for section:', section);
     }
 }
 
@@ -185,12 +235,15 @@ function handleWindowResize() {
 function setupPeriodicChecks() {
     // Check authentication status every 5 minutes
     setInterval(() => {
-        if (Auth.isAuthenticated()) {
-            // Optionally ping server to keep session alive
-            API.getCurrentUser().catch(() => {
-                // If user fetch fails, token might be invalid
-                Auth.logout();
-            });
+        if (Auth && Auth.isAuthenticated && Auth.isAuthenticated()) {
+            // Ping server to keep session alive
+            if (API && API.keepAlive) {
+                API.keepAlive().catch(() => {
+                    // If keep-alive fails, token might be invalid
+                    console.log('Keep-alive failed, logging out');
+                    Auth.logout();
+                });
+            }
         }
     }, 5 * 60 * 1000);
     
@@ -208,15 +261,17 @@ async function checkForNotifications() {
     }
 }
 
-// Page-specific initialization functions (stubs for now)
+// Page-specific initialization functions
 function initializeDashboard() {
     console.log('Dashboard page initialized');
-    // Dashboard-specific initialization will be implemented in task 11
+    // Dashboard initialization is handled by the view-specific script
+    // This function is called when navigating to dashboard via SPA-style navigation
 }
 
 function initializeCalendar() {
     console.log('Calendar page initialized');
-    // Calendar-specific initialization will be implemented in task 9
+    // Calendar initialization is handled by the view-specific script
+    // This function is called when navigating to calendar via SPA-style navigation
 }
 
 function initializeProperties() {
@@ -231,7 +286,8 @@ function initializeReservations() {
 
 function initializeReports() {
     console.log('Reports page initialized');
-    // Reports module is initialized automatically via reports.js
+    // Reports initialization is handled by the view-specific script
+    // This function is called when navigating to reports via SPA-style navigation
 }
 
 function initializeLogin() {

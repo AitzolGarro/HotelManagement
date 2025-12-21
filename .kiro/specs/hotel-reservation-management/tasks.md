@@ -15,7 +15,9 @@
 
 
 
-- [ ] 2. Implement core data models and database schema
+- [x] 2. Implement core data models and database schema
+
+
 
   - Create Entity Framework entity classes for Hotel, Room, Guest, and Reservation
   - Define enums for RoomType, RoomStatus, ReservationStatus, and ReservationSource
@@ -52,13 +54,17 @@
 
 
 
-- [ ] 4. Build core business services
+- [x] 4. Build core business services
+
+
 
 - [ ] 4.1 Implement PropertyService for hotel and room management
 
   - Create PropertyService with methods for hotel CRUD operations
   - Implement room management functionality including status updates
   - Add validation logic for property and room data
+
+
   - Write unit tests for PropertyService methods
   - _Requirements: 2.1, 2.2, 2.3, 2.4_
 
@@ -98,6 +104,8 @@
 
 
   - Create API endpoints for reservation CRUD operations
+
+
   - Add endpoint for availability checking with date range queries
   - Implement filtering capabilities by hotel, date range, and status
   - Add manual reservation creation endpoint with guest data capture
@@ -144,6 +152,8 @@
   - Implement availability push mechanism to update Booking.com
   - Write integration tests with mock Booking.com API responses
   - _Requirements: 1.1, 1.2, 1.3_
+
+
 
 
 
@@ -310,6 +320,8 @@
 
 
 - [x] 16. Set up deployment and configuration
+
+
 
 
 

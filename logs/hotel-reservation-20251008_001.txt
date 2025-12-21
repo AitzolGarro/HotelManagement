@@ -1,0 +1,248 @@
+2025-10-08 12:31:01.300 +02:00 [INF] Starting Hotel Reservation System
+2025-10-08 12:31:01.369 +02:00 [INF] Database Provider configured as: SqlServer
+2025-10-08 12:31:01.370 +02:00 [INF] Using in-memory cache for demo mode
+2025-10-08 12:31:01.375 +02:00 [FTL] Application terminated unexpectedly
+System.InvalidOperationException: JWT Secret not configured
+   at Program.<Main>$(String[] args)
+2025-10-08 12:31:18.713 +02:00 [INF] Starting Hotel Reservation System
+2025-10-08 12:31:18.778 +02:00 [INF] Database Provider configured as: SqlServer
+2025-10-08 12:31:18.780 +02:00 [INF] Using in-memory cache for demo mode
+2025-10-08 12:31:18.785 +02:00 [FTL] Application terminated unexpectedly
+System.InvalidOperationException: JWT Secret not configured
+   at Program.<Main>$(String[] args)
+2025-10-08 12:31:28.790 +02:00 [INF] Starting Hotel Reservation System
+2025-10-08 12:31:28.858 +02:00 [INF] Database Provider configured as: SqlServer
+2025-10-08 12:31:28.860 +02:00 [INF] Using in-memory cache for demo mode
+2025-10-08 12:31:28.866 +02:00 [FTL] Application terminated unexpectedly
+System.InvalidOperationException: JWT Secret not configured
+   at Program.<Main>$(String[] args)
+2025-10-08 12:31:40.117 +02:00 [INF] Starting Hotel Reservation System
+2025-10-08 12:31:40.184 +02:00 [INF] Database Provider configured as: SqlServer
+2025-10-08 12:31:40.185 +02:00 [INF] Using in-memory cache for demo mode
+2025-10-08 12:31:40.191 +02:00 [FTL] Application terminated unexpectedly
+System.InvalidOperationException: JWT Secret not configured
+   at Program.<Main>$(String[] args)
+2025-10-08 12:33:16.804 +02:00 [INF] Starting Hotel Reservation System
+2025-10-08 12:33:16.875 +02:00 [INF] Database Provider configured as: Sqlite
+2025-10-08 12:33:16.877 +02:00 [INF] Using in-memory cache for demo mode
+2025-10-08 12:33:17.233 +02:00 [WRN] The 'ReservationStatus' property 'Status' on entity type 'Reservation' is configured with a database-generated default, but has no configured sentinel value. The database-generated default will always be used for inserts when the property has the value '0', since this is the CLR default for the 'ReservationStatus' type. Consider using a nullable type, using a nullable backing field, or setting the sentinel value for the property to ensure the database default is used when, and only when, appropriate. See https://aka.ms/efcore-docs-default-values for more information.
+2025-10-08 12:33:17.234 +02:00 [WRN] The 'RoomStatus' property 'Status' on entity type 'Room' is configured with a database-generated default, but has no configured sentinel value. The database-generated default will always be used for inserts when the property has the value '0', since this is the CLR default for the 'RoomStatus' type. Consider using a nullable type, using a nullable backing field, or setting the sentinel value for the property to ensure the database default is used when, and only when, appropriate. See https://aka.ms/efcore-docs-default-values for more information.
+2025-10-08 12:33:17.312 +02:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "name" = '__EFMigrationsHistory' AND "type" = 'table';
+2025-10-08 12:33:17.317 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "name" = '__EFMigrationsHistory' AND "type" = 'table';
+2025-10-08 12:33:17.322 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2025-10-08 12:33:17.328 +02:00 [INF] No migrations were applied. The database is already up to date.
+2025-10-08 12:33:17.336 +02:00 [INF] User profile is available. Using 'C:\Users\aitzol\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-10-08 12:33:17.345 +02:00 [INF] Reservation synchronization background service started with interval "00:15:00"
+2025-10-08 12:33:17.347 +02:00 [INF] Starting periodic reservation synchronization
+2025-10-08 12:33:17.353 +02:00 [INF] Starting full reservation synchronization
+2025-10-08 12:33:17.450 +02:00 [ERR] Failed executing DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "h"."Id", "h"."Address", "h"."CreatedAt", "h"."Email", "h"."IsActive", "h"."Name", "h"."Phone", "h"."UpdatedAt"
+FROM "Hotels" AS "h"
+WHERE "h"."IsActive"
+ORDER BY "h"."Name"
+2025-10-08 12:33:17.458 +02:00 [ERR] An exception occurred while iterating over the results of a query for context type 'HotelReservationSystem.Data.HotelReservationContext'.
+Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such table: Hotels'.
+   at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such table: Hotels'.
+   at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+2025-10-08 12:33:17.461 +02:00 [ERR] Failed to complete full reservation synchronization
+Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such table: Hotels'.
+   at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at HotelReservationSystem.Data.Repositories.HotelRepository.GetActiveHotelsAsync()
+   at HotelReservationSystem.Services.BookingCom.BookingIntegrationService.SyncReservationsAsync(CancellationToken cancellationToken)
+2025-10-08 12:33:17.464 +02:00 [ERR] Failed to complete periodic reservation synchronization
+Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such table: Hotels'.
+   at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at HotelReservationSystem.Data.Repositories.HotelRepository.GetActiveHotelsAsync()
+   at HotelReservationSystem.Services.BookingCom.BookingIntegrationService.SyncReservationsAsync(CancellationToken cancellationToken)
+   at HotelReservationSystem.Services.BackgroundServices.ReservationSyncBackgroundService.PerformSynchronizationAsync(CancellationToken cancellationToken)
+2025-10-08 12:33:17.476 +02:00 [WRN] The WebRootPath was not found: C:\Users\aitzol\Documents\development\hostelavila\wwwroot. Static files may be unavailable.
+2025-10-08 12:33:17.494 +02:00 [WRN] The ASP.NET Core developer certificate is not trusted. For information about trusting the ASP.NET Core developer certificate, see https://aka.ms/aspnet/https-trust-dev-cert.
+2025-10-08 12:33:17.502 +02:00 [INF] Now listening on: http://localhost:5001
+2025-10-08 12:33:17.502 +02:00 [INF] Now listening on: https://localhost:7002
+2025-10-08 12:33:17.503 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-10-08 12:33:17.503 +02:00 [INF] Hosting environment: Development
+2025-10-08 12:33:17.504 +02:00 [INF] Content root path: C:\Users\aitzol\Documents\development\hostelavila
+2025-10-08 12:33:22.729 +02:00 [INF] Request starting HTTP/2 GET https://localhost:7002/ - null null
+2025-10-08 12:33:22.763 +02:00 [INF] Executing endpoint 'HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem)'
+2025-10-08 12:33:22.766 +02:00 [INF] Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller HotelReservationSystem.Controllers.HomeController (HotelReservationSystem).
+2025-10-08 12:33:22.771 +02:00 [INF] Executing ViewResult, running view Index.
+2025-10-08 12:33:22.798 +02:00 [INF] Executed ViewResult - view Index executed in 26.7374ms.
+2025-10-08 12:33:22.800 +02:00 [INF] Executed action HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem) in 32.9859ms
+2025-10-08 12:33:22.801 +02:00 [INF] Executed endpoint 'HotelReservationSystem.Controllers.HomeController.Index (HotelReservationSystem)'
+2025-10-08 12:33:22.805 +02:00 [ERR] An unhandled exception occurred while processing the request
+System.InvalidOperationException: Headers are read-only, response has already started.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.ThrowHeadersReadOnlyException()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.System.Collections.Generic.IDictionary<System.String,Microsoft.Extensions.Primitives.StringValues>.Add(String key, StringValues value)
+   at HotelReservationSystem.Middleware.PerformanceMonitoringMiddleware.InvokeAsync(HttpContext context, IPerformanceMonitoringService performanceMonitoring)
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.InvokeAsync(HttpContext context)
+2025-10-08 12:33:22.809 +02:00 [ERR] An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Headers are read-only, response has already started.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.ThrowHeadersReadOnlyException()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpResponseHeaders.Microsoft.AspNetCore.Http.IHeaderDictionary.set_ContentType(StringValues value)
+   at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.HandleExceptionAsync(HttpContext context, Exception exception)
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.InvokeAsync(HttpContext context)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-10-08 12:33:22.811 +02:00 [WRN] The response has already started, the error page middleware will not be executed.
+2025-10-08 12:33:22.813 +02:00 [ERR] Connection id "0HNG6AODJLC51", Request id "0HNG6AODJLC51:00000001": An unhandled exception was thrown by the application.
+System.InvalidOperationException: Headers are read-only, response has already started.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpHeaders.ThrowHeadersReadOnlyException()
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpResponseHeaders.Microsoft.AspNetCore.Http.IHeaderDictionary.set_ContentType(StringValues value)
+   at Microsoft.AspNetCore.Http.DefaultHttpResponse.set_ContentType(String value)
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.HandleExceptionAsync(HttpContext context, Exception exception)
+   at HotelReservationSystem.Middleware.GlobalExceptionHandlingMiddleware.InvokeAsync(HttpContext context)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpProtocol.ProcessRequests[TContext](IHttpApplication`1 application)
+2025-10-08 12:33:22.817 +02:00 [INF] Request starting HTTP/2 GET https://localhost:7002/js/modules/signalr.js - null null
+2025-10-08 12:33:22.817 +02:00 [INF] Request starting HTTP/2 GET https://localhost:7002/js/modules/auth.js - null null
+2025-10-08 12:33:22.817 +02:00 [INF] Request starting HTTP/2 GET https://localhost:7002/css/site.css - null null
+2025-10-08 12:33:22.817 +02:00 [INF] Request starting HTTP/2 GET https://localhost:7002/js/modules/api.js - null null
+2025-10-08 12:33:22.817 +02:00 [INF] Request starting HTTP/2 GET https://localhost:7002/js/modules/ui.js - null null
+2025-10-08 12:33:22.817 +02:00 [INF] Request starting HTTP/2 GET https://localhost:7002/js/modules/notifications.js - null null
+2025-10-08 12:33:22.817 +02:00 [INF] Request starting HTTP/2 GET https://localhost:7002/js/site.js - null null
+2025-10-08 12:33:22.817 +02:00 [INF] Request starting HTTP/2 GET https://localhost:7002/js/modules/dashboard.js - null null
+2025-10-08 12:33:22.817 +02:00 [INF] Request finished HTTP/2 GET https://localhost:7002/ - 200 null text/html; charset=utf-8 88.9519ms
+2025-10-08 12:33:22.821 +02:00 [INF] Request finished HTTP/2 GET https://localhost:7002/js/modules/signalr.js - 404 0 null 4.4405ms
+2025-10-08 12:33:22.821 +02:00 [INF] Request finished HTTP/2 GET https://localhost:7002/js/modules/auth.js - 404 0 null 4.4377ms
+2025-10-08 12:33:22.822 +02:00 [INF] Request finished HTTP/2 GET https://localhost:7002/css/site.css - 404 0 null 5.5639ms
+2025-10-08 12:33:22.823 +02:00 [INF] Request finished HTTP/2 GET https://localhost:7002/js/modules/api.js - 404 0 null 6.3484ms
+2025-10-08 12:33:22.824 +02:00 [INF] Request finished HTTP/2 GET https://localhost:7002/js/modules/ui.js - 404 0 null 7.345ms
+2025-10-08 12:33:22.826 +02:00 [INF] Request finished HTTP/2 GET https://localhost:7002/js/modules/notifications.js - 404 0 null 8.7875ms
+2025-10-08 12:33:22.827 +02:00 [INF] Request finished HTTP/2 GET https://localhost:7002/js/site.js - 404 0 null 9.5481ms
+2025-10-08 12:33:22.828 +02:00 [INF] Request finished HTTP/2 GET https://localhost:7002/js/modules/dashboard.js - 404 0 null 10.6527ms
+2025-10-08 12:33:22.831 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:7002/js/modules/signalr.js, Response status code: 404
+2025-10-08 12:33:22.832 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:7002/js/modules/auth.js, Response status code: 404
+2025-10-08 12:33:22.834 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:7002/css/site.css, Response status code: 404
+2025-10-08 12:33:22.835 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:7002/js/modules/api.js, Response status code: 404
+2025-10-08 12:33:22.836 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:7002/js/modules/ui.js, Response status code: 404
+2025-10-08 12:33:22.837 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:7002/js/modules/notifications.js, Response status code: 404
+2025-10-08 12:33:22.839 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:7002/js/site.js, Response status code: 404
+2025-10-08 12:33:22.840 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:7002/js/modules/dashboard.js, Response status code: 404
+2025-10-08 12:33:24.388 +02:00 [INF] Request starting HTTP/2 GET https://localhost:7002/properties - null null
+2025-10-08 12:33:24.390 +02:00 [INF] Request finished HTTP/2 GET https://localhost:7002/properties - 404 0 null 1.5935ms
+2025-10-08 12:33:24.391 +02:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET https://localhost:7002/properties, Response status code: 404
+2025-10-08 12:48:17.469 +02:00 [INF] Starting periodic reservation synchronization
+2025-10-08 12:48:17.471 +02:00 [INF] Starting full reservation synchronization
+2025-10-08 12:48:17.503 +02:00 [ERR] Failed executing DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "h"."Id", "h"."Address", "h"."CreatedAt", "h"."Email", "h"."IsActive", "h"."Name", "h"."Phone", "h"."UpdatedAt"
+FROM "Hotels" AS "h"
+WHERE "h"."IsActive"
+ORDER BY "h"."Name"
+2025-10-08 12:48:17.505 +02:00 [ERR] An exception occurred while iterating over the results of a query for context type 'HotelReservationSystem.Data.HotelReservationContext'.
+Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such table: Hotels'.
+   at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such table: Hotels'.
+   at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+2025-10-08 12:48:17.508 +02:00 [ERR] Failed to complete full reservation synchronization
+Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such table: Hotels'.
+   at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at HotelReservationSystem.Data.Repositories.HotelRepository.GetActiveHotelsAsync()
+   at HotelReservationSystem.Services.BookingCom.BookingIntegrationService.SyncReservationsAsync(CancellationToken cancellationToken)
+2025-10-08 12:48:17.512 +02:00 [ERR] Failed to complete periodic reservation synchronization
+Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such table: Hotels'.
+   at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at HotelReservationSystem.Data.Repositories.HotelRepository.GetActiveHotelsAsync()
+   at HotelReservationSystem.Services.BookingCom.BookingIntegrationService.SyncReservationsAsync(CancellationToken cancellationToken)
+   at HotelReservationSystem.Services.BackgroundServices.ReservationSyncBackgroundService.PerformSynchronizationAsync(CancellationToken cancellationToken)
+2025-10-08 12:48:50.387 +02:00 [INF] Application is shutting down...
+2025-10-08 12:48:50.391 +02:00 [INF] Stopping reservation synchronization background service
+2025-10-08 12:48:50.391 +02:00 [INF] Reservation synchronization background service stopped

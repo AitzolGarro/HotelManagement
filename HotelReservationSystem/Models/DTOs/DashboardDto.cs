@@ -34,12 +34,7 @@ public class RevenueTrackingDto
     public List<WeeklyRevenueDto> WeeklyBreakdown { get; set; } = new();
 }
 
-public class DailyRevenueDto
-{
-    public DateTime Date { get; set; }
-    public decimal Revenue { get; set; }
-    public int ReservationCount { get; set; }
-}
+// DailyRevenueDto is defined in ReportDto.cs
 
 public class WeeklyRevenueDto
 {
@@ -80,17 +75,7 @@ public class NotificationPanelDto
     public int InfoCount { get; set; }
 }
 
-public class SystemNotificationDto
-{
-    public int Id { get; set; }
-    public NotificationType Type { get; set; }
-    public string Title { get; set; } = string.Empty;
-    public string Message { get; set; } = string.Empty;
-    public DateTime CreatedAt { get; set; }
-    public bool IsRead { get; set; }
-    public string? RelatedEntityType { get; set; }
-    public int? RelatedEntityId { get; set; }
-}
+// SystemNotificationDto is defined in NotificationDto.cs
 
 public class RecentReservationDto
 {
@@ -107,13 +92,4 @@ public class RecentReservationDto
     public DateTime CreatedAt { get; set; }
 }
 
-public enum NotificationType
-{
-    Info = 1,
-    Warning = 2,
-    Critical = 3,
-    Overbooking = 4,
-    MaintenanceConflict = 5,
-    SystemError = 6,
-    IntegrationError = 7
-}
+// NotificationType enum is defined in NotificationDto.cs
