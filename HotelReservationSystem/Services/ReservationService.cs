@@ -608,6 +608,7 @@ public class ReservationService : IReservationService
             UpdatedAt = reservation.UpdatedAt,
             HotelName = reservation.Hotel?.Name ?? "",
             RoomNumber = reservation.Room?.RoomNumber ?? "",
+            RoomType = reservation.Room?.Type.ToString() ?? "",
             GuestName = $"{reservation.Guest?.FirstName} {reservation.Guest?.LastName}".Trim(),
             GuestEmail = reservation.Guest?.Email ?? "",
             GuestPhone = reservation.Guest?.Phone ?? ""

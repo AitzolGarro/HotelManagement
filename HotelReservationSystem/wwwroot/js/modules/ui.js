@@ -109,6 +109,19 @@ class UIManager {
         }
     }
 
+    showInfo(message, duration = 4000) {
+        // Use success alert for info messages with different styling
+        if (this.successMessage && this.successAlert) {
+            this.successMessage.textContent = message;
+            this.successAlert.style.display = 'block';
+            this.successAlert.classList.add('show');
+            
+            if (duration > 0) {
+                setTimeout(() => this.hideSuccess(), duration);
+            }
+        }
+    }
+
     hideError() {
         this.hideAlert(this.errorAlert);
     }

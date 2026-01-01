@@ -362,24 +362,19 @@
 </div>
 
 @section Scripts {
+    <!-- Reservations module -->
+    <script src="~/js/modules/reservations.js" asp-append-version="true"></script>
+    
     <script>
-        // Global variables for reservation management
-        let currentReservationId = null;
-        let isEditMode = false;
-        let availableRooms = [];
-        let hotels = [];
-
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Reservations page loaded');
+        // Initialize the new reservations manager
+        let reservationsManager;
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('Reservations page loaded - using new ReservationsManager');
             
-            // Initialize event listeners
-            initializeEventListeners();
-            
-            // Set default date range (current month)
-            setDefaultDateRange();
-            
-            // Load initial data
-            loadInitialData();
+            // Initialize reservations manager
+            reservationsManager = new ReservationsManager();
+            await reservationsManager.initialize();
         });
 
         function initializeEventListeners() {

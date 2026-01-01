@@ -5947,19 +5947,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\aitzol\\.nuget\\packages\\": {}
+    "/home/aitzol/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\aitzol\\Documents\\development\\hostelavila\\HotelReservationSystem\\HotelReservationSystem.csproj",
+      "projectUniqueName": "/home/aitzol/GitHub/Aitzol/hostalavila/HotelReservationSystem/HotelReservationSystem.csproj",
       "projectName": "HotelReservationSystem",
-      "projectPath": "C:\\Users\\aitzol\\Documents\\development\\hostelavila\\HotelReservationSystem\\HotelReservationSystem.csproj",
-      "packagesPath": "C:\\Users\\aitzol\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\aitzol\\Documents\\development\\hostelavila\\HotelReservationSystem\\obj\\",
+      "projectPath": "/home/aitzol/GitHub/Aitzol/hostalavila/HotelReservationSystem/HotelReservationSystem.csproj",
+      "packagesPath": "/home/aitzol/.nuget/packages/",
+      "outputPath": "/home/aitzol/GitHub/Aitzol/hostalavila/HotelReservationSystem/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\aitzol\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/home/aitzol/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -5977,13 +5977,7 @@
         "warnAsError": [
           "NU1605"
         ]
-      },
-      "restoreAuditProperties": {
-        "enableAudit": "true",
-        "auditLevel": "low",
-        "auditMode": "direct"
-      },
-      "SdkAnalysisLevel": "10.0.100"
+      }
     },
     "frameworks": {
       "net8.0": {
@@ -6093,7 +6087,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100-rc.1.25451.107/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/lib64/dotnet/sdk/8.0.110/PortableRuntimeIdentifierGraph.json"
       }
     }
   },

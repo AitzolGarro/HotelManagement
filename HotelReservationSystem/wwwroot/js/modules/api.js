@@ -19,6 +19,7 @@ class ApiClient {
         const url = `${this.baseUrl}${endpoint}`;
         const config = {
             headers: this.getAuthHeaders(),
+            credentials: 'same-origin',
             ...options
         };
 

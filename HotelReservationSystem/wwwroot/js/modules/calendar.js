@@ -43,8 +43,9 @@ class CalendarManager {
 
     async loadHotels() {
         try {
-            const response = await API.get('/api/hotels');
-            this.hotels = response.data || [];
+            const response = await API.get('/hotels');
+            console.log('Calendar hotels API response:', response); // Debug log
+            this.hotels = response || []; // Use response directly, not response.data
             this.populateHotelFilter();
         } catch (error) {
             console.error('Error loading hotels:', error);
@@ -54,8 +55,10 @@ class CalendarManager {
 
     async loadRooms() {
         try {
-            const response = await API.get('/api/rooms');
-            this.rooms = response.data || [];
+            // Fixed API endpoint - removed double /api prefix (2025-12-30)
+            const response = await API.get('/rooms');
+            console.log('Calendar rooms API response:', response); // Debug log
+            this.rooms = response || []; // Use response directly, not response.data
         } catch (error) {
             console.error('Error loading rooms:', error);
             this.rooms = [];
@@ -76,16 +79,33 @@ class CalendarManager {
             } else {
                 // Get current calendar date range
                 const view = this.calendar.view;
-                params.append('from', view.activeStart.toISOString().split('T')[0]);
-                params.append('to', view.activeEnd.toISOString().split('T')[0]);
+                const viewStart = new Date(view.activeStart);
+                const viewEnd = new Date(view.activeEnd);
+                
+                // Check if "Show Past Reservations" is enabled
+                const showPastCheckbox = document.getElementById('showPastReservations');
+                const showPast = showPastCheckbox ? showPastCheckbox.checked : true;
+                
+                let startDate = viewStart;
+                if (showPast) {
+                    // Extend the range to include 30 days before the view start to show recent past reservations
+                    startDate = new Date(viewStart);
+                    startDate.setDate(startDate.getDate() - 30);
+                }
+                
+                params.append('from', startDate.toISOString().split('T')[0]);
+                params.append('to', viewEnd.toISOString().split('T')[0]);
+                
+                console.log(`Loading reservations from ${startDate.toISOString().split('T')[0]} to ${viewEnd.toISOString().split('T')[0]} (showPast: ${showPast})`);
             }
 
             if (this.currentFilters.hotel) {
                 params.append('hotelId', this.currentFilters.hotel);
             }
 
-            const response = await API.get(`/api/reservations?${params.toString()}`);
-            this.reservations = response.data || [];
+            const response = await API.get(`/reservations?${params.toString()}`);
+            console.log('Calendar reservations API response:', response); // Debug log
+            this.reservations = response || []; // Use response directly, not response.data
 
             // Convert reservations to calendar events
             const events = this.convertReservationsToEvents(this.reservations);
@@ -105,22 +125,15 @@ class CalendarManager {
     initializeCalendar() {
         const calendarEl = document.getElementById('calendar');
 
-        this.calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'resourceTimelineWeek',
+        // Simplified calendar configuration - basic views only (2025-12-30 fix)
+        const calendarConfig = {
+            initialView: 'dayGridMonth',
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
-                right: 'resourceTimelineWeek,resourceTimelineMonth,dayGridMonth'
+                right: 'dayGridMonth,timeGridWeek,listWeek'
             },
             height: 'auto',
-
-            // Timeline specific settings
-            resourceAreaHeaderContent: 'Rooms',
-            resourceAreaWidth: '200px',
-            resourceOrder: 'title',
-
-            // Resources (rooms) will be loaded dynamically
-            resources: this.getRoomResources.bind(this),
 
             // Event rendering
             eventDisplay: 'block',
@@ -140,18 +153,6 @@ class CalendarManager {
             // Responsive
             windowResize: this.handleWindowResize.bind(this),
 
-            // Resource rendering
-            resourceLabelContent: this.renderResourceLabel.bind(this),
-
-            // Timeline view settings
-            slotMinTime: '00:00:00',
-            slotMaxTime: '24:00:00',
-            slotDuration: '01:00:00',
-            slotLabelInterval: '06:00:00',
-
-            // Allow events to overlap
-            slotEventOverlap: false,
-
             // Business hours (optional)
             businessHours: {
                 startTime: '06:00',
@@ -170,12 +171,14 @@ class CalendarManager {
             editable: false, // Disable for now, can be enabled later
             eventResizableFromStart: false,
             eventDurationEditable: false
-        });
+        };
+
+        console.log('Using basic calendar views only - no timeline dependencies');
+
+        this.calendar = new FullCalendar.Calendar(calendarEl, calendarConfig);
 
         this.calendar.render();
     }
-
-
 
     getFilteredRooms() {
         let filtered = [...this.rooms];
@@ -195,34 +198,122 @@ class CalendarManager {
         const filteredReservations = this.getFilteredReservations(reservations);
 
         return filteredReservations.map(reservation => {
-            const room = this.rooms.find(r => r.id === reservation.roomId);
-            const hotel = this.hotels.find(h => h.id === reservation.hotelId);
+            // Use flattened properties from API response
+            const guestName = reservation.guestName || 'Unknown Guest';
+            const roomNumber = reservation.roomNumber || 'Unknown';
+            const hotelName = reservation.hotelName || 'Unknown Hotel';
 
-            return {
+            // Convert numeric status to string
+            const statusMap = {
+                1: 'Pending',
+                2: 'Confirmed', 
+                3: 'CheckedIn',
+                4: 'CheckedOut',
+                5: 'Cancelled'
+            };
+            
+            // Convert numeric source to string
+            const sourceMap = {
+                1: 'Manual',
+                2: 'Booking',
+                3: 'Online'
+            };
+
+            const statusString = statusMap[reservation.status] || 'Unknown';
+            const sourceString = sourceMap[reservation.source] || 'Manual';
+
+            // Create guest object for compatibility with existing code
+            const guestParts = guestName.split(' ');
+            const guest = {
+                firstName: guestParts[0] || 'Unknown',
+                lastName: guestParts.slice(1).join(' ') || 'Guest',
+                email: reservation.guestEmail || '',
+                phone: reservation.guestPhone || ''
+            };
+
+            // Basic calendar format - always include room info in title
+            const event = {
                 id: reservation.id.toString(),
-                resourceId: reservation.roomId.toString(), // Assign event to room resource
-                title: `${reservation.guest.firstName} ${reservation.guest.lastName}`,
+                title: `${guestName} - Room ${roomNumber}`,
                 start: reservation.checkInDate,
                 end: reservation.checkOutDate,
                 extendedProps: {
-                    reservation: reservation,
-                    status: reservation.status,
-                    source: reservation.source,
+                    reservation: {
+                        ...reservation,
+                        guest: guest,
+                        status: statusString,
+                        source: sourceString
+                    },
+                    status: statusString,
+                    source: sourceString,
                     totalAmount: reservation.totalAmount,
                     numberOfGuests: reservation.numberOfGuests,
                     specialRequests: reservation.specialRequests,
-                    roomNumber: room ? room.roomNumber : 'Unknown',
-                    hotelName: hotel ? hotel.name : 'Unknown Hotel'
+                    roomNumber: roomNumber,
+                    hotelName: hotelName
                 }
             };
+
+            return event;
         });
     }
 
     getFilteredReservations(reservations) {
         let filtered = [...reservations];
 
+        // Filter by hotel (this is handled by API query params, but we can double-check here)
+        if (this.currentFilters.hotel) {
+            filtered = filtered.filter(res => res.hotelId.toString() === this.currentFilters.hotel);
+        }
+
+        // Filter by room type
+        if (this.currentFilters.roomType) {
+            console.log('Filtering by room type:', this.currentFilters.roomType);
+            console.log('Sample reservation:', filtered[0]); // Debug log to see what fields are available
+            
+            // Check if room type is directly in reservation data
+            if (filtered.length > 0 && filtered[0].roomType) {
+                // Room type is directly available in reservation
+                console.log('Using direct roomType from reservation');
+                filtered = filtered.filter(res => 
+                    res.roomType && res.roomType.toLowerCase() === this.currentFilters.roomType.toLowerCase()
+                );
+            } else {
+                // Fallback: look up room type from rooms array
+                console.log('Room type not in reservation, looking up from rooms array');
+                console.log('Available rooms:', this.rooms);
+                
+                const matchingRooms = this.rooms.filter(room => 
+                    room.type && room.type.toLowerCase() === this.currentFilters.roomType.toLowerCase()
+                );
+                const matchingRoomIds = matchingRooms.map(room => room.id);
+                
+                console.log('Matching rooms for type', this.currentFilters.roomType, ':', matchingRooms);
+                console.log('Matching room IDs:', matchingRoomIds);
+                
+                // Filter reservations to only include those for matching rooms
+                filtered = filtered.filter(res => matchingRoomIds.includes(res.roomId));
+            }
+            
+            console.log('Filtered reservations after room type filter:', filtered.length);
+        }
+
+        // Filter by status
         if (this.currentFilters.status) {
-            filtered = filtered.filter(res => res.status.toLowerCase() === this.currentFilters.status.toLowerCase());
+            // Convert filter status to numeric for comparison
+            const statusMap = {
+                'pending': 1,
+                'confirmed': 2,
+                'checkedin': 3,
+                'checkedout': 4,
+                'cancelled': 5
+            };
+            
+            const filterStatusNum = statusMap[this.currentFilters.status.toLowerCase()];
+            
+            if (filterStatusNum) {
+                filtered = filtered.filter(res => res.status === filterStatusNum);
+            }
         }
 
         return filtered;
@@ -231,7 +322,6 @@ class CalendarManager {
     renderEventContent(eventInfo) {
         const reservation = eventInfo.event.extendedProps.reservation;
         const roomNumber = eventInfo.event.extendedProps.roomNumber;
-        const hotelName = eventInfo.event.extendedProps.hotelName;
 
         return {
             html: `
@@ -249,8 +339,16 @@ class CalendarManager {
     }
 
     getEventClassNames(eventInfo) {
-        const status = eventInfo.event.extendedProps.status.toLowerCase();
-        const source = eventInfo.event.extendedProps.source.toLowerCase();
+        // Safely handle status and source properties
+        const statusValue = eventInfo.event.extendedProps.status;
+        const sourceValue = eventInfo.event.extendedProps.source;
+        
+        const status = (statusValue && typeof statusValue === 'string') 
+            ? statusValue.toLowerCase() 
+            : 'unknown';
+        const source = (sourceValue && typeof sourceValue === 'string') 
+            ? sourceValue.toLowerCase() 
+            : 'manual';
 
         const classes = ['calendar-event'];
         classes.push(`status-${status}`);
@@ -279,18 +377,51 @@ class CalendarManager {
 
         const tooltip = document.createElement('div');
         tooltip.className = 'calendar-tooltip';
+        
+        // Handle both old and new reservation format
+        const guestName = reservation.guestName || 
+            (reservation.guest ? `${reservation.guest.firstName || 'Unknown'} ${reservation.guest.lastName || 'Guest'}` : 'Unknown Guest');
+        
+        const statusValue = reservation.status;
+        let statusClass, statusDisplay;
+        
+        if (typeof statusValue === 'number') {
+            // Convert numeric status to string
+            const statusMap = {
+                1: 'pending',
+                2: 'confirmed',
+                3: 'checkedin', 
+                4: 'checkedout',
+                5: 'cancelled'
+            };
+            const statusDisplayMap = {
+                1: 'Pending',
+                2: 'Confirmed',
+                3: 'Checked In',
+                4: 'Checked Out', 
+                5: 'Cancelled'
+            };
+            statusClass = statusMap[statusValue] || 'unknown';
+            statusDisplay = statusDisplayMap[statusValue] || 'Unknown';
+        } else {
+            statusClass = (statusValue && typeof statusValue === 'string') 
+                ? statusValue.toLowerCase() 
+                : 'unknown';
+            statusDisplay = statusValue || 'Unknown';
+        }
+        
         tooltip.innerHTML = `
             <div class="tooltip-header">
-                <strong>${reservation.guest.firstName} ${reservation.guest.lastName}</strong>
-                <span class="badge status-${reservation.status.toLowerCase()}">${reservation.status}</span>
+                <strong>${guestName}</strong>
+                <span class="badge status-${statusClass}">${statusDisplay}</span>
             </div>
             <div class="tooltip-body">
-                <div><i class="bi bi-building"></i> ${this.getHotelName(reservation.hotelId)}</div>
-                <div><i class="bi bi-door-open"></i> Room ${this.getRoomNumber(reservation.roomId)} (${this.getRoomType(reservation.roomId)})</div>
+                <div><i class="bi bi-building"></i> ${reservation.hotelName || this.getHotelName(reservation.hotelId)}</div>
+                <div><i class="bi bi-door-open"></i> Room ${reservation.roomNumber || this.getRoomNumber(reservation.roomId)} (${this.getRoomType(reservation.roomId)})</div>
                 <div><i class="bi bi-calendar-check"></i> ${this.formatDate(reservation.checkInDate)} - ${this.formatDate(reservation.checkOutDate)}</div>
                 <div><i class="bi bi-people"></i> ${reservation.numberOfGuests} guest${reservation.numberOfGuests > 1 ? 's' : ''}</div>
-                <div><i class="bi bi-currency-dollar"></i> $${reservation.totalAmount.toFixed(2)}</div>
-                ${reservation.source === 'Booking' ? '<div><i class="bi bi-globe"></i> Booking.com</div>' : ''}
+                <div><i class="bi bi-currency-dollar"></i> ${reservation.totalAmount.toFixed(2)}</div>
+                ${reservation.source === 2 || reservation.source === 'Booking' ? '<div><i class="bi bi-globe"></i> Booking.com</div>' : ''}
                 ${reservation.specialRequests ? `<div><i class="bi bi-chat-text"></i> ${reservation.specialRequests}</div>` : ''}
             </div>
         `;
@@ -321,21 +452,17 @@ class CalendarManager {
     }
 
     handleWindowResize() {
-        // Handle responsive behavior for timeline view
+        // Handle responsive behavior for basic calendar views
         if (window.innerWidth < 768) {
             // Switch to list view on mobile
             this.calendar.changeView('listWeek');
         } else if (window.innerWidth < 1024) {
-            // Use timeline week view on tablets
-            this.calendar.changeView('resourceTimelineWeek');
+            // Use week view on tablets
+            this.calendar.changeView('timeGridWeek');
         } else {
-            // Use timeline month view on desktop
-            this.calendar.changeView('resourceTimelineMonth');
+            // Use month view on desktop
+            this.calendar.changeView('dayGridMonth');
         }
-
-        // Adjust resource area width based on screen size
-        const resourceAreaWidth = window.innerWidth < 768 ? '150px' : '200px';
-        this.calendar.setOption('resourceAreaWidth', resourceAreaWidth);
     }
 
     initializeDateRangePicker() {
@@ -414,6 +541,15 @@ class CalendarManager {
             // Update SignalR hotel group subscription
             this.updateSignalRHotelSubscription();
         });
+
+        // Show past reservations toggle
+        const showPastCheckbox = document.getElementById('showPastReservations');
+        if (showPastCheckbox) {
+            showPastCheckbox.addEventListener('change', () => {
+                console.log('Show past reservations toggled:', showPastCheckbox.checked);
+                this.loadReservations();
+            });
+        }
     }
 
     async initializeSignalR() {
@@ -538,11 +674,11 @@ class CalendarManager {
                     <div class="room-title">${resourceInfo.resource.title}</div>
                     <div class="room-details">
                         <small class="text-muted">
-                            ${hotelName} • ${room.capacity} guests • $${room.baseRate}/night
+                            ${hotelName} • ${room.capacity} guests • ${room.baseRate}/night
                         </small>
                     </div>
                     <div class="room-status">
-                        <span class="badge room-status-${room.status.toLowerCase()}">${room.status}</span>
+                        <span class="badge room-status-${room.status && typeof room.status === 'string' ? room.status.toLowerCase() : 'unknown'}">${room.status || 'Unknown'}</span>
                     </div>
                 </div>
             `
@@ -567,7 +703,13 @@ class CalendarManager {
 
     updateRoomResources() {
         // Refresh the calendar resources when filters change
-        this.calendar.refetchResources();
+        // Check if timeline/resource features are available
+        if (this.calendar.refetchResources && typeof this.calendar.refetchResources === 'function') {
+            this.calendar.refetchResources();
+        } else {
+            // For basic calendar views, just reload reservations
+            console.log('Resource timeline not available, refreshing events only');
+        }
         this.loadReservations();
     }
 
@@ -591,19 +733,53 @@ class CalendarManager {
     showReservationModal(reservation) {
         this.currentReservation = reservation;
 
+        // Handle both old and new reservation format
+        const guestName = reservation.guestName || 
+            (reservation.guest ? `${reservation.guest.firstName || 'Unknown'} ${reservation.guest.lastName || 'Guest'}` : 'Unknown Guest');
+        const guestEmail = reservation.guestEmail || reservation.guest?.email || 'Not provided';
+        const guestPhone = reservation.guestPhone || reservation.guest?.phone || 'Not provided';
+
+        // Handle numeric status values
+        const statusValue = reservation.status;
+        let statusClass, statusDisplay;
+        
+        if (typeof statusValue === 'number') {
+            const statusMap = {
+                1: 'pending',
+                2: 'confirmed',
+                3: 'checkedin', 
+                4: 'checkedout',
+                5: 'cancelled'
+            };
+            const statusDisplayMap = {
+                1: 'Pending',
+                2: 'Confirmed',
+                3: 'Checked In',
+                4: 'Checked Out', 
+                5: 'Cancelled'
+            };
+            statusClass = statusMap[statusValue] || 'unknown';
+            statusDisplay = statusDisplayMap[statusValue] || 'Unknown';
+        } else {
+            statusClass = (statusValue && typeof statusValue === 'string') 
+                ? statusValue.toLowerCase() 
+                : 'unknown';
+            statusDisplay = statusValue || 'Unknown';
+        }
+
         // Populate reservation details
         const detailsHtml = `
             <div class="row">
                 <div class="col-md-6">
                     <h6><i class="bi bi-person-circle"></i> Guest Information</h6>
-                    <p><strong>Name:</strong> ${reservation.guest.firstName} ${reservation.guest.lastName}</p>
-                    <p><strong>Email:</strong> ${reservation.guest.email || 'Not provided'}</p>
-                    <p><strong>Phone:</strong> ${reservation.guest.phone || 'Not provided'}</p>
+                    <p><strong>Name:</strong> ${guestName}</p>
+                    <p><strong>Email:</strong> ${guestEmail}</p>
+                    <p><strong>Phone:</strong> ${guestPhone}</p>
                 </div>
                 <div class="col-md-6">
                     <h6><i class="bi bi-building"></i> Accommodation Details</h6>
-                    <p><strong>Hotel:</strong> ${this.getHotelName(reservation.hotelId)}</p>
-                    <p><strong>Room:</strong> ${this.getRoomNumber(reservation.roomId)} (${this.getRoomType(reservation.roomId)})</p>
+                    <p><strong>Hotel:</strong> ${reservation.hotelName || this.getHotelName(reservation.hotelId)}</p>
+                    <p><strong>Room:</strong> ${reservation.roomNumber || this.getRoomNumber(reservation.roomId)} (${this.getRoomType(reservation.roomId)})</p>
                     <p><strong>Guests:</strong> ${reservation.numberOfGuests}</p>
                 </div>
             </div>
@@ -616,8 +792,8 @@ class CalendarManager {
                 </div>
                 <div class="col-md-6">
                     <h6><i class="bi bi-info-circle"></i> Reservation Details</h6>
-                    <p><strong>Status:</strong> <span class="badge status-${reservation.status.toLowerCase()}">${reservation.status}</span></p>
-                    <p><strong>Source:</strong> ${reservation.source === 'Booking' ? 'Booking.com' : 'Manual'}</p>
+                    <p><strong>Status:</strong> <span class="badge status-${statusClass}">${statusDisplay}</span></p>
+                    <p><strong>Source:</strong> ${reservation.source === 2 || reservation.source === 'Booking' ? 'Booking.com' : 'Manual'}</p>
                     <p><strong>Total Amount:</strong> $${reservation.totalAmount.toFixed(2)}</p>
                     ${reservation.bookingReference ? `<p><strong>Booking Reference:</strong> ${reservation.bookingReference}</p>` : ''}
                 </div>
@@ -646,12 +822,12 @@ class CalendarManager {
         const editBtn = document.getElementById('editReservationBtn');
         const cancelBtn = document.getElementById('cancelReservationBtn');
 
-        if (reservation.status.toLowerCase() === 'cancelled') {
+        if (statusClass === 'cancelled') {
             editBtn.style.display = 'none';
             cancelBtn.style.display = 'none';
         } else {
             editBtn.style.display = 'inline-block';
-            cancelBtn.style.display = reservation.status.toLowerCase() !== 'checkedout' ? 'inline-block' : 'none';
+            cancelBtn.style.display = statusClass !== 'checkedout' ? 'inline-block' : 'none';
         }
 
         // Show modal
@@ -771,7 +947,7 @@ class CalendarManager {
                 internalNotes: document.getElementById('internalNotes').value
             };
 
-            const response = await API.post('/api/reservations/manual', reservationData);
+            const response = await API.post('/reservations/manual', reservationData);
 
             if (response.success) {
                 UI.showSuccess('Reservation created successfully');
@@ -808,14 +984,17 @@ class CalendarManager {
     async cancelCurrentReservation() {
         if (!this.currentReservation) return;
 
-        const confirmed = confirm(`Are you sure you want to cancel the reservation for ${this.currentReservation.guest.firstName} ${this.currentReservation.guest.lastName}?`);
+        const guestName = this.currentReservation.guestName || 
+            (this.currentReservation.guest ? `${this.currentReservation.guest.firstName || 'Unknown'} ${this.currentReservation.guest.lastName || 'Guest'}` : 'Unknown Guest');
+            
+        const confirmed = confirm(`Are you sure you want to cancel the reservation for ${guestName}?`);
 
         if (!confirmed) return;
 
         try {
             UI.showLoading();
 
-            const response = await API.delete(`/api/reservations/${this.currentReservation.id}`, {
+            const response = await API.delete(`/reservations/${this.currentReservation.id}`, {
                 reason: 'Cancelled by staff'
             });
 

@@ -46,7 +46,16 @@
             <label for="dateRangePicker" class="form-label">Date Range</label>
             <input type="text" class="form-control" id="dateRangePicker" placeholder="Select date range">
         </div>
-        <div class="col-lg-3 col-md-12 mb-3">
+        <div class="col-lg-2 col-md-3 col-sm-6 mb-3">
+            <label class="form-label d-block">Options</label>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="showPastReservations" checked>
+                <label class="form-check-label" for="showPastReservations">
+                    Show Past Reservations
+                </label>
+            </div>
+        </div>
+        <div class="col-lg-1 col-md-12 mb-3">
             <div class="d-flex gap-2 flex-wrap">
                 <button type="button" class="btn btn-primary" id="applyFilters">
                     <i class="bi bi-funnel"></i>

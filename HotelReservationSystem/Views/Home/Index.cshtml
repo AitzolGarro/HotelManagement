@@ -300,8 +300,10 @@
         
         async function loadHotelOptions() {
             try {
+                console.log('Loading hotel options - TIMESTAMP: 2025-12-30-12:30'); // Force cache bust
                 const apiClient = new ApiClient();
-                const hotels = await apiClient.get('/api/hotels');
+                const hotels = await apiClient.get('/hotels');
+                console.log('API call made to /hotels, response:', hotels); // Debug the response
                 const hotelFilter = document.getElementById('hotelFilter');
                 
                 if (hotelFilter && hotels) {

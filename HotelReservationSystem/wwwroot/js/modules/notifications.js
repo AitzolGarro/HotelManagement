@@ -25,9 +25,14 @@ class NotificationManager {
 
     async setupSignalRConnection() {
         try {
-            // Create SignalR connection
+            // Get JWT token for authentication
+            const token = localStorage.getItem('jwt_token');
+            
+            // Create SignalR connection with authentication
             this.connection = new signalR.HubConnectionBuilder()
-                .withUrl("/reservationHub")
+                .withUrl("/reservationHub", {
+                    accessTokenFactory: () => token
+                })
                 .withAutomaticReconnect([0, 2000, 10000, 30000])
                 .configureLogging(signalR.LogLevel.Information)
                 .build();
@@ -137,18 +142,17 @@ class NotificationManager {
 
     async loadInitialNotifications() {
         try {
-            const response = await fetch('/api/notifications?limit=20');
-            if (response.ok) {
-                this.notifications = await response.json();
-                this.updateNotificationsList();
-            }
+            // Use ApiClient for authenticated requests
+            const apiClient = new ApiClient();
+            
+            const notifications = await apiClient.get('/notifications?limit=20');
+            this.notifications = notifications || [];
+            this.updateNotificationsList();
 
             // Load unread count
-            const countResponse = await fetch('/api/notifications/unread-count');
-            if (countResponse.ok) {
-                this.unreadCount = await countResponse.json();
-                this.updateUnreadBadge();
-            }
+            const unreadCount = await apiClient.get('/notifications/unread-count');
+            this.unreadCount = unreadCount || 0;
+            this.updateUnreadBadge();
         } catch (error) {
             console.error('Failed to load initial notifications:', error);
         }
@@ -298,16 +302,12 @@ class NotificationManager {
 
     async markAsRead(notificationId) {
         try {
-            const response = await fetch(`/api/notifications/${notificationId}/read`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
+            const apiClient = new ApiClient();
+            await apiClient.request(`/notifications/${notificationId}/read`, {
+                method: 'PUT'
             });
-
-            if (response.ok) {
-                this.markNotificationAsRead(notificationId, true);
-            }
+            
+            this.markNotificationAsRead(notificationId, true);
         } catch (error) {
             console.error('Failed to mark notification as read:', error);
         }
@@ -316,22 +316,18 @@ class NotificationManager {
     async markAllAsRead() {
         try {
             const hotelId = this.getCurrentHotelId();
-            const url = hotelId ? `/api/notifications/read-all?hotelId=${hotelId}` : '/api/notifications/read-all';
+            const endpoint = hotelId ? `/notifications/read-all?hotelId=${hotelId}` : '/notifications/read-all';
             
-            const response = await fetch(url, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
+            const apiClient = new ApiClient();
+            await apiClient.request(endpoint, {
+                method: 'PUT'
             });
 
-            if (response.ok) {
-                // Mark all notifications as read locally
-                this.notifications.forEach(n => n.isRead = true);
-                this.unreadCount = 0;
-                this.updateNotificationsList();
-                this.updateUnreadBadge();
-            }
+            // Mark all notifications as read locally
+            this.notifications.forEach(n => n.isRead = true);
+            this.unreadCount = 0;
+            this.updateNotificationsList();
+            this.updateUnreadBadge();
         } catch (error) {
             console.error('Failed to mark all notifications as read:', error);
         }

@@ -47,6 +47,19 @@ try
     // Add SignalR
     builder.Services.AddSignalR();
 
+    // Add CORS support for browser requests
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowLocalhost", policy =>
+        {
+            policy.WithOrigins("http://localhost:5001", "https://localhost:7001", "http://127.0.0.1:5001")
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .AllowCredentials()
+                  .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
+        });
+    });
+
     // Add caching services
     builder.Services.AddMemoryCache();
     
@@ -232,6 +245,9 @@ try
 
     app.UseHttpsRedirection();
     app.UseStaticFiles();
+    
+    // Enable CORS
+    app.UseCors("AllowLocalhost");
     
     // Add global exception handling middleware (should be early in the pipeline)
     app.UseMiddleware<GlobalExceptionHandlingMiddleware>();

@@ -94,54 +94,25 @@
 </div>
 
 @section Scripts {
+    <!-- Properties module -->
+    <script src="~/js/modules/properties.js" asp-append-version="true"></script>
+    
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Properties-specific initialization
+        let propertiesManager;
+        
+        document.addEventListener('DOMContentLoaded', async function() {
             console.log('Properties page loaded');
             
-            // Placeholder data loading
-            setTimeout(() => {
-                loadPropertiesData();
-            }, 1000);
+            // Initialize properties manager
+            propertiesManager = new PropertiesManager();
+            await propertiesManager.initialize();
         });
         
-        function loadPropertiesData() {
-            // Placeholder implementation - will be replaced with actual API calls
-            const tbody = document.querySelector('#hotelsTable tbody');
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="7" class="text-center text-muted">
-                        <p>No hotels found</p>
-                        <p class="small">Hotel management functionality will be implemented in later tasks</p>
-                    </td>
-                </tr>
-            `;
-        }
-        
+        // Legacy function for backward compatibility
         function showHotelRooms(hotelId, hotelName) {
-            document.getElementById('selectedHotelName').textContent = hotelName;
-            document.getElementById('roomsSection').style.display = 'block';
-            
-            // Load rooms for the selected hotel
-            const roomsTableBody = document.querySelector('#roomsTable tbody');
-            roomsTableBody.innerHTML = `
-                <tr>
-                    <td colspan="6" class="text-center text-muted py-3">
-                        <p>Loading rooms for ${hotelName}...</p>
-                    </td>
-                </tr>
-            `;
-            
-            // Placeholder room loading
-            setTimeout(() => {
-                roomsTableBody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="text-center text-muted">
-                            <p>No rooms found for this hotel</p>
-                        </td>
-                    </tr>
-                `;
-            }, 500);
+            if (propertiesManager) {
+                propertiesManager.showHotelRooms(hotelId, hotelName);
+            }
         }
     </script>
 }
