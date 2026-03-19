@@ -11,5 +11,15 @@ namespace HotelReservationSystem.Services.Interfaces
         Task RemoveByPatternAsync(string pattern);
         Task<bool> ExistsAsync(string key);
         Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getItem, TimeSpan? expiration = null) where T : class;
+        CacheStatistics GetStatistics();
+    }
+
+    public class CacheStatistics
+    {
+        public long Hits { get; set; }
+        public long Misses { get; set; }
+        public long Sets { get; set; }
+        public long Removes { get; set; }
+        public double HitRatio => Hits + Misses == 0 ? 0 : (double)Hits / (Hits + Misses);
     }
 }

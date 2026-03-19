@@ -43,9 +43,12 @@ class ReportsModule {
 
     async loadHotels() {
         try {
-            const hotels = await API.getHotels();
-            const hotelSelect = document.getElementById('hotelFilter');
+            const response = await API.getHotels();
+            const hotels = (response && response.items) ? response.items : (response || []);
             
+            const hotelSelect = document.getElementById('hotelFilter');
+            if (!hotelSelect) return;
+
             hotels.forEach(hotel => {
                 const option = document.createElement('option');
                 option.value = hotel.id;

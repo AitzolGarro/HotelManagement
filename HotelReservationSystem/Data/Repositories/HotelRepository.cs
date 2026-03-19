@@ -12,10 +12,25 @@ public class HotelRepository : Repository<Hotel>, IHotelRepository
 
     public async Task<IEnumerable<Hotel>> GetActiveHotelsAsync()
     {
-        return await _dbSet
+        return await _dbSet.AsNoTracking()
             .Where(h => h.IsActive)
             .OrderBy(h => h.Name)
             .ToListAsync();
+    }
+
+    public async Task<(IEnumerable<Hotel> Items, int TotalCount)> GetPagedHotelsAsync(int pageNumber, int pageSize)
+    {
+        var query = _dbSet.AsNoTracking().Where(h => h.IsActive);
+
+        var totalCount = await query.CountAsync();
+        
+        var items = await query
+            .OrderBy(h => h.Name)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
     }
 
     public async Task<Hotel?> GetHotelWithRoomsAsync(int hotelId)

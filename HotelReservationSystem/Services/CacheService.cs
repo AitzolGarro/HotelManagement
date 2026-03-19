@@ -13,6 +13,10 @@ namespace HotelReservationSystem.Services
         private readonly IConnectionMultiplexer? _redis;
         private readonly ILogger<CacheService> _logger;
         private readonly JsonSerializerOptions _jsonOptions;
+        private long _hits = 0;
+        private long _misses = 0;
+        private long _sets = 0;
+        private long _removes = 0;
 
         public CacheService(
             IDistributedCache distributedCache,
@@ -38,6 +42,7 @@ namespace HotelReservationSystem.Services
                 // First try memory cache for frequently accessed small data
                 if (_memoryCache.TryGetValue(key, out T? cachedValue))
                 {
+                    Interlocked.Increment(ref _hits);
                     _logger.LogDebug("Cache hit in memory cache for key: {Key}", key);
                     return cachedValue;
                 }
@@ -46,6 +51,7 @@ namespace HotelReservationSystem.Services
                 var cachedString = await _distributedCache.GetStringAsync(key);
                 if (cachedString != null)
                 {
+                    Interlocked.Increment(ref _hits);
                     var deserializedValue = JsonSerializer.Deserialize<T>(cachedString, _jsonOptions);
                     
                     // Store in memory cache for faster subsequent access
@@ -55,11 +61,13 @@ namespace HotelReservationSystem.Services
                     return deserializedValue;
                 }
 
+                Interlocked.Increment(ref _misses);
                 _logger.LogDebug("Cache miss for key: {Key}", key);
                 return null;
             }
             catch (Exception ex)
             {
+                Interlocked.Increment(ref _misses);
                 _logger.LogError(ex, "Error retrieving from cache for key: {Key}", key);
                 return null;
             }
@@ -86,6 +94,7 @@ namespace HotelReservationSystem.Services
                 
                 // Also store in memory cache for faster access
                 _memoryCache.Set(key, value, TimeSpan.FromMinutes(5));
+                Interlocked.Increment(ref _sets);
                 
                 _logger.LogDebug("Cached value for key: {Key} with expiration: {Expiration}", key, expiration);
             }
@@ -101,6 +110,7 @@ namespace HotelReservationSystem.Services
             {
                 await _distributedCache.RemoveAsync(key);
                 _memoryCache.Remove(key);
+                Interlocked.Increment(ref _removes);
                 _logger.LogDebug("Removed cache entry for key: {Key}", key);
             }
             catch (Exception ex)
@@ -174,6 +184,17 @@ namespace HotelReservationSystem.Services
             }
 
             return value;
+        }
+
+        public CacheStatistics GetStatistics()
+        {
+            return new CacheStatistics
+            {
+                Hits = Interlocked.Read(ref _hits),
+                Misses = Interlocked.Read(ref _misses),
+                Sets = Interlocked.Read(ref _sets),
+                Removes = Interlocked.Read(ref _removes)
+            };
         }
     }
 }

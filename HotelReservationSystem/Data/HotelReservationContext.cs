@@ -16,6 +16,15 @@ public class HotelReservationContext : IdentityDbContext<User, IdentityRole<int>
     public DbSet<Guest> Guests { get; set; }
     public DbSet<Reservation> Reservations { get; set; }
     public DbSet<UserHotelAccess> UserHotelAccess { get; set; }
+    public DbSet<Payment> Payments { get; set; }
+    public DbSet<PaymentMethod> PaymentMethods { get; set; }
+    public DbSet<Invoice> Invoices { get; set; }
+    public DbSet<InvoiceItem> InvoiceItems { get; set; }
+    public DbSet<AuditLogEntry> AuditLogs { get; set; }
+    public DbSet<UserPasswordHistory> UserPasswordHistories { get; set; }
+    public DbSet<SystemNotification> SystemNotifications { get; set; }
+    public DbSet<NotificationPreference> NotificationPreferences { get; set; }
+    public DbSet<NotificationTemplate> NotificationTemplates { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -53,6 +62,7 @@ public class HotelReservationContext : IdentityDbContext<User, IdentityRole<int>
                   .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasIndex(e => new { e.HotelId, e.RoomNumber }).IsUnique();
+            entity.HasIndex(e => new { e.HotelId, e.Status });
         });
 
         // Configure Guest entity
@@ -67,6 +77,8 @@ public class HotelReservationContext : IdentityDbContext<User, IdentityRole<int>
             entity.Property(e => e.DocumentNumber).HasMaxLength(50);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("datetime('now')");
+
+            entity.HasIndex(e => e.Email);
         });
 
         // Configure Reservation entity
@@ -99,6 +111,11 @@ public class HotelReservationContext : IdentityDbContext<User, IdentityRole<int>
                   .WithMany(g => g.Reservations)
                   .HasForeignKey(e => e.GuestId)
                   .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => new { e.CheckInDate, e.CheckOutDate, e.Status });
+            entity.HasIndex(e => new { e.HotelId, e.Status });
+            entity.HasIndex(e => new { e.RoomId, e.CheckInDate, e.CheckOutDate });
+            entity.HasIndex(e => e.BookingReference);
         });
 
         // Configure User entity
@@ -129,6 +146,70 @@ public class HotelReservationContext : IdentityDbContext<User, IdentityRole<int>
                   .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasIndex(e => new { e.UserId, e.HotelId }).IsUnique();
+        });
+
+        // Configure Payment entity
+        modelBuilder.Entity<Payment>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Amount).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.Currency).HasMaxLength(3);
+            entity.Property(e => e.StripePaymentIntentId).HasMaxLength(100);
+            entity.Property(e => e.StripeChargeId).HasMaxLength(100);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("datetime('now')");
+
+            entity.HasOne(e => e.Reservation)
+                  .WithMany()
+                  .HasForeignKey(e => e.ReservationId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configure PaymentMethod entity
+        modelBuilder.Entity<PaymentMethod>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.StripePaymentMethodId).HasMaxLength(100);
+            entity.Property(e => e.CardBrand).HasMaxLength(50);
+            entity.Property(e => e.Last4).HasMaxLength(4);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
+
+            entity.HasOne(e => e.Guest)
+                  .WithMany()
+                  .HasForeignKey(e => e.GuestId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configure Invoice entity
+        modelBuilder.Entity<Invoice>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.InvoiceNumber).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.TotalAmount).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.TaxAmount).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("datetime('now')");
+
+            entity.HasIndex(e => e.InvoiceNumber).IsUnique();
+
+            entity.HasOne(e => e.Reservation)
+                  .WithMany()
+                  .HasForeignKey(e => e.ReservationId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Configure InvoiceItem entity
+        modelBuilder.Entity<InvoiceItem>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Description).IsRequired().HasMaxLength(255);
+            entity.Property(e => e.UnitPrice).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.Amount).HasColumnType("decimal(18,2)");
+
+            entity.HasOne(e => e.Invoice)
+                  .WithMany(i => i.Items)
+                  .HasForeignKey(e => e.InvoiceId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

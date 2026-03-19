@@ -82,12 +82,17 @@ class DashboardManager {
 
     async loadNotifications() {
         const params = this.currentHotelId ? `?hotelId=${this.currentHotelId}` : '';
-        return await this.apiClient.get(`/dashboard/notifications${params}`);
+        const response = await this.apiClient.get(`/dashboard/notifications${params}`);
+        if (response && response.notifications && response.notifications.items) {
+            response.notifications = response.notifications.items;
+        }
+        return response;
     }
 
     async loadRecentReservations() {
         const params = this.currentHotelId ? `?hotelId=${this.currentHotelId}` : '';
-        return await this.apiClient.get(`/dashboard/recent-reservations${params}`);
+        const response = await this.apiClient.get(`/dashboard/recent-reservations${params}`);
+        return (response && response.items) ? response.items : (response || []);
     }
 
     updateKpiWidgets(kpiData) {

@@ -108,7 +108,8 @@ class ApiClient {
 
     // Hotels API
     async getHotels() {
-        return this.get('/hotels');
+        const response = await this.get('/hotels');
+        return (response && response.items) ? response.items : response;
     }
 
     async getHotel(id) {
@@ -128,8 +129,14 @@ class ApiClient {
     }
 
     // Rooms API
+    async getAllRooms() {
+        const response = await this.get('/rooms');
+        return (response && response.items) ? response.items : response;
+    }
+
     async getRooms(hotelId) {
-        return this.get(`/hotels/${hotelId}/rooms`);
+        const response = await this.get(`/hotels/${hotelId}/rooms`);
+        return (response && response.items) ? response.items : response;
     }
 
     async getRoom(hotelId, roomId) {
@@ -150,7 +157,8 @@ class ApiClient {
 
     // Reservations API
     async getReservations(params = {}) {
-        return this.get('/reservations', params);
+        const response = await this.get('/reservations', params);
+        return (response && response.items) ? response.items : response;
     }
 
     async getReservation(id) {

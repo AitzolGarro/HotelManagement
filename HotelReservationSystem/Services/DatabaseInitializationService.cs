@@ -98,8 +98,30 @@ public class DatabaseInitializationService
                     Phone TEXT,
                     Address TEXT,
                     DocumentNumber TEXT,
+                    Nationality TEXT,
+                    IsVip INTEGER DEFAULT 0,
                     CreatedAt TEXT DEFAULT (datetime('now')),
                     UpdatedAt TEXT DEFAULT (datetime('now'))
+                );
+
+                CREATE TABLE IF NOT EXISTS GuestPreferences (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    GuestId INTEGER NOT NULL,
+                    Category TEXT NOT NULL,
+                    Preference TEXT NOT NULL,
+                    CreatedAt TEXT DEFAULT (datetime('now')),
+                    UpdatedAt TEXT DEFAULT (datetime('now')),
+                    FOREIGN KEY (GuestId) REFERENCES Guests(Id) ON DELETE CASCADE
+                );
+
+                CREATE TABLE IF NOT EXISTS GuestNotes (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    GuestId INTEGER NOT NULL,
+                    Note TEXT NOT NULL,
+                    CreatedByUserId INTEGER NOT NULL,
+                    CreatedAt TEXT DEFAULT (datetime('now')),
+                    UpdatedAt TEXT DEFAULT (datetime('now')),
+                    FOREIGN KEY (GuestId) REFERENCES Guests(Id) ON DELETE CASCADE
                 );
 
                 CREATE TABLE IF NOT EXISTS Rooms (
@@ -158,8 +180,174 @@ public class DatabaseInitializationService
                     LastName TEXT,
                     Role INTEGER,
                     IsActive INTEGER DEFAULT 1,
+                    PasswordChangedDate TEXT,
+                    TwoFactorSecret TEXT,
                     CreatedAt TEXT DEFAULT (datetime('now')),
                     UpdatedAt TEXT DEFAULT (datetime('now'))
+                );
+
+                CREATE TABLE IF NOT EXISTS UserPasswordHistories (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    UserId INTEGER NOT NULL,
+                    PasswordHash TEXT NOT NULL,
+                    CreatedAt TEXT DEFAULT (datetime('now')),
+                    FOREIGN KEY (UserId) REFERENCES AspNetUsers(Id) ON DELETE CASCADE
+                );
+
+                CREATE TABLE IF NOT EXISTS Payments (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    ReservationId INTEGER NOT NULL,
+                    Amount REAL NOT NULL,
+                    Currency TEXT NOT NULL,
+                    Status INTEGER NOT NULL,
+                    StripePaymentIntentId TEXT,
+                    StripeChargeId TEXT,
+                    ReceiptUrl TEXT,
+                    ErrorMessage TEXT,
+                    CreatedAt TEXT DEFAULT (datetime('now')),
+                    UpdatedAt TEXT DEFAULT (datetime('now')),
+                    FOREIGN KEY (ReservationId) REFERENCES Reservations(Id) ON DELETE CASCADE
+                );
+
+                CREATE TABLE IF NOT EXISTS PaymentMethods (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    GuestId INTEGER NOT NULL,
+                    StripePaymentMethodId TEXT,
+                    CardBrand TEXT,
+                    Last4 TEXT,
+                    ExpMonth INTEGER,
+                    ExpYear INTEGER,
+                    IsDefault INTEGER DEFAULT 0,
+                    CreatedAt TEXT DEFAULT (datetime('now')),
+                    FOREIGN KEY (GuestId) REFERENCES Guests(Id) ON DELETE CASCADE
+                );
+
+                CREATE TABLE IF NOT EXISTS Invoices (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    InvoiceNumber TEXT NOT NULL UNIQUE,
+                    ReservationId INTEGER NOT NULL,
+                    TotalAmount REAL NOT NULL,
+                    TaxAmount REAL NOT NULL,
+                    Status INTEGER NOT NULL,
+                    IssueDate TEXT NOT NULL,
+                    DueDate TEXT,
+                    CreatedAt TEXT DEFAULT (datetime('now')),
+                    UpdatedAt TEXT DEFAULT (datetime('now')),
+                    FOREIGN KEY (ReservationId) REFERENCES Reservations(Id) ON DELETE RESTRICT
+                );
+
+                CREATE TABLE IF NOT EXISTS InvoiceItems (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    InvoiceId INTEGER NOT NULL,
+                    Description TEXT NOT NULL,
+                    UnitPrice REAL NOT NULL,
+                    Quantity INTEGER NOT NULL,
+                    Amount REAL NOT NULL,
+                    FOREIGN KEY (InvoiceId) REFERENCES Invoices(Id) ON DELETE CASCADE
+                );
+
+                CREATE TABLE IF NOT EXISTS AuditLogs (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    UserId TEXT,
+                    IpAddress TEXT,
+                    Method TEXT NOT NULL,
+                    Path TEXT NOT NULL,
+                    QueryString TEXT,
+                    RequestBody TEXT,
+                    StatusCode INTEGER NOT NULL,
+                    Timestamp TEXT DEFAULT (datetime('now'))
+                );
+
+                CREATE TABLE IF NOT EXISTS SystemNotifications (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Type INTEGER NOT NULL,
+                    Title TEXT NOT NULL,
+                    Message TEXT NOT NULL,
+                    RelatedEntityType TEXT,
+                    RelatedEntityId INTEGER,
+                    HotelId INTEGER,
+                    UserId TEXT,
+                    IsRead INTEGER DEFAULT 0,
+                    CreatedAt TEXT DEFAULT (datetime('now'))
+                );
+
+                CREATE TABLE IF NOT EXISTS NotificationPreferences (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    UserId INTEGER NOT NULL,
+                    EmailEnabled INTEGER DEFAULT 1,
+                    SmsEnabled INTEGER DEFAULT 0,
+                    BrowserPushEnabled INTEGER DEFAULT 1,
+                    Channels TEXT,
+                    FOREIGN KEY (UserId) REFERENCES AspNetUsers(Id) ON DELETE CASCADE
+                );
+
+                CREATE TABLE IF NOT EXISTS NotificationTemplates (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Name TEXT NOT NULL,
+                    SubjectTemplate TEXT NOT NULL,
+                    BodyTemplate TEXT NOT NULL,
+                    Type INTEGER NOT NULL
+                );
+
+                CREATE TABLE IF NOT EXISTS Channels (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Name TEXT NOT NULL,
+                    IsActive INTEGER DEFAULT 1,
+                    ApiBaseUrl TEXT,
+                    CreatedAt TEXT DEFAULT (datetime('now'))
+                );
+
+                CREATE TABLE IF NOT EXISTS HotelChannels (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    HotelId INTEGER NOT NULL,
+                    ChannelId INTEGER NOT NULL,
+                    ChannelHotelId TEXT NOT NULL,
+                    Username TEXT,
+                    PasswordHash TEXT,
+                    IsActive INTEGER DEFAULT 1,
+                    CreatedAt TEXT DEFAULT (datetime('now')),
+                    UpdatedAt TEXT DEFAULT (datetime('now')),
+                    FOREIGN KEY (HotelId) REFERENCES Hotels(Id) ON DELETE CASCADE,
+                    FOREIGN KEY (ChannelId) REFERENCES Channels(Id) ON DELETE CASCADE
+                );
+
+                CREATE TABLE IF NOT EXISTS ChannelSyncLogs (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    HotelChannelId INTEGER NOT NULL,
+                    SyncType TEXT NOT NULL,
+                    Status TEXT NOT NULL,
+                    Details TEXT,
+                    Timestamp TEXT DEFAULT (datetime('now')),
+                    FOREIGN KEY (HotelChannelId) REFERENCES HotelChannels(Id) ON DELETE CASCADE
+                );
+
+                CREATE TABLE IF NOT EXISTS RoomPricings (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    RoomId INTEGER NOT NULL,
+                    Date TEXT NOT NULL,
+                    BaseRate REAL NOT NULL,
+                    FinalRate REAL NOT NULL,
+                    IsManualOverride INTEGER DEFAULT 0,
+                    CreatedAt TEXT DEFAULT (datetime('now')),
+                    UpdatedAt TEXT DEFAULT (datetime('now')),
+                    FOREIGN KEY (RoomId) REFERENCES Rooms(Id) ON DELETE CASCADE
+                );
+
+                CREATE TABLE IF NOT EXISTS PricingRules (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    HotelId INTEGER NOT NULL,
+                    Name TEXT NOT NULL,
+                    Type INTEGER NOT NULL,
+                    AdjustmentPercentage REAL NOT NULL,
+                    AdjustmentFixed REAL,
+                    Priority INTEGER NOT NULL,
+                    IsActive INTEGER DEFAULT 1,
+                    Configuration TEXT,
+                    StartDate TEXT,
+                    EndDate TEXT,
+                    CreatedAt TEXT DEFAULT (datetime('now')),
+                    UpdatedAt TEXT DEFAULT (datetime('now')),
+                    FOREIGN KEY (HotelId) REFERENCES Hotels(Id) ON DELETE CASCADE
                 );
 
                 CREATE TABLE IF NOT EXISTS AspNetRoles (
@@ -210,17 +398,8 @@ public class DatabaseInitializationService
     {
         try
         {
-            // Check if we already have data
-            var hotelCount = await _context.Hotels.CountAsync();
-            if (hotelCount > 0)
-            {
-                _logger.LogInformation("Demo data already exists, skipping seeding");
-                return;
-            }
-
-            _logger.LogInformation("Seeding demo data...");
+            _logger.LogInformation("Checking for demo data seeding...");
             await DemoDataSeeder.SeedDemoDataAsync(_context, _userManager);
-            _logger.LogInformation("Demo data seeded successfully");
         }
         catch (Exception ex)
         {

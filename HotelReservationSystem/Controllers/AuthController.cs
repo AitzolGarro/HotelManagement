@@ -187,10 +187,63 @@ public class AuthController : ControllerBase
 
             return Ok(new { message = "Password changed successfully" });
         }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error changing password");
             return StatusCode(500, new { message = "An error occurred while changing the password" });
+        }
+    }
+
+    [HttpPost("enable-2fa")]
+    [Authorize]
+    public async Task<IActionResult> Enable2FA()
+    {
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized();
+            }
+
+            var key = await _authService.Enable2FAAsync(userId);
+            return Ok(new { message = "2FA enabled", authenticatorKey = key });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error enabling 2FA");
+            return StatusCode(500, new { message = "An error occurred while enabling 2FA" });
+        }
+    }
+
+    [HttpPost("verify-2fa")]
+    [Authorize]
+    public async Task<IActionResult> Verify2FA([FromBody] Verify2FARequest request)
+    {
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized();
+            }
+
+            var success = await _authService.Verify2FACodeAsync(userId, request.Code);
+            if (success)
+            {
+                return Ok(new { message = "2FA verified successfully" });
+            }
+
+            return BadRequest(new { message = "Invalid 2FA code" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error verifying 2FA");
+            return StatusCode(500, new { message = "An error occurred while verifying 2FA" });
         }
     }
 

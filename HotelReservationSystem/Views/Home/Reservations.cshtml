@@ -482,7 +482,10 @@
                     params.status = mapStatusToEnum(filters.status || document.getElementById('statusFilterRes').value);
                 }
                 
-                const reservations = await API.getReservations(params);
+                const response = await API.getReservations(params);
+                
+                // Handle paged result or array
+                const reservations = (response && response.items) ? response.items : (response || []);
                 
                 // Filter by source if specified (API doesn't support this filter yet)
                 let filteredReservations = reservations;

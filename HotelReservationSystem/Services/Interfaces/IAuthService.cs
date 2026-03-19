@@ -13,4 +13,8 @@ public interface IAuthService
     Task<bool> DeactivateUserAsync(int userId);
     Task<bool> HasHotelAccessAsync(int userId, int hotelId);
     Task<IEnumerable<int>> GetUserHotelAccessAsync(int userId);
+    
+    // 2FA methods
+    Task<string> Enable2FAAsync(int userId);
+    Task<bool> Verify2FACodeAsync(int userId, string code);
 }

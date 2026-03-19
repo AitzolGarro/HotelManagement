@@ -27,7 +27,7 @@ class PropertiesManager {
         try {
             UI.showLoading();
             
-            const response = await API.get('/hotels');
+            const response = await API.getHotels();
             console.log('Hotels API response:', response);
             
             this.hotels = response || [];

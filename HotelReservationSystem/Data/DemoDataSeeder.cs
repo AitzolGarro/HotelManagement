@@ -9,10 +9,13 @@ public static class DemoDataSeeder
 {
     public static async Task SeedDemoDataAsync(HotelReservationContext context, UserManager<User> userManager)
     {
-        // Check if data already exists
+        // Always seed/reset users
+        await SeedDemoUsersAsync(userManager, null!);
+
+        // Check if other data already exists
         if (await context.Hotels.AnyAsync())
         {
-            return; // Data already seeded
+            return; // Other data already seeded
         }
 
         // Seed Hotels
@@ -145,52 +148,50 @@ public static class DemoDataSeeder
 
     private static async Task SeedDemoUsersAsync(UserManager<User> userManager, List<Hotel> hotels)
     {
-        // Create demo admin user
-        var adminUser = new User
-        {
-            UserName = "admin@demo.com",
-            Email = "admin@demo.com",
-            FirstName = "Admin",
-            LastName = "User",
-            Role = UserRole.Admin,
-            IsActive = true
-        };
+        await CreateOrResetUserAsync(userManager, "admin@demo.com", "Demo123!", UserRole.Admin);
+        await CreateOrResetUserAsync(userManager, "manager@demo.com", "Demo123!", UserRole.Manager);
+        await CreateOrResetUserAsync(userManager, "staff@demo.com", "Demo123!", UserRole.Staff);
+    }
 
-        if (await userManager.FindByEmailAsync(adminUser.Email) == null)
+    private static async Task CreateOrResetUserAsync(UserManager<User> userManager, string email, string password, UserRole role)
+    {
+        var user = await userManager.FindByEmailAsync(email);
+        if (user == null)
         {
-            await userManager.CreateAsync(adminUser, "Demo123!");
+            user = new User
+            {
+                UserName = email,
+                Email = email,
+                FirstName = role.ToString(),
+                LastName = "User",
+                Role = role,
+                IsActive = true,
+                EmailConfirmed = true,
+                PasswordChangedDate = DateTime.UtcNow
+            };
+            var result = await userManager.CreateAsync(user, password);
+            if (!result.Succeeded)
+            {
+                throw new Exception($"Failed to create demo user {email}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            }
+            Console.WriteLine($"[SEED] Created demo user: {email}");
         }
-
-        // Create demo manager user
-        var managerUser = new User
+        else
         {
-            UserName = "manager@demo.com",
-            Email = "manager@demo.com",
-            FirstName = "Manager",
-            LastName = "User",
-            Role = UserRole.Manager,
-            IsActive = true
-        };
-
-        if (await userManager.FindByEmailAsync(managerUser.Email) == null)
-        {
-            await userManager.CreateAsync(managerUser, "Demo123!");
-        }
-
-        // Create demo staff user
-        var staffUser = new User
-        {
-            UserName = "staff@demo.com",
-            Email = "staff@demo.com",
-            FirstName = "Staff",
-            LastName = "User",
-            Role = UserRole.Staff,
-            IsActive = true
-        };
-
-        if (await userManager.FindByEmailAsync(staffUser.Email) == null)
-        {
-            await userManager.CreateAsync(staffUser, "Demo123!");
+            // Reset password to ensure it's what we expect
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await userManager.ResetPasswordAsync(user, token, password);
+            if (result.Succeeded)
+            {
+                user.PasswordChangedDate = DateTime.UtcNow;
+                user.IsActive = true;
+                await userManager.UpdateAsync(user);
+                Console.WriteLine($"[SEED] Reset demo user password: {email}");
+            }
+            else
+            {
+                Console.WriteLine($"[SEED] Failed to reset demo user password: {email} - {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            }
         }
     }
 }

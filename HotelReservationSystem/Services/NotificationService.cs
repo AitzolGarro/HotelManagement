@@ -1,10 +1,13 @@
+using HotelReservationSystem.Models;
 using HotelReservationSystem.Models.DTOs;
+using HotelReservationSystem.Data.Repositories.Interfaces;
 using HotelReservationSystem.Services.Interfaces;
 using HotelReservationSystem.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using System.Net.Mail;
 using System.Net;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelReservationSystem.Services;
 
@@ -13,50 +16,61 @@ public class NotificationService : INotificationService
     private readonly ILogger<NotificationService> _logger;
     private readonly IHubContext<ReservationHub> _hubContext;
     private readonly IConfiguration _configuration;
-    
-    // In a real implementation, this would use a database table for notifications
-    // For now, we'll use in-memory storage for demonstration
-    private static readonly List<SystemNotificationDto> _notifications = new();
-    private static int _nextId = 1;
+    private readonly IUnitOfWork _unitOfWork;
 
     public NotificationService(
         ILogger<NotificationService> logger,
         IHubContext<ReservationHub> hubContext,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IUnitOfWork unitOfWork)
     {
         _logger = logger;
         _hubContext = hubContext;
         _configuration = configuration;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<SystemNotificationDto> CreateNotificationAsync(NotificationType type, string title, string message, string? relatedEntityType = null, int? relatedEntityId = null)
     {
-        var notification = new SystemNotificationDto
+        var dbNotification = new SystemNotification
         {
-            Id = _nextId++,
             Type = type,
             Title = title,
             Message = message,
+            RelatedEntityType = relatedEntityType,
+            RelatedEntityId = relatedEntityId,
             CreatedAt = DateTime.UtcNow,
+            IsRead = false
+        };
+
+        await _unitOfWork.SystemNotifications.AddAsync(dbNotification);
+        await _unitOfWork.SaveChangesAsync();
+
+        var notificationDto = new SystemNotificationDto
+        {
+            Id = dbNotification.Id,
+            Type = type,
+            Title = title,
+            Message = message,
+            CreatedAt = dbNotification.CreatedAt,
             IsRead = false,
             RelatedEntityType = relatedEntityType,
             RelatedEntityId = relatedEntityId,
             Priority = GetPriorityFromType(type)
         };
 
-        _notifications.Add(notification);
-        
         _logger.LogInformation("Created notification: {Type} - {Title}", type, title);
         
         // Send real-time notification via SignalR
-        await SendRealTimeNotificationAsync(notification);
+        await SendRealTimeNotificationAsync(notificationDto);
         
-        return notification;
+        return notificationDto;
     }
 
     public async Task<List<SystemNotificationDto>> GetNotificationsAsync(int? hotelId = null, bool unreadOnly = false)
     {
-        var notifications = _notifications.AsQueryable();
+        var query = await _unitOfWork.SystemNotifications.GetAllAsync();
+        var notifications = query.AsQueryable();
         
         if (unreadOnly)
         {
@@ -70,15 +84,31 @@ public class NotificationService : INotificationService
         
         return notifications
             .OrderByDescending(n => n.CreatedAt)
+            .Select(n => new SystemNotificationDto
+            {
+                Id = n.Id,
+                Type = n.Type,
+                Title = n.Title,
+                Message = n.Message,
+                CreatedAt = n.CreatedAt,
+                IsRead = n.IsRead,
+                RelatedEntityType = n.RelatedEntityType,
+                RelatedEntityId = n.RelatedEntityId,
+                HotelId = n.HotelId,
+                UserId = n.UserId,
+                Priority = GetPriorityFromType(n.Type)
+            })
             .ToList();
     }
 
     public async Task<bool> MarkNotificationAsReadAsync(int notificationId)
     {
-        var notification = _notifications.FirstOrDefault(n => n.Id == notificationId);
+        var notification = await _unitOfWork.SystemNotifications.GetByIdAsync(notificationId);
         if (notification != null)
         {
             notification.IsRead = true;
+            _unitOfWork.SystemNotifications.Update(notification);
+            await _unitOfWork.SaveChangesAsync();
             _logger.LogInformation("Marked notification {NotificationId} as read", notificationId);
             
             // Notify clients about the read status change
@@ -92,7 +122,8 @@ public class NotificationService : INotificationService
 
     public async Task<bool> MarkAllNotificationsAsReadAsync(int? hotelId = null)
     {
-        var notifications = _notifications.Where(n => !n.IsRead);
+        var query = await _unitOfWork.SystemNotifications.GetAllAsync();
+        var notifications = query.Where(n => !n.IsRead);
         
         if (hotelId.HasValue)
         {
@@ -103,7 +134,13 @@ public class NotificationService : INotificationService
         foreach (var notification in notifications)
         {
             notification.IsRead = true;
+            _unitOfWork.SystemNotifications.Update(notification);
             updatedIds.Add(notification.Id);
+        }
+        
+        if (updatedIds.Any())
+        {
+            await _unitOfWork.SaveChangesAsync();
         }
         
         _logger.LogInformation("Marked {Count} notifications as read for hotel {HotelId}", updatedIds.Count, hotelId);
@@ -120,7 +157,8 @@ public class NotificationService : INotificationService
 
     public async Task<int> GetUnreadCountAsync(int? hotelId = null)
     {
-        var notifications = _notifications.Where(n => !n.IsRead);
+        var query = await _unitOfWork.SystemNotifications.GetAllAsync();
+        var notifications = query.Where(n => !n.IsRead);
         
         if (hotelId.HasValue)
         {
@@ -177,7 +215,7 @@ public class NotificationService : INotificationService
         var notification = await CreateNotificationAsync(type, title, message, "System", hotelId);
         
         // Send to admin users for critical alerts
-        if (type == NotificationType.Error || type == NotificationType.SystemAlert)
+        if (type == NotificationType.Error || type == NotificationType.SystemAlert || type == NotificationType.Critical)
         {
             await _hubContext.Clients.Group("AdminUsers").SendAsync("SystemAlert", notification);
         }
@@ -253,7 +291,8 @@ public class NotificationService : INotificationService
 
     public async Task<NotificationStatsDto> GetNotificationStatsAsync(int? hotelId = null)
     {
-        var notifications = _notifications.AsQueryable();
+        var query = await _unitOfWork.SystemNotifications.GetAllAsync();
+        var notifications = query.AsQueryable();
         
         if (hotelId.HasValue)
         {
@@ -270,7 +309,7 @@ public class NotificationService : INotificationService
             TodayCount = notificationList.Count(n => n.CreatedAt.Date == today),
             CountByType = notificationList.GroupBy(n => n.Type)
                 .ToDictionary(g => g.Key, g => g.Count()),
-            CountByPriority = notificationList.GroupBy(n => n.Priority)
+            CountByPriority = notificationList.GroupBy(n => GetPriorityFromType(n.Type))
                 .ToDictionary(g => g.Key, g => g.Count())
         };
     }

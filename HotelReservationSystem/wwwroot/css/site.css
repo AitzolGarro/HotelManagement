@@ -1082,9 +1082,20 @@
 /* Improved focus states for accessibility */
 .form-control:focus,
 .form-select:focus,
-.btn:focus {
-    outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
+.btn:focus,
+a:focus,
+button:focus {
+    outline: 2px solid var(--primary-color) !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+}
+
+/* Ensure sufficient color contrast */
+.text-muted {
+    color: #595c5f !important; /* Darker grey for better contrast against white */
+}
+.bg-primary {
+    background-color: #0056b3 !important; /* Darker primary for better white text contrast */
 }
 
 /* Skip to content link for accessibility */

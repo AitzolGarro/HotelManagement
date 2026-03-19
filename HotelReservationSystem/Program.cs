@@ -35,6 +35,12 @@ try
     // Add Serilog
     builder.Host.UseSerilog();
 
+    // Add health checks
+    builder.Services.AddHealthChecks()
+        .AddDbContextCheck<HotelReservationContext>("Database")
+        .AddCheck<HotelReservationSystem.HealthChecks.RedisHealthCheck>("Redis")
+        .AddCheck<HotelReservationSystem.HealthChecks.BookingComHealthCheck>("BookingCom");
+
     // Add services to the container
     builder.Services.AddControllers();
     builder.Services.AddControllersWithViews();
@@ -68,6 +74,9 @@ try
     var databaseProvider = usesSqlite ? "Sqlite" : "SqlServer";
     Log.Information("Database Provider configured as: {DatabaseProvider}", databaseProvider);
     
+    // Register RedisConnectionService
+    builder.Services.AddSingleton<IRedisConnectionService, RedisConnectionService>();
+
     // Configure Redis (gracefully handle missing Redis for demo)
     var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
     var isDemoMode = usesSqlite;
@@ -83,7 +92,10 @@ try
             });
             
             builder.Services.AddSingleton<IConnectionMultiplexer>(provider =>
-                ConnectionMultiplexer.Connect(redisConnectionString));
+            {
+                var connectionService = provider.GetRequiredService<IRedisConnectionService>();
+                return connectionService.GetConnection() ?? ConnectionMultiplexer.Connect(redisConnectionString);
+            });
             
             Log.Information("Redis cache configured successfully");
         }
@@ -119,10 +131,10 @@ try
         // Password settings
         options.Password.RequireDigit = true;
         options.Password.RequireLowercase = true;
-        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireNonAlphanumeric = true;
         options.Password.RequireUppercase = true;
-        options.Password.RequiredLength = 6;
-        options.Password.RequiredUniqueChars = 1;
+        options.Password.RequiredLength = 8;
+        options.Password.RequiredUniqueChars = 2;
 
         // Lockout settings
         options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
@@ -209,7 +221,16 @@ try
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<IReservationService, ReservationService>();
     builder.Services.AddScoped<IPropertyService, PropertyService>();
+    builder.Services.AddScoped<IPaymentGatewayService, StripePaymentGatewayService>();
+    builder.Services.AddScoped<IPaymentService, PaymentService>();
+    builder.Services.AddScoped<IGuestManagementService, GuestManagementService>();
+    builder.Services.AddScoped<IGuestPortalService, GuestPortalService>();
+    builder.Services.AddSingleton<IEncryptionService, EncryptionService>();
     builder.Services.AddScoped<HotelReservationSystem.Services.BookingCom.IBookingIntegrationService, HotelReservationSystem.Services.BookingCom.BookingIntegrationService>();
+    builder.Services.AddScoped<IExpediaChannelService, ExpediaChannelService>();
+    builder.Services.AddScoped<IChannelManagerService, ChannelManagerService>();
+    builder.Services.AddScoped<IPricingService, PricingService>();
+    builder.Services.AddScoped<IExportService, ExportService>();
     builder.Services.AddScoped<INotificationService, NotificationService>();
     builder.Services.AddScoped<IDashboardService, DashboardService>();
     builder.Services.AddScoped<IReportingService, ReportingService>();
@@ -252,10 +273,42 @@ try
     // Add global exception handling middleware (should be early in the pipeline)
     app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
     
+    // Add correlation ID middleware
+    app.UseMiddleware<CorrelationIdMiddleware>();
+    
     // Add performance monitoring middleware
     app.UseMiddleware<PerformanceMonitoringMiddleware>();
     
+    // Add rate limiting middleware
+    app.UseMiddleware<RateLimitingMiddleware>();
+    
+    // Add audit logging middleware
+    app.UseMiddleware<AuditLoggingMiddleware>();
+    
     app.UseRouting();
+
+    // Health check endpoints
+    app.MapHealthChecks("/health");
+    app.MapHealthChecks("/health/details", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+    {
+        ResponseWriter = async (context, report) =>
+        {
+            context.Response.ContentType = "application/json";
+            var result = System.Text.Json.JsonSerializer.Serialize(new
+            {
+                status = report.Status.ToString(),
+                checks = report.Entries.Select(e => new
+                {
+                    name = e.Key,
+                    status = e.Value.Status.ToString(),
+                    description = e.Value.Description,
+                    error = e.Value.Exception?.Message
+                })
+            });
+            await context.Response.WriteAsync(result);
+        }
+    }).RequireAuthorization(new Microsoft.AspNetCore.Authorization.AuthorizeAttribute { Roles = "Admin" });
+
     app.UseAuthentication();
     app.UseAuthorization();
     

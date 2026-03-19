@@ -25,14 +25,23 @@ public class HotelsController : ControllerBase
     /// <summary>
     /// Get all hotels
     /// </summary>
-    /// <returns>List of hotels</returns>
+    /// <param name="pageNumber">Page number for pagination</param>
+    /// <param name="pageSize">Page size for pagination</param>
+    /// <returns>Paged list of hotels</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<HotelDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<HotelDto>>> GetHotels()
+    [ProducesResponseType(typeof(PagedResultDto<HotelDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedResultDto<HotelDto>>> GetHotels([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
     {
-        _logger.LogInformation("Getting all hotels");
-        var hotels = await _propertyService.GetAllHotelsAsync();
-        return Ok(hotels);
+        _logger.LogInformation("Getting all hotels (Paged - Page: {PageNumber}, Size: {PageSize})", pageNumber, pageSize);
+        var pagedResult = await _propertyService.GetPagedHotelsAsync(pageNumber, pageSize);
+        
+        // Add pagination metadata to headers
+        Response.Headers.Append("X-Pagination-Total-Count", pagedResult.TotalCount.ToString());
+        Response.Headers.Append("X-Pagination-Page-Number", pagedResult.PageNumber.ToString());
+        Response.Headers.Append("X-Pagination-Page-Size", pagedResult.PageSize.ToString());
+        Response.Headers.Append("X-Pagination-Total-Pages", pagedResult.TotalPages.ToString());
+
+        return Ok(pagedResult);
     }
 
     /// <summary>

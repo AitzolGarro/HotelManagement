@@ -28,6 +28,11 @@ public class GuestDto
     [StringLength(50, ErrorMessage = "Document number cannot exceed 50 characters")]
     public string? DocumentNumber { get; set; }
     
+    [StringLength(100, ErrorMessage = "Nationality cannot exceed 100 characters")]
+    public string? Nationality { get; set; }
+    
+    public bool IsVip { get; set; }
+    
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
@@ -55,6 +60,9 @@ public class CreateGuestRequest
     
     [StringLength(50, ErrorMessage = "Document number cannot exceed 50 characters")]
     public string? DocumentNumber { get; set; }
+    
+    [StringLength(100, ErrorMessage = "Nationality cannot exceed 100 characters")]
+    public string? Nationality { get; set; }
 }
 
 public class UpdateGuestRequest
@@ -80,4 +88,9 @@ public class UpdateGuestRequest
     
     [StringLength(50, ErrorMessage = "Document number cannot exceed 50 characters")]
     public string? DocumentNumber { get; set; }
+    
+    [StringLength(100, ErrorMessage = "Nationality cannot exceed 100 characters")]
+    public string? Nationality { get; set; }
+    
+    public bool IsVip { get; set; }
 }

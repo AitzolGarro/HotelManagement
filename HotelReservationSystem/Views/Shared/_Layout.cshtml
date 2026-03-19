@@ -15,54 +15,62 @@
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.css" rel="stylesheet">
     <!-- Date Range Picker CSS -->
     <link href="https://cdn.jsdelivr.net/npm/daterangepicker@3.1.0/daterangepicker.css" rel="stylesheet">
+    
+    <!-- GridStack CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/gridstack@7.2.1/dist/gridstack.min.css" rel="stylesheet"/>
+    
     <!-- Custom CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="~/manifest.json" />
+    <meta name="theme-color" content="#0d6efd" />
 </head>
 <body>
     <!-- Skip to content link for accessibility -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
     
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <header role="banner">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary" aria-label="Main Navigation">
             <div class="container-fluid">
-                <a class="navbar-brand" href="/">
-                    <i class="bi bi-building"></i>
+                <a class="navbar-brand" href="/" aria-label="Home">
+                    <i class="bi bi-building" aria-hidden="true"></i>
                     Hotel Reservation System
                 </a>
                 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
+                    <ul class="navbar-nav me-auto" role="menubar">
+                        <li class="nav-item" role="menuitem">
                             <a class="nav-link" href="/" data-section="dashboard">
-                                <i class="bi bi-speedometer2"></i>
+                                <i class="bi bi-speedometer2" aria-hidden="true"></i>
                                 Dashboard
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" role="menuitem">
                             <a class="nav-link" href="/Home/calendar" data-section="calendar">
-                                <i class="bi bi-calendar3"></i>
+                                <i class="bi bi-calendar3" aria-hidden="true"></i>
                                 Calendar
                             </a>
                         </li>
-                        <li class="nav-item" data-role="manager">
+                        <li class="nav-item" data-role="manager" role="menuitem">
                             <a class="nav-link" href="/Home/properties" data-section="properties">
-                                <i class="bi bi-buildings"></i>
+                                <i class="bi bi-buildings" aria-hidden="true"></i>
                                 Properties
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" role="menuitem">
                             <a class="nav-link" href="/Home/reservations" data-section="reservations">
-                                <i class="bi bi-journal-bookmark"></i>
+                                <i class="bi bi-journal-bookmark" aria-hidden="true"></i>
                                 Reservations
                             </a>
                         </li>
-                        <li class="nav-item" data-role="manager">
+                        <li class="nav-item" data-role="manager" role="menuitem">
                             <a class="nav-link" href="/Home/reports" data-section="reports">
-                                <i class="bi bi-graph-up"></i>
+                                <i class="bi bi-graph-up" aria-hidden="true"></i>
                                 Reports
                             </a>
                         </li>
@@ -70,15 +78,15 @@
                     
                     <ul class="navbar-nav">
                         <li class="nav-item dropdown" id="userMenu" style="display: none;">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-person-circle me-1"></i>
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User Menu">
+                                <i class="bi bi-person-circle me-1" aria-hidden="true"></i>
                                 <span id="userName"></span>
                                 <small class="text-muted ms-1" id="userRole" data-user-role></small>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
+                            <ul class="dropdown-menu dropdown-menu-end" aria-label="User actions">
                                 <li class="dropdown-header">
                                     <div class="d-flex align-items-center">
-                                        <i class="bi bi-person-circle fs-4 me-2"></i>
+                                        <i class="bi bi-person-circle fs-4 me-2" aria-hidden="true"></i>
                                         <div>
                                             <div class="fw-semibold" id="userFullName"></div>
                                             <small class="text-muted" id="userEmail"></small>
@@ -87,30 +95,30 @@
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="#" id="profileLink">
-                                    <i class="bi bi-person me-2"></i> My Profile
+                                    <i class="bi bi-person me-2" aria-hidden="true"></i> My Profile
                                 </a></li>
                                 <li><a class="dropdown-item" href="#" id="changePasswordLink">
-                                    <i class="bi bi-key me-2"></i> Change Password
+                                    <i class="bi bi-key me-2" aria-hidden="true"></i> Change Password
                                 </a></li>
                                 <li data-role="admin"><a class="dropdown-item" href="#" id="userManagementLink">
-                                    <i class="bi bi-people me-2"></i> User Management
+                                    <i class="bi bi-people me-2" aria-hidden="true"></i> User Management
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="#" id="settingsLink">
-                                    <i class="bi bi-gear me-2"></i> Settings
+                                    <i class="bi bi-gear me-2" aria-hidden="true"></i> Settings
                                 </a></li>
                                 <li><a class="dropdown-item" href="#" id="helpLink">
-                                    <i class="bi bi-question-circle me-2"></i> Help & Support
+                                    <i class="bi bi-question-circle me-2" aria-hidden="true"></i> Help & Support
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item text-danger" href="#" id="logoutBtn">
-                                    <i class="bi bi-box-arrow-right me-2"></i> Sign Out
+                                    <i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i> Sign Out
                                 </a></li>
                             </ul>
                         </li>
                         <li class="nav-item" id="loginMenu">
                             <a class="nav-link" href="/Home/login">
-                                <i class="bi bi-box-arrow-in-right"></i>
+                                <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
                                 Sign In
                             </a>
                         </li>
@@ -120,7 +128,7 @@
         </nav>
     </header>
 
-    <main id="main-content" class="container-fluid mt-3">
+    <main id="main-content" class="container-fluid mt-3" role="main">
         <!-- Loading overlay -->
         <div id="loadingOverlay" class="loading-overlay" style="display: none;">
             <div class="loading-spinner">
@@ -148,6 +156,24 @@
         @RenderBody()
     </main>
 
+    <!-- Bottom Navigation for Mobile -->
+    <nav class="mobile-bottom-nav d-lg-none">
+        <div class="d-flex justify-content-around w-100">
+            <a href="/" class="nav-item text-center p-2 text-decoration-none text-dark" data-section="dashboard">
+                <i class="bi bi-speedometer2 d-block fs-5"></i>
+                <small>Home</small>
+            </a>
+            <a href="/Home/calendar" class="nav-item text-center p-2 text-decoration-none text-dark" data-section="calendar">
+                <i class="bi bi-calendar3 d-block fs-5"></i>
+                <small>Calendar</small>
+            </a>
+            <a href="/Home/reservations" class="nav-item text-center p-2 text-decoration-none text-dark" data-section="reservations">
+                <i class="bi bi-journal-bookmark d-block fs-5"></i>
+                <small>Bookings</small>
+            </a>
+        </div>
+    </nav>
+
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- jQuery (required for date range picker) -->
@@ -167,6 +193,18 @@
     <script src="~/js/modules/signalr.js" asp-append-version="true"></script>
     <script src="~/js/modules/notifications.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(registration => {
+                    console.log('SW registered: ', registration);
+                }).catch(registrationError => {
+                    console.log('SW registration failed: ', registrationError);
+                });
+            });
+        }
+    </script>
     
     @await RenderSectionAsync("Scripts", required: false)
 </body>

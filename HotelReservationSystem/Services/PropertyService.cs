@@ -75,6 +75,21 @@ public class PropertyService : IPropertyService
         }, CacheKeys.Expiration.Long);
     }
 
+    public async Task<PagedResultDto<HotelDto>> GetPagedHotelsAsync(int pageNumber, int pageSize)
+    {
+        using var timer = _performanceMonitoring.StartTimer("PropertyService.GetPagedHotels");
+        
+        var (items, totalCount) = await _unitOfWork.Hotels.GetPagedHotelsAsync(pageNumber, pageSize);
+        
+        return new PagedResultDto<HotelDto>
+        {
+            Items = items.Select(MapToHotelDto).ToList(),
+            TotalCount = totalCount,
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
+    }
+
     public async Task<HotelDto> UpdateHotelAsync(int id, UpdateHotelRequest request)
     {
         using var timer = _performanceMonitoring.StartTimer("PropertyService.UpdateHotel");

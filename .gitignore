@@ -1,0 +1,46 @@
+# Kiro IDE - specs, steering y configuración local
+.kiro/
+
+# Build outputs
+bin/
+obj/
+publish/
+
+# .NET
+*.user
+*.suo
+.vs/
+*.swp
+
+# Logs
+logs/
+*.log
+*.txt.log
+
+# SQLite databases
+*.db
+*.db-shm
+*.db-wal
+
+# Secrets & environment
+appsettings.Development.json
+appsettings.*.json
+!appsettings.json
+
+# NuGet
+*.nupkg
+packages/
+.nuget/
+
+# Coverage
+coverage/
+*.coverage
+*.coveragexml
+TestResults/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node (test scripts)
+node_modules/

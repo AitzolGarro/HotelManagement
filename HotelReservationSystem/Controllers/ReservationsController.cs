@@ -23,50 +23,42 @@ public class ReservationsController : ControllerBase
     }
 
     /// <summary>
-    /// Get reservations with optional filtering
+    /// Get reservations with optional filtering and pagination
     /// </summary>
     /// <param name="from">Start date for filtering</param>
     /// <param name="to">End date for filtering</param>
     /// <param name="hotelId">Hotel ID for filtering</param>
     /// <param name="status">Reservation status for filtering</param>
     /// <param name="roomId">Room ID for filtering</param>
-    /// <returns>List of reservations</returns>
+    /// <param name="pageNumber">Page number for pagination</param>
+    /// <param name="pageSize">Page size for pagination</param>
+    /// <returns>Paged list of reservations</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<ReservationDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PagedResultDto<ReservationDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<IEnumerable<ReservationDto>>> GetReservations(
+    public async Task<ActionResult<PagedResultDto<ReservationDto>>> GetReservations(
         [FromQuery] DateTime? from,
         [FromQuery] DateTime? to,
         [FromQuery] int? hotelId,
         [FromQuery] ReservationStatus? status,
-        [FromQuery] int? roomId)
+        [FromQuery] int? roomId,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20)
     {
-        _logger.LogInformation("Getting reservations with filters - From: {From}, To: {To}, HotelId: {HotelId}, Status: {Status}, RoomId: {RoomId}",
-            from, to, hotelId, status, roomId);
+        _logger.LogInformation("Getting reservations with filters - From: {From}, To: {To}, HotelId: {HotelId}, Status: {Status}, RoomId: {RoomId}, Page: {PageNumber}, Size: {PageSize}",
+            from, to, hotelId, status, roomId, pageNumber, pageSize);
 
         try
         {
-            IEnumerable<ReservationDto> reservations;
+            var pagedResult = await _reservationService.GetPagedReservationsAsync(from, to, hotelId, status, roomId, pageNumber, pageSize);
 
-            // Determine date range - use provided dates or default to current month
-            var dateFrom = from ?? new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
-            var dateTo = to ?? dateFrom.AddMonths(1).AddDays(-1);
+            // Add pagination metadata to headers
+            Response.Headers.Append("X-Pagination-Total-Count", pagedResult.TotalCount.ToString());
+            Response.Headers.Append("X-Pagination-Page-Number", pagedResult.PageNumber.ToString());
+            Response.Headers.Append("X-Pagination-Page-Size", pagedResult.PageSize.ToString());
+            Response.Headers.Append("X-Pagination-Total-Pages", pagedResult.TotalPages.ToString());
 
-            // Get reservations by date range (this is the primary filter)
-            reservations = await _reservationService.GetReservationsByDateRangeAsync(dateFrom, dateTo, hotelId);
-
-            // Apply additional filters if specified
-            if (status.HasValue)
-            {
-                reservations = reservations.Where(r => r.Status == status.Value);
-            }
-
-            if (roomId.HasValue)
-            {
-                reservations = reservations.Where(r => r.RoomId == roomId.Value);
-            }
-
-            return Ok(reservations);
+            return Ok(pagedResult);
         }
         catch (InvalidDateRangeException ex)
         {
@@ -82,6 +74,72 @@ public class ReservationsController : ControllerBase
         {
             _logger.LogError(ex, "Error retrieving reservations");
             return StatusCode(500, "An error occurred while retrieving reservations");
+        }
+    }
+
+    [HttpGet("search")]
+    [ProducesResponseType(typeof(PagedResultDto<ReservationDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedResultDto<ReservationDto>>> SearchReservations(
+        [FromQuery] ReservationSearchCriteria criteria,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20)
+    {
+        _logger.LogInformation("Searching reservations - Page: {PageNumber}, Size: {PageSize}", pageNumber, pageSize);
+
+        try
+        {
+            var pagedResult = await _reservationService.SearchReservationsAsync(criteria, pageNumber, pageSize);
+
+            // Add pagination metadata to headers
+            Response.Headers.Append("X-Pagination-Total-Count", pagedResult.TotalCount.ToString());
+            Response.Headers.Append("X-Pagination-Page-Number", pagedResult.PageNumber.ToString());
+            Response.Headers.Append("X-Pagination-Page-Size", pagedResult.PageSize.ToString());
+            Response.Headers.Append("X-Pagination-Total-Pages", pagedResult.TotalPages.ToString());
+
+            return Ok(pagedResult);
+        }
+        catch (InvalidDateRangeException ex)
+        {
+            _logger.LogWarning(ex, "Invalid date range provided");
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error searching reservations");
+            return StatusCode(500, "An error occurred while searching reservations");
+        }
+    }
+
+    [HttpGet("export")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ExportReservations(
+        [FromServices] IExportService exportService,
+        [FromQuery] ReservationSearchCriteria criteria,
+        [FromQuery] string format = "csv")
+    {
+        try
+        {
+            // For export we might want a larger page size or to retrieve all matching records
+            var pagedResult = await _reservationService.SearchReservationsAsync(criteria, 1, 10000);
+            var data = pagedResult.Items;
+
+            return format.ToLower() switch
+            {
+                "excel" => File(exportService.ExportToExcel(data, "Reservations"), 
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
+                                $"Reservations_{DateTime.UtcNow:yyyyMMdd}.xlsx"),
+                "pdf" => File(exportService.ExportToPdf(data, "Reservations Report"), 
+                              "application/pdf", 
+                              $"Reservations_{DateTime.UtcNow:yyyyMMdd}.pdf"),
+                _ => File(exportService.ExportToCsv(data), 
+                          "text/csv", 
+                          $"Reservations_{DateTime.UtcNow:yyyyMMdd}.csv")
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error exporting reservations");
+            return StatusCode(500, "An error occurred while exporting reservations");
         }
     }
 
@@ -307,6 +365,58 @@ public class ReservationsController : ControllerBase
         {
             _logger.LogError(ex, "Error updating reservation {ReservationId}", id);
             return StatusCode(500, "An error occurred while updating the reservation");
+        }
+    }
+
+    /// <summary>
+    /// Modify reservation dates (for calendar drag-and-drop)
+    /// </summary>
+    /// <param name="id">Reservation ID</param>
+    /// <param name="request">New dates and optional room</param>
+    /// <returns>Updated reservation</returns>
+    [HttpPatch("{id}/dates")]
+    [ProducesResponseType(typeof(ReservationDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<ReservationDto>> UpdateReservationDates(int id, [FromBody] UpdateReservationDatesRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        _logger.LogInformation("Updating dates for reservation {ReservationId}", id);
+
+        try
+        {
+            var updatedReservation = await _reservationService.UpdateReservationDatesAsync(id, request);
+            return Ok(updatedReservation);
+        }
+        catch (ReservationNotFoundException ex)
+        {
+            _logger.LogWarning(ex, "Reservation {ReservationId} not found", id);
+            return NotFound(ex.Message);
+        }
+        catch (ReservationConflictException ex)
+        {
+            _logger.LogWarning(ex, "Reservation conflict detected during drag-and-drop");
+            return Conflict(ex.Message);
+        }
+        catch (InvalidDateRangeException ex)
+        {
+            _logger.LogWarning(ex, "Invalid date range");
+            return BadRequest(ex.Message);
+        }
+        catch (ArgumentException ex)
+        {
+            _logger.LogWarning(ex, "Invalid reservation data");
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating dates for reservation {ReservationId}", id);
+            return StatusCode(500, "An error occurred while updating the reservation dates");
         }
     }
 

@@ -59,11 +59,33 @@ public class ReportingService : IReportingService
         var dailyOccupancy = new List<DailyOccupancyDto>();
         var totalRooms = await GetTotalRoomsAsync(hotelId);
 
+        // Load data once to avoid 90 queries
+        var reservations = await _context.Reservations
+            .Where(r => r.CheckInDate < endDate && r.CheckOutDate > startDate)
+            .Where(r => r.Status != ReservationStatus.Cancelled)
+            .Select(r => new { r.CheckInDate, r.CheckOutDate, r.TotalAmount, r.RoomId, r.HotelId })
+            .ToListAsync();
+
+        if (hotelId.HasValue)
+        {
+            reservations = reservations.Where(r => r.HotelId == hotelId.Value).ToList();
+        }
+
         for (var date = startDate.Date; date < endDate.Date; date = date.AddDays(1))
         {
-            var occupiedRooms = await GetOccupiedRoomsCountAsync(date, date.AddDays(1), hotelId);
-            var revenue = await CalculateRevenueForDateAsync(date, hotelId);
-            var reservationCount = await GetReservationCountForDateAsync(date, hotelId);
+            var occupiedRooms = reservations
+                .Where(r => r.CheckInDate <= date && r.CheckOutDate > date)
+                .Select(r => r.RoomId)
+                .Distinct()
+                .Count();
+                
+            var revenue = reservations
+                .Where(r => r.CheckInDate.Date == date.Date)
+                .Sum(r => r.TotalAmount);
+                
+            var reservationCount = reservations
+                .Where(r => r.CheckInDate.Date == date.Date)
+                .Count();
 
             dailyOccupancy.Add(new DailyOccupancyDto
             {
@@ -88,20 +110,51 @@ public class ReportingService : IReportingService
             roomTypeQuery = roomTypeQuery.Where(r => r.HotelId == hotelId.Value);
         }
 
-        var roomTypes = await roomTypeQuery
+        var rooms = await roomTypeQuery
             .Where(r => r.Status == RoomStatus.Available)
-            .GroupBy(r => r.Type)
-            .Select(g => new { RoomType = g.Key, TotalRooms = g.Count() })
+            .Select(r => new { r.Id, r.Type, r.HotelId })
             .ToListAsync();
+
+        var roomTypes = rooms
+            .GroupBy(r => r.Type)
+            .Select(g => new { RoomType = g.Key, TotalRooms = g.Count(), RoomIds = g.Select(r => r.Id).ToList() })
+            .ToList();
+
+        var reservations = await _context.Reservations
+            .Where(r => r.CheckInDate < endDate && r.CheckOutDate > startDate)
+            .Where(r => r.Status != ReservationStatus.Cancelled)
+            .Select(r => new { r.CheckInDate, r.CheckOutDate, r.TotalAmount, r.RoomId, r.HotelId })
+            .ToListAsync();
+
+        if (hotelId.HasValue)
+        {
+            reservations = reservations.Where(r => r.HotelId == hotelId.Value).ToList();
+        }
 
         var result = new List<RoomTypeOccupancyDto>();
 
         foreach (var roomType in roomTypes)
         {
-            var occupiedRoomNights = await GetOccupiedRoomNightsByTypeAsync(startDate, endDate, roomType.RoomType, hotelId);
+            var typeReservations = reservations.Where(r => roomType.RoomIds.Contains(r.RoomId)).ToList();
+            
+            var occupiedRoomNights = 0;
+            foreach (var res in typeReservations)
+            {
+                var overlapStart = res.CheckInDate > startDate ? res.CheckInDate : startDate;
+                var overlapEnd = res.CheckOutDate < endDate ? res.CheckOutDate : endDate;
+                if (overlapStart < overlapEnd)
+                {
+                    occupiedRoomNights += (overlapEnd - overlapStart).Days;
+                }
+            }
+
             var totalRoomNights = roomType.TotalRooms * (endDate - startDate).Days;
             var occupancyRate = totalRoomNights > 0 ? (decimal)occupiedRoomNights / totalRoomNights * 100 : 0;
-            var revenue = await GetRevenueByRoomTypeAsync(startDate, endDate, roomType.RoomType, hotelId);
+            
+            var revenue = typeReservations
+                .Where(r => r.CheckInDate >= startDate && r.CheckInDate < endDate)
+                .Sum(r => r.TotalAmount);
+                
             var averageRate = occupiedRoomNights > 0 ? revenue / occupiedRoomNights : 0;
 
             result.Add(new RoomTypeOccupancyDto
@@ -208,9 +261,13 @@ public class ReportingService : IReportingService
             query = query.Where(r => r.HotelId == hotelId.Value);
         }
 
-        var monthlyData = await query
+        var reservations = await query
             .Where(r => r.CheckInDate >= startDate && r.CheckInDate < endDate)
             .Where(r => r.Status != ReservationStatus.Cancelled)
+            .Select(r => new { r.CheckInDate, r.TotalAmount })
+            .ToListAsync();
+
+        var monthlyData = reservations
             .GroupBy(r => new { r.CheckInDate.Year, r.CheckInDate.Month })
             .Select(g => new MonthlyRevenueDto
             {
@@ -219,11 +276,11 @@ public class ReportingService : IReportingService
                 MonthName = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMMM yyyy"),
                 Revenue = g.Sum(r => r.TotalAmount),
                 ReservationCount = g.Count(),
-                AverageRevenuePerReservation = g.Average(r => r.TotalAmount)
+                AverageRevenuePerReservation = g.Any() ? g.Average(r => r.TotalAmount) : 0
             })
             .OrderBy(m => m.Year)
             .ThenBy(m => m.Month)
-            .ToListAsync();
+            .ToList();
 
         // Calculate variance from previous month
         for (int i = 1; i < monthlyData.Count; i++)
@@ -245,9 +302,13 @@ public class ReportingService : IReportingService
             query = query.Where(r => r.HotelId == hotelId.Value);
         }
 
-        var sourceData = await query
+        var reservations = await query
             .Where(r => r.CheckInDate >= startDate && r.CheckInDate < endDate)
             .Where(r => r.Status != ReservationStatus.Cancelled)
+            .Select(r => new { r.Source, r.TotalAmount })
+            .ToListAsync();
+
+        var sourceData = reservations
             .GroupBy(r => r.Source)
             .Select(g => new RevenueSourceDto
             {
@@ -255,9 +316,9 @@ public class ReportingService : IReportingService
                 SourceName = g.Key.ToString(),
                 Revenue = g.Sum(r => r.TotalAmount),
                 ReservationCount = g.Count(),
-                AverageRevenuePerReservation = g.Average(r => r.TotalAmount)
+                AverageRevenuePerReservation = g.Any() ? g.Average(r => r.TotalAmount) : 0
             })
-            .ToListAsync();
+            .ToList();
 
         var totalRevenue = sourceData.Sum(s => s.Revenue);
         foreach (var source in sourceData)
@@ -370,20 +431,24 @@ public class ReportingService : IReportingService
             query = query.Where(r => r.HotelId == hotelId.Value);
         }
 
-        var sourcePatterns = await query
+        var reservations = await query
             .Where(r => r.CheckInDate >= startDate && r.CheckInDate < endDate)
             .Where(r => r.Status != ReservationStatus.Cancelled)
+            .Select(r => new { r.Source, r.CreatedAt, r.CheckInDate, r.CheckOutDate, r.TotalAmount })
+            .ToListAsync();
+
+        var sourcePatterns = reservations
             .GroupBy(r => r.Source)
             .Select(g => new BookingSourcePatternDto
             {
                 Source = g.Key,
                 SourceName = g.Key.ToString(),
                 ReservationCount = g.Count(),
-                AverageLeadTime = (decimal)g.Average(r => EF.Functions.DateDiffDay(r.CreatedAt, r.CheckInDate)),
-                AverageStayDuration = (decimal)g.Average(r => EF.Functions.DateDiffDay(r.CheckInDate, r.CheckOutDate)),
+                AverageLeadTime = (decimal)g.Average(r => (r.CheckInDate - r.CreatedAt).TotalDays),
+                AverageStayDuration = (decimal)g.Average(r => (r.CheckOutDate - r.CheckInDate).TotalDays),
                 AverageRevenue = g.Average(r => r.TotalAmount)
             })
-            .ToListAsync();
+            .ToList();
 
         var totalReservations = sourcePatterns.Sum(sp => sp.ReservationCount);
         foreach (var pattern in sourcePatterns)
@@ -407,7 +472,7 @@ public class ReportingService : IReportingService
             .Where(r => r.CheckInDate >= startDate && r.CheckInDate < endDate)
             .Where(r => r.Status != ReservationStatus.Cancelled)
             .Select(r => new { 
-                Duration = EF.Functions.DateDiffDay(r.CheckInDate, r.CheckOutDate),
+                Duration = (r.CheckOutDate - r.CheckInDate).Days,
                 Revenue = r.TotalAmount 
             })
             .ToListAsync();
@@ -418,7 +483,7 @@ public class ReportingService : IReportingService
             {
                 DurationRange = g.Key,
                 ReservationCount = g.Count(),
-                AverageRevenue = Math.Round(g.Average(r => r.Revenue), 2)
+                AverageRevenue = Math.Round(g.Any() ? g.Average(r => r.Revenue) : 0, 2)
             })
             .ToList();
 
@@ -440,20 +505,24 @@ public class ReportingService : IReportingService
             query = query.Where(r => r.HotelId == hotelId.Value);
         }
 
-        var seasonalData = await query
+        var reservations = await query
             .Where(r => r.CheckInDate >= startDate && r.CheckInDate < endDate)
             .Where(r => r.Status != ReservationStatus.Cancelled)
+            .Select(r => new { r.CheckInDate, r.CheckOutDate, r.TotalAmount })
+            .ToListAsync();
+
+        var seasonalData = reservations
             .GroupBy(r => r.CheckInDate.Month)
             .Select(g => new SeasonalPatternDto
             {
                 Month = g.Key,
                 MonthName = new DateTime(2023, g.Key, 1).ToString("MMMM"),
                 ReservationCount = g.Count(),
-                AverageRevenue = Math.Round(g.Average(r => r.TotalAmount), 2),
-                AverageStayDuration = Math.Round((decimal)g.Average(r => EF.Functions.DateDiffDay(r.CheckInDate, r.CheckOutDate)), 2)
+                AverageRevenue = Math.Round(g.Any() ? g.Average(r => r.TotalAmount) : 0, 2),
+                AverageStayDuration = Math.Round((decimal)(g.Any() ? g.Average(r => (r.CheckOutDate - r.CheckInDate).TotalDays) : 0), 2)
             })
             .OrderBy(sp => sp.Month)
-            .ToListAsync();
+            .ToList();
 
         // Calculate occupancy rates for each month
         foreach (var month in seasonalData)
@@ -482,10 +551,23 @@ public class ReportingService : IReportingService
             query = query.Where(r => r.HotelId == hotelId.Value);
         }
 
-        var guestData = await query
+        var reservations = await query
             .Where(r => r.CheckInDate >= startDate && r.CheckInDate < endDate)
             .Where(r => r.Status != ReservationStatus.Cancelled)
-            .GroupBy(r => new { r.GuestId, r.Guest.FirstName, r.Guest.LastName, r.Guest.Email })
+            .Select(r => new { 
+                r.GuestId, 
+                r.Guest.FirstName, 
+                r.Guest.LastName, 
+                r.Guest.Email, 
+                r.TotalAmount, 
+                r.CheckInDate, 
+                r.CheckOutDate,
+                RoomType = r.Room.Type 
+            })
+            .ToListAsync();
+
+        var guestData = reservations
+            .GroupBy(r => new { r.GuestId, r.FirstName, r.LastName, r.Email })
             .Where(g => g.Count() > 1) // Only repeat guests
             .Select(g => new GuestLoyaltyDto
             {
@@ -496,15 +578,15 @@ public class ReportingService : IReportingService
                 TotalRevenue = g.Sum(r => r.TotalAmount),
                 FirstStay = g.Min(r => r.CheckInDate),
                 LastStay = g.Max(r => r.CheckInDate),
-                AverageStayDuration = Math.Round((decimal)g.Average(r => EF.Functions.DateDiffDay(r.CheckInDate, r.CheckOutDate)), 2),
-                PreferredRoomType = g.GroupBy(r => r.Room.Type)
+                AverageStayDuration = Math.Round((decimal)g.Average(r => (r.CheckOutDate - r.CheckInDate).TotalDays), 2),
+                PreferredRoomType = g.GroupBy(r => r.RoomType)
                     .OrderByDescending(rt => rt.Count())
                     .Select(rt => rt.Key.ToString())
                     .FirstOrDefault() ?? ""
             })
             .OrderByDescending(g => g.TotalRevenue)
             .Take(50) // Top 50 loyal guests
-            .ToListAsync();
+            .ToList();
 
         return guestData;
     }
@@ -798,10 +880,13 @@ public class ReportingService : IReportingService
             query = query.Where(r => r.HotelId == hotelId.Value);
         }
 
-        return await query
+        var totals = await query
             .Where(r => r.CheckInDate.Date == date.Date)
             .Where(r => r.Status != ReservationStatus.Cancelled)
-            .SumAsync(r => r.TotalAmount);
+            .Select(r => r.TotalAmount)
+            .ToListAsync();
+
+        return totals.Sum();
     }
 
     private async Task<int> GetReservationCountForDateAsync(DateTime date, int? hotelId = null)
@@ -840,10 +925,13 @@ public class ReportingService : IReportingService
             query = query.Where(r => r.HotelId == hotelId.Value);
         }
 
-        return await query
+        var totals = await query
             .Where(r => r.CheckInDate >= startDate && r.CheckInDate < endDate)
             .Where(r => r.Status != ReservationStatus.Cancelled)
-            .SumAsync(r => r.TotalAmount);
+            .Select(r => r.TotalAmount)
+            .ToListAsync();
+
+        return totals.Sum();
     }
 
     private async Task<decimal> CalculateOccupancyRateAsync(DateTime startDate, DateTime endDate, int? hotelId = null)
@@ -902,11 +990,14 @@ public class ReportingService : IReportingService
             query = query.Where(r => r.HotelId == hotelId.Value);
         }
 
-        return await query
+        var totals = await query
             .Where(r => r.Room.Type == roomType)
             .Where(r => r.CheckInDate >= startDate && r.CheckInDate < endDate)
             .Where(r => r.Status != ReservationStatus.Cancelled)
-            .SumAsync(r => r.TotalAmount);
+            .Select(r => r.TotalAmount)
+            .ToListAsync();
+
+        return totals.Sum();
     }
 
     private async Task<List<DailyRevenueDto>> GetDailyRevenueBreakdownAsync(DateTime startDate, DateTime endDate, int? hotelId = null)
@@ -917,10 +1008,14 @@ public class ReportingService : IReportingService
             query = query.Where(r => r.HotelId == hotelId.Value);
         }
 
-        return await query
+        var reservations = await query
             .Where(r => r.CheckInDate >= startDate && r.CheckInDate < endDate)
             .Where(r => r.Status != ReservationStatus.Cancelled)
-            .GroupBy(r => r.CheckInDate.Date)
+            .Select(r => new { r.CheckInDate.Date, r.TotalAmount })
+            .ToListAsync();
+
+        return reservations
+            .GroupBy(r => r.Date)
             .Select(g => new DailyRevenueDto
             {
                 Date = g.Key,
@@ -929,7 +1024,7 @@ public class ReportingService : IReportingService
                 AverageRevenuePerReservation = g.Count() > 0 ? g.Average(r => r.TotalAmount) : 0
             })
             .OrderBy(d => d.Date)
-            .ToListAsync();
+            .ToList();
     }
 
     private string GetDurationRange(int duration)

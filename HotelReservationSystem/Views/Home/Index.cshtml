@@ -11,6 +11,7 @@
                     Dashboard
                 </h1>
                 <div class="d-flex gap-2">
+                    <input type="text" id="dashboardDateRange" class="form-control form-control-sm" style="width: 200px;" placeholder="Date Range">
                     <select class="form-select form-select-sm" id="hotelFilter" style="width: auto;">
                         <option value="">All Hotels</option>
                         <!-- Hotel options will be populated by JavaScript -->
@@ -18,6 +19,9 @@
                     <button class="btn btn-outline-primary btn-sm" id="refreshDashboard">
                         <i class="bi bi-arrow-clockwise"></i>
                         Refresh
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" id="saveLayoutBtn">
+                        <i class="bi bi-layout-text-window"></i> Save Layout
                     </button>
                 </div>
             </div>
@@ -28,9 +32,9 @@
     <div id="dashboardError" style="display: none;"></div>
 
     <!-- KPI Cards Row -->
-    <div class="row mb-4 dashboard-content">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card dashboard-card h-100">
+    <div class="grid-stack" id="dashboardGrid">
+        <div class="grid-stack-item" gs-x="0" gs-y="0" gs-w="3" gs-h="2">
+            <div class="grid-stack-item-content card dashboard-card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
@@ -47,8 +51,8 @@
             </div>
         </div>
         
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card dashboard-card h-100">
+        <div class="grid-stack-item" gs-x="3" gs-y="0" gs-w="3" gs-h="2">
+            <div class="grid-stack-item-content card dashboard-card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
@@ -65,8 +69,8 @@
             </div>
         </div>
         
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card dashboard-card h-100">
+        <div class="grid-stack-item" gs-x="6" gs-y="0" gs-w="3" gs-h="2">
+            <div class="grid-stack-item-content card dashboard-card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
@@ -83,8 +87,8 @@
             </div>
         </div>
         
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card dashboard-card h-100">
+        <div class="grid-stack-item" gs-x="9" gs-y="0" gs-w="3" gs-h="2">
+            <div class="grid-stack-item-content card dashboard-card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
@@ -100,12 +104,9 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Occupancy Breakdown -->
-    <div class="row mb-4 dashboard-content">
-        <div class="col-12">
-            <div class="card">
+        <div class="grid-stack-item" gs-x="0" gs-y="2" gs-w="12" gs-h="4">
+            <div class="grid-stack-item-content card">
                 <div class="card-header">
                     <h5 class="mb-0">
                         <i class="bi bi-pie-chart"></i>
@@ -122,13 +123,10 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Main Content Row -->
-    <div class="row dashboard-content">
         <!-- Today's Activity -->
-        <div class="col-lg-8 mb-4">
-            <div class="card">
+        <div class="grid-stack-item" gs-x="0" gs-y="6" gs-w="8" gs-h="5">
+            <div class="grid-stack-item-content card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
                         <i class="bi bi-calendar-day"></i>
@@ -136,7 +134,7 @@
                     </h5>
                     <small class="text-muted" id="todayDate"></small>
                 </div>
-                <div class="card-body">
+                <div class="card-body overflow-auto">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -168,8 +166,8 @@
         </div>
         
         <!-- Notifications & Alerts -->
-        <div class="col-lg-4 mb-4">
-            <div class="card">
+        <div class="grid-stack-item" gs-x="8" gs-y="6" gs-w="4" gs-h="5">
+            <div class="grid-stack-item-content card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
                         <i class="bi bi-bell"></i>
@@ -177,7 +175,7 @@
                         <span class="badge bg-danger ms-2" id="notificationBadge" style="display: none;">0</span>
                     </h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body overflow-auto">
                     <!-- Notification Summary -->
                     <div class="row text-center mb-3">
                         <div class="col-4">
@@ -209,12 +207,10 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Revenue Chart -->
-    <div class="row mb-4 dashboard-content">
-        <div class="col-12">
-            <div class="card">
+        <!-- Revenue Chart -->
+        <div class="grid-stack-item" gs-x="0" gs-y="11" gs-w="12" gs-h="5">
+            <div class="grid-stack-item-content card">
                 <div class="card-header">
                     <h5 class="mb-0">
                         <i class="bi bi-graph-up"></i>
@@ -222,18 +218,16 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <div style="height: 300px; position: relative;">
+                    <div style="height: 100%; position: relative;">
                         <canvas id="revenueChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Recent Reservations -->
-    <div class="row dashboard-content">
-        <div class="col-12">
-            <div class="card">
+        <!-- Recent Reservations -->
+        <div class="grid-stack-item" gs-x="0" gs-y="16" gs-w="12" gs-h="5">
+            <div class="grid-stack-item-content card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
                         <i class="bi bi-clock-history"></i>
@@ -243,7 +237,7 @@
                         View All
                     </a>
                 </div>
-                <div class="card-body">
+                <div class="card-body overflow-auto">
                     <div class="table-responsive">
                         <table class="table table-hover" id="recentReservationsTable">
                             <thead>
@@ -278,6 +272,9 @@
     <!-- Chart.js for revenue charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
+    <!-- GridStack.js -->
+    <script src="https://cdn.jsdelivr.net/npm/gridstack@7.2.1/dist/gridstack-all.js"></script>
+    
     <!-- Dashboard module -->
     <script src="~/js/modules/dashboard.js"></script>
     
@@ -294,6 +291,54 @@
                 });
             }
             
+            // Initialize Date Range Picker
+            $('#dashboardDateRange').daterangepicker({
+                startDate: moment().subtract(29, 'days'),
+                endDate: moment(),
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                }
+            });
+            
+            // Initialize GridStack
+            const grid = GridStack.init({
+                margin: 10,
+                cellHeight: '100px',
+                handle: '.card-header, .card-body', // allow dragging by card body or header
+            });
+            
+            // Load saved layout if exists
+            const savedLayout = localStorage.getItem('dashboardLayout');
+            if (savedLayout) {
+                grid.load(JSON.parse(savedLayout));
+            }
+            
+            document.getElementById('saveLayoutBtn').addEventListener('click', () => {
+                const layout = grid.save();
+                localStorage.setItem('dashboardLayout', JSON.stringify(layout));
+                
+                const toastStr = `
+                    <div class="toast align-items-center text-bg-success border-0 position-fixed bottom-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true" id="layoutSavedToast">
+                      <div class="d-flex">
+                        <div class="toast-body">
+                          Dashboard layout saved successfully.
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                      </div>
+                    </div>`;
+                document.body.insertAdjacentHTML('beforeend', toastStr);
+                const toastEl = document.getElementById('layoutSavedToast');
+                const toast = new bootstrap.Toast(toastEl);
+                toast.show();
+                
+                setTimeout(() => toastEl.remove(), 3000);
+            });
+            
             // Load hotel options for filter
             loadHotelOptions();
         });
@@ -302,9 +347,11 @@
             try {
                 console.log('Loading hotel options - TIMESTAMP: 2025-12-30-12:30'); // Force cache bust
                 const apiClient = new ApiClient();
-                const hotels = await apiClient.get('/hotels');
-                console.log('API call made to /hotels, response:', hotels); // Debug the response
+                const response = await apiClient.get('/hotels');
+                console.log('API call made to /hotels, response:', response); // Debug the response
                 const hotelFilter = document.getElementById('hotelFilter');
+                
+                const hotels = (response && response.items) ? response.items : (response || []);
                 
                 if (hotelFilter && hotels) {
                     // Clear existing options except "All Hotels"

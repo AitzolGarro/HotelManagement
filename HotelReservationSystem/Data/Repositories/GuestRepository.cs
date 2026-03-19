@@ -36,7 +36,7 @@ public class GuestRepository : Repository<Guest>, IGuestRepository
     {
         var lowerSearchTerm = searchTerm.ToLower();
         
-        return await _dbSet
+        return await _dbSet.AsNoTracking()
             .Where(g => g.FirstName.ToLower().Contains(lowerSearchTerm) ||
                        g.LastName.ToLower().Contains(lowerSearchTerm) ||
                        (g.Email != null && g.Email.ToLower().Contains(lowerSearchTerm)) ||
@@ -45,6 +45,22 @@ public class GuestRepository : Repository<Guest>, IGuestRepository
             .OrderBy(g => g.LastName)
             .ThenBy(g => g.FirstName)
             .ToListAsync();
+    }
+
+    public async Task<(IEnumerable<Guest> Items, int TotalCount)> GetPagedGuestsAsync(int pageNumber, int pageSize)
+    {
+        var query = _dbSet.AsNoTracking();
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .OrderBy(g => g.LastName)
+            .ThenBy(g => g.FirstName)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
     }
 
     public async Task<bool> ExistsByEmailAsync(string email)

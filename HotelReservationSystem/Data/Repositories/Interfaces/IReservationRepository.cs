@@ -5,6 +5,7 @@ namespace HotelReservationSystem.Data.Repositories.Interfaces;
 public interface IReservationRepository : IRepository<Reservation>
 {
     Task<IEnumerable<Reservation>> GetReservationsByDateRangeAsync(DateTime fromDate, DateTime toDate, int? hotelId = null);
+    Task<(IEnumerable<Reservation> Items, int TotalCount)> GetPagedReservationsAsync(DateTime? fromDate, DateTime? toDate, int? hotelId, ReservationStatus? status, int? roomId, int pageNumber, int pageSize);
     Task<IEnumerable<Reservation>> GetReservationsByRoomAsync(int roomId, DateTime? fromDate = null, DateTime? toDate = null);
     Task<IEnumerable<Reservation>> GetReservationsByGuestAsync(int guestId);
     Task<IEnumerable<Reservation>> GetReservationsByStatusAsync(ReservationStatus status, int? hotelId = null);
@@ -15,4 +16,5 @@ public interface IReservationRepository : IRepository<Reservation>
     Task<bool> HasConflictingReservationsAsync(int roomId, DateTime checkIn, DateTime checkOut, int? excludeReservationId = null);
     Task<bool> HasActiveReservationsForHotelAsync(int hotelId);
     Task<bool> HasActiveReservationsForRoomAsync(int roomId);
+    Task<(IEnumerable<Reservation> Items, int TotalCount)> SearchReservationsAsync(Models.DTOs.ReservationSearchCriteria criteria, int pageNumber, int pageSize);
 }

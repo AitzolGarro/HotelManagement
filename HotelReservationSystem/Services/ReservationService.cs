@@ -187,6 +187,54 @@ public class ReservationService : IReservationService
         return reservation != null ? await MapToReservationDto(reservation) : null;
     }
 
+    public async Task<PagedResultDto<ReservationDto>> GetPagedReservationsAsync(DateTime? from, DateTime? to, int? hotelId, ReservationStatus? status, int? roomId, int pageNumber, int pageSize)
+    {
+        if (from.HasValue && to.HasValue && from >= to)
+        {
+            throw new InvalidDateRangeException("From date must be before to date");
+        }
+
+        var (items, totalCount) = await _unitOfWork.Reservations.GetPagedReservationsAsync(from, to, hotelId, status, roomId, pageNumber, pageSize);
+        
+        var result = new List<ReservationDto>();
+        foreach (var reservation in items)
+        {
+            result.Add(await MapToReservationDto(reservation));
+        }
+
+        return new PagedResultDto<ReservationDto>
+        {
+            Items = result,
+            TotalCount = totalCount,
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
+    }
+
+    public async Task<PagedResultDto<ReservationDto>> SearchReservationsAsync(ReservationSearchCriteria criteria, int pageNumber, int pageSize)
+    {
+        if (criteria.DateFrom.HasValue && criteria.DateTo.HasValue && criteria.DateFrom >= criteria.DateTo)
+        {
+            throw new InvalidDateRangeException("From date must be before to date");
+        }
+
+        var (items, totalCount) = await _unitOfWork.Reservations.SearchReservationsAsync(criteria, pageNumber, pageSize);
+        
+        var result = new List<ReservationDto>();
+        foreach (var reservation in items)
+        {
+            result.Add(await MapToReservationDto(reservation));
+        }
+
+        return new PagedResultDto<ReservationDto>
+        {
+            Items = result,
+            TotalCount = totalCount,
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
+    }
+
     public async Task<IEnumerable<ReservationDto>> GetReservationsByDateRangeAsync(DateTime from, DateTime to, int? hotelId = null)
     {
         if (from >= to)
@@ -304,6 +352,43 @@ public class ReservationService : IReservationService
         await _unitOfWork.SaveChangesAsync();
 
         // Send SignalR notification
+        await _notificationService.NotifyReservationUpdatedAsync(reservation.Id, reservation.HotelId);
+
+        return await MapToReservationDto(reservation);
+    }
+
+    public async Task<ReservationDto> UpdateReservationDatesAsync(int id, UpdateReservationDatesRequest request)
+    {
+        _logger.LogInformation("Updating dates for reservation {ReservationId} to {CheckIn} - {CheckOut}", id, request.CheckInDate, request.CheckOutDate);
+
+        await ValidateReservationExistsAsync(id);
+        await ValidateReservationDatesAsync(request.CheckInDate, request.CheckOutDate);
+
+        var reservation = await _unitOfWork.Reservations.GetByIdAsync(id);
+        if (reservation == null) throw new ReservationNotFoundException($"Reservation {id} not found");
+
+        var targetRoomId = request.RoomId ?? reservation.RoomId;
+        
+        // Check for conflicts
+        await ValidateNoConflictsAsync(targetRoomId, request.CheckInDate, request.CheckOutDate, id);
+
+        reservation.CheckInDate = request.CheckInDate;
+        reservation.CheckOutDate = request.CheckOutDate;
+        
+        if (request.RoomId.HasValue && request.RoomId != reservation.RoomId)
+        {
+            await ValidateRoomCapacityAsync(request.RoomId.Value, reservation.NumberOfGuests);
+            reservation.RoomId = request.RoomId.Value;
+            // Clear related entity so it reloads
+            reservation.Room = null; 
+        }
+
+        reservation.UpdatedAt = DateTime.UtcNow;
+
+        _unitOfWork.Reservations.Update(reservation);
+        await _unitOfWork.SaveChangesAsync();
+
+        // Broadcast to SignalR
         await _notificationService.NotifyReservationUpdatedAsync(reservation.Id, reservation.HotelId);
 
         return await MapToReservationDto(reservation);

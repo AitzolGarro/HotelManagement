@@ -43,9 +43,8 @@ class CalendarManager {
 
     async loadHotels() {
         try {
-            const response = await API.get('/hotels');
-            console.log('Calendar hotels API response:', response); // Debug log
-            this.hotels = response || []; // Use response directly, not response.data
+            this.hotels = await API.getHotels();
+            console.log('Calendar hotels loaded:', this.hotels);
             this.populateHotelFilter();
         } catch (error) {
             console.error('Error loading hotels:', error);
@@ -55,10 +54,8 @@ class CalendarManager {
 
     async loadRooms() {
         try {
-            // Fixed API endpoint - removed double /api prefix (2025-12-30)
-            const response = await API.get('/rooms');
-            console.log('Calendar rooms API response:', response); // Debug log
-            this.rooms = response || []; // Use response directly, not response.data
+            this.rooms = await API.getAllRooms();
+            console.log('Calendar rooms loaded:', this.rooms);
         } catch (error) {
             console.error('Error loading rooms:', error);
             this.rooms = [];
@@ -70,12 +67,12 @@ class CalendarManager {
             UI.showLoading();
 
             // Build query parameters based on current filters
-            const params = new URLSearchParams();
+            const params = {};
 
             // Use date range filter if set, otherwise use calendar view range
             if (this.currentFilters.dateRange) {
-                params.append('from', this.currentFilters.dateRange.start);
-                params.append('to', this.currentFilters.dateRange.end);
+                params.from = this.currentFilters.dateRange.start;
+                params.to = this.currentFilters.dateRange.end;
             } else {
                 // Get current calendar date range
                 const view = this.calendar.view;
@@ -88,24 +85,23 @@ class CalendarManager {
                 
                 let startDate = viewStart;
                 if (showPast) {
-                    // Extend the range to include 30 days before the view start to show recent past reservations
                     startDate = new Date(viewStart);
                     startDate.setDate(startDate.getDate() - 30);
                 }
                 
-                params.append('from', startDate.toISOString().split('T')[0]);
-                params.append('to', viewEnd.toISOString().split('T')[0]);
-                
-                console.log(`Loading reservations from ${startDate.toISOString().split('T')[0]} to ${viewEnd.toISOString().split('T')[0]} (showPast: ${showPast})`);
+                params.from = startDate.toISOString().split('T')[0];
+                params.to = viewEnd.toISOString().split('T')[0];
             }
 
             if (this.currentFilters.hotel) {
-                params.append('hotelId', this.currentFilters.hotel);
+                params.hotelId = this.currentFilters.hotel;
             }
 
-            const response = await API.get(`/reservations?${params.toString()}`);
-            console.log('Calendar reservations API response:', response); // Debug log
-            this.reservations = response || []; // Use response directly, not response.data
+            // For calendar, we want a large page size
+            params.pageSize = 1000;
+
+            this.reservations = await API.getReservations(params);
+            console.log('Calendar reservations loaded:', this.reservations);
 
             // Convert reservations to calendar events
             const events = this.convertReservationsToEvents(this.reservations);
@@ -205,18 +201,18 @@ class CalendarManager {
 
             // Convert numeric status to string
             const statusMap = {
-                1: 'Pending',
-                2: 'Confirmed', 
-                3: 'CheckedIn',
-                4: 'CheckedOut',
-                5: 'Cancelled'
+                0: 'Pending',
+                1: 'Confirmed', 
+                2: 'CheckedIn',
+                3: 'CheckedOut',
+                4: 'Cancelled'
             };
             
             // Convert numeric source to string
             const sourceMap = {
-                1: 'Manual',
-                2: 'Booking',
-                3: 'Online'
+                0: 'Manual',
+                1: 'Booking',
+                2: 'Online'
             };
 
             const statusString = statusMap[reservation.status] || 'Unknown';
@@ -268,50 +264,38 @@ class CalendarManager {
 
         // Filter by room type
         if (this.currentFilters.roomType) {
-            console.log('Filtering by room type:', this.currentFilters.roomType);
-            console.log('Sample reservation:', filtered[0]); // Debug log to see what fields are available
+            const roomTypeMap = {
+                'single': 0,
+                'double': 1,
+                'twin': 2,
+                'suite': 3,
+                'family': 4,
+                'deluxe': 5
+            };
             
-            // Check if room type is directly in reservation data
-            if (filtered.length > 0 && filtered[0].roomType) {
-                // Room type is directly available in reservation
-                console.log('Using direct roomType from reservation');
-                filtered = filtered.filter(res => 
-                    res.roomType && res.roomType.toLowerCase() === this.currentFilters.roomType.toLowerCase()
-                );
-            } else {
-                // Fallback: look up room type from rooms array
-                console.log('Room type not in reservation, looking up from rooms array');
-                console.log('Available rooms:', this.rooms);
-                
-                const matchingRooms = this.rooms.filter(room => 
-                    room.type && room.type.toLowerCase() === this.currentFilters.roomType.toLowerCase()
-                );
-                const matchingRoomIds = matchingRooms.map(room => room.id);
-                
-                console.log('Matching rooms for type', this.currentFilters.roomType, ':', matchingRooms);
-                console.log('Matching room IDs:', matchingRoomIds);
-                
-                // Filter reservations to only include those for matching rooms
-                filtered = filtered.filter(res => matchingRoomIds.includes(res.roomId));
-            }
+            const filterTypeNum = roomTypeMap[this.currentFilters.roomType.toLowerCase()];
             
-            console.log('Filtered reservations after room type filter:', filtered.length);
+            // Look up room IDs from rooms array that match the type
+            const matchingRoomIds = this.rooms
+                .filter(room => room.type === filterTypeNum)
+                .map(room => room.id);
+            
+            filtered = filtered.filter(res => matchingRoomIds.includes(res.roomId));
         }
 
         // Filter by status
         if (this.currentFilters.status) {
-            // Convert filter status to numeric for comparison
             const statusMap = {
-                'pending': 1,
-                'confirmed': 2,
-                'checkedin': 3,
-                'checkedout': 4,
-                'cancelled': 5
+                'pending': 0,
+                'confirmed': 1,
+                'checkedin': 2,
+                'checkedout': 3,
+                'cancelled': 4
             };
             
             const filterStatusNum = statusMap[this.currentFilters.status.toLowerCase()];
             
-            if (filterStatusNum) {
+            if (filterStatusNum !== undefined) {
                 filtered = filtered.filter(res => res.status === filterStatusNum);
             }
         }

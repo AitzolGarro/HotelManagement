@@ -10,9 +10,22 @@ public class User : IdentityUser<int>
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? PasswordChangedDate { get; set; }
+    public string? TwoFactorSecret { get; set; }
 
     // Navigation properties for property-level access control
     public ICollection<UserHotelAccess> HotelAccess { get; set; } = new List<UserHotelAccess>();
+    public ICollection<UserPasswordHistory> PasswordHistory { get; set; } = new List<UserPasswordHistory>();
+}
+
+public class UserPasswordHistory
+{
+    public int Id { get; set; }
+    public int UserId { get; set; }
+    public string PasswordHash { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    
+    public User? User { get; set; }
 }
 
 public enum UserRole

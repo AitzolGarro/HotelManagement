@@ -1,25 +1,32 @@
 {
   "format": 1,
   "restore": {
-    "/home/aitzol/GitHub/Aitzol/hostalavila/HotelReservationSystem/HotelReservationSystem.csproj": {}
+    "C:\\Users\\aitzol\\Documents\\repos\\hostalavila\\HotelReservationSystem\\HotelReservationSystem.csproj": {}
   },
   "projects": {
-    "/home/aitzol/GitHub/Aitzol/hostalavila/HotelReservationSystem/HotelReservationSystem.csproj": {
+    "C:\\Users\\aitzol\\Documents\\repos\\hostalavila\\HotelReservationSystem\\HotelReservationSystem.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/aitzol/GitHub/Aitzol/hostalavila/HotelReservationSystem/HotelReservationSystem.csproj",
+        "projectUniqueName": "C:\\Users\\aitzol\\Documents\\repos\\hostalavila\\HotelReservationSystem\\HotelReservationSystem.csproj",
         "projectName": "HotelReservationSystem",
-        "projectPath": "/home/aitzol/GitHub/Aitzol/hostalavila/HotelReservationSystem/HotelReservationSystem.csproj",
-        "packagesPath": "/home/aitzol/.nuget/packages/",
-        "outputPath": "/home/aitzol/GitHub/Aitzol/hostalavila/HotelReservationSystem/obj/",
+        "projectPath": "C:\\Users\\aitzol\\Documents\\repos\\hostalavila\\HotelReservationSystem\\HotelReservationSystem.csproj",
+        "packagesPath": "C:\\Users\\aitzol\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\aitzol\\Documents\\repos\\hostalavila\\HotelReservationSystem\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/home/aitzol/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\aitzol\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -32,12 +39,26 @@
           "warnAsError": [
             "NU1605"
           ]
-        }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "ClosedXML": {
+              "target": "Package",
+              "version": "[0.105.0, )"
+            },
+            "CsvHelper": {
+              "target": "Package",
+              "version": "[33.1.0, )"
+            },
             "FluentValidation": {
               "target": "Package",
               "version": "[11.8.0, )"
@@ -82,6 +103,10 @@
               "target": "Package",
               "version": "[8.0.0, )"
             },
+            "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "Microsoft.Extensions.Http.Polly": {
               "target": "Package",
               "version": "[8.0.0, )"
@@ -93,6 +118,10 @@
             "Polly.Extensions.Http": {
               "target": "Package",
               "version": "[3.0.0, )"
+            },
+            "QuestPDF": {
+              "target": "Package",
+              "version": "[2026.2.2, )"
             },
             "Serilog.AspNetCore": {
               "target": "Package",
@@ -109,6 +138,14 @@
             "Serilog.Sinks.MSSqlServer": {
               "target": "Package",
               "version": "[6.5.0, )"
+            },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[2.11.8, )"
+            },
+            "Stripe.net": {
+              "target": "Package",
+              "version": "[50.4.0, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -142,7 +179,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib64/dotnet/sdk/8.0.110/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.200-preview.0.26103.119/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

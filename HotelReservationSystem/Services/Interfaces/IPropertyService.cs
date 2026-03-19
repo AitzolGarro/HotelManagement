@@ -9,6 +9,7 @@ public interface IPropertyService
     Task<HotelDto> CreateHotelAsync(CreateHotelRequest request);
     Task<HotelDto?> GetHotelByIdAsync(int id);
     Task<IEnumerable<HotelDto>> GetAllHotelsAsync();
+    Task<PagedResultDto<HotelDto>> GetPagedHotelsAsync(int pageNumber, int pageSize);
     Task<HotelDto> UpdateHotelAsync(int id, UpdateHotelRequest request);
     Task<bool> DeleteHotelAsync(int id);
 

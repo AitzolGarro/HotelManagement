@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.105.0" />
+    <PackageReference Include="CsvHelper" Version="33.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0" />
@@ -14,6 +16,10 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="QuestPDF" Version="2026.2.2" />
+    <PackageReference Include="StackExchange.Redis" Version="2.11.8" />
+    <PackageReference Include="Stripe.net" Version="50.4.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="5.0.0" />
