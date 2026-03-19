@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  hotelmanagement:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hotelmanagement
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_ENVIRONMENT=Production
+    restart: unless-stopped
