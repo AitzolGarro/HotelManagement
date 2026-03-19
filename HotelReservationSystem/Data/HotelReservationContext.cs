@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using HotelReservationSystem.Models;
+using HotelReservationSystem.Models.DTOs;
 
 namespace HotelReservationSystem.Data;
 
