@@ -1,4 +1,5 @@
 version: '3.8'
+
 services:
   hotelmanagement:
     build:
@@ -7,8 +8,11 @@ services:
     container_name: hotelmanagement
     ports:
       - '8082:8080'   # host_port:container_port
-      - '8083:8081'   # optional, if you need the second port externally
+      - '8083:8081'   # optional second port
     environment:
       - 'ASPNETCORE_URLS=http://+:8080'  # container still listens on 8080
       - ASPNETCORE_ENVIRONMENT=Production
+      - COOLIFY_FQDN=hotel.aitzol.net            # public domain for Coolify SSL
+      - SERVICE_FQDN_HOTELMANAGEMENT=hotel.aitzol.net
+      - SERVICE_URL_HOTELMANAGEMENT=http://hotel.aitzol.net
     restart: unless-stopped
