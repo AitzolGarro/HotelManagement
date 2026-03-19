@@ -18,10 +18,13 @@ public class Reservation
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 
-    // Navigation properties
+    // Propiedades de navegación
     public Hotel Hotel { get; set; } = null!;
     public Room Room { get; set; } = null!;
     public Guest Guest { get; set; } = null!;
+
+    /// <summary>Pagos asociados a esta reservación</summary>
+    public ICollection<Payment> Payments { get; set; } = new List<Payment>();
 }
 
 public enum ReservationSource

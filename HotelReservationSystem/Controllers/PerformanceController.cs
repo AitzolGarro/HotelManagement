@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using HotelReservationSystem.Services.Interfaces;
+using HotelReservationSystem.Models.DTOs;
 
 namespace HotelReservationSystem.Controllers
 {
@@ -18,6 +19,24 @@ namespace HotelReservationSystem.Controllers
         {
             _performanceMonitoring = performanceMonitoring;
             _logger = logger;
+        }
+
+        /// <summary>
+        /// Obtiene el resumen de métricas de rendimiento en tiempo real (avg/min/max, cache hit ratio, consultas lentas)
+        /// </summary>
+        [HttpGet("metrics/summary")]
+        public ActionResult<PerformanceMetricsSummaryDto> GetMetricsSummary()
+        {
+            try
+            {
+                var summary = _performanceMonitoring.GetMetricsSummary();
+                return Ok(summary);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener el resumen de métricas de rendimiento");
+                return StatusCode(500, "Error interno al obtener el resumen de métricas");
+            }
         }
 
         /// <summary>

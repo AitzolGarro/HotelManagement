@@ -24,10 +24,12 @@ public class GuestRepository : Repository<Guest>, IGuestRepository
 
     public async Task<Guest?> GetGuestWithReservationsAsync(int guestId)
     {
-        return await _dbSet
-            .Include(g => g.Reservations)
+        // AsNoTracking para consulta de solo lectura; se limita a las últimas 50 reservaciones
+        // para evitar cargar todo el historial del huésped en memoria
+        return await _dbSet.AsNoTracking()
+            .Include(g => g.Reservations.OrderByDescending(r => r.CheckInDate).Take(50))
                 .ThenInclude(r => r.Hotel)
-            .Include(g => g.Reservations)
+            .Include(g => g.Reservations.OrderByDescending(r => r.CheckInDate).Take(50))
                 .ThenInclude(r => r.Room)
             .FirstOrDefaultAsync(g => g.Id == guestId);
     }
@@ -35,7 +37,8 @@ public class GuestRepository : Repository<Guest>, IGuestRepository
     public async Task<IEnumerable<Guest>> SearchGuestsAsync(string searchTerm)
     {
         var lowerSearchTerm = searchTerm.ToLower();
-        
+
+        // Límite de 50 resultados para evitar respuestas masivas en búsquedas amplias
         return await _dbSet.AsNoTracking()
             .Where(g => g.FirstName.ToLower().Contains(lowerSearchTerm) ||
                        g.LastName.ToLower().Contains(lowerSearchTerm) ||
@@ -44,6 +47,7 @@ public class GuestRepository : Repository<Guest>, IGuestRepository
                        (g.DocumentNumber != null && g.DocumentNumber.ToLower().Contains(lowerSearchTerm)))
             .OrderBy(g => g.LastName)
             .ThenBy(g => g.FirstName)
+            .Take(50)
             .ToListAsync();
     }
 

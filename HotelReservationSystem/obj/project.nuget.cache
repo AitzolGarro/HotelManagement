@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "5Wfe6L6pmZY=",
+  "dgSpecHash": "Gsyf/0oPKm0=",
   "success": true,
   "projectFilePath": "C:\\Users\\aitzol\\Documents\\repos\\hostalavila\\HotelReservationSystem\\HotelReservationSystem.csproj",
   "expectedPackageFiles": [
@@ -85,6 +85,9 @@
     "C:\\Users\\aitzol\\.nuget\\packages\\rbush.signed\\4.0.0\\rbush.signed.4.0.0.nupkg.sha512",
     "C:\\Users\\aitzol\\.nuget\\packages\\serilog\\3.1.1\\serilog.3.1.1.nupkg.sha512",
     "C:\\Users\\aitzol\\.nuget\\packages\\serilog.aspnetcore\\8.0.0\\serilog.aspnetcore.8.0.0.nupkg.sha512",
+    "C:\\Users\\aitzol\\.nuget\\packages\\serilog.enrichers.environment\\2.3.0\\serilog.enrichers.environment.2.3.0.nupkg.sha512",
+    "C:\\Users\\aitzol\\.nuget\\packages\\serilog.enrichers.process\\2.0.2\\serilog.enrichers.process.2.0.2.nupkg.sha512",
+    "C:\\Users\\aitzol\\.nuget\\packages\\serilog.enrichers.thread\\3.1.0\\serilog.enrichers.thread.3.1.0.nupkg.sha512",
     "C:\\Users\\aitzol\\.nuget\\packages\\serilog.extensions.hosting\\8.0.0\\serilog.extensions.hosting.8.0.0.nupkg.sha512",
     "C:\\Users\\aitzol\\.nuget\\packages\\serilog.extensions.logging\\8.0.0\\serilog.extensions.logging.8.0.0.nupkg.sha512",
     "C:\\Users\\aitzol\\.nuget\\packages\\serilog.formatting.compact\\2.0.0\\serilog.formatting.compact.2.0.0.nupkg.sha512",

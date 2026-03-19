@@ -22,7 +22,8 @@ public class Repository<T> : IRepository<T> where T : class
 
     public virtual async Task<IEnumerable<T>> GetAllAsync()
     {
-        return await _dbSet.ToListAsync();
+        // Consulta de solo lectura: no se necesita seguimiento de cambios
+        return await _dbSet.AsNoTracking().ToListAsync();
     }
 
     public virtual async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)

@@ -11,13 +11,20 @@ public class ReservationService : IReservationService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IPropertyService _propertyService;
     private readonly INotificationService _notificationService;
+    private readonly ICacheService _cacheService;
     private readonly ILogger<ReservationService> _logger;
 
-    public ReservationService(IUnitOfWork unitOfWork, IPropertyService propertyService, INotificationService notificationService, ILogger<ReservationService> logger)
+    public ReservationService(
+        IUnitOfWork unitOfWork,
+        IPropertyService propertyService,
+        INotificationService notificationService,
+        ICacheService cacheService,
+        ILogger<ReservationService> logger)
     {
         _unitOfWork = unitOfWork;
         _propertyService = propertyService;
         _notificationService = notificationService;
+        _cacheService = cacheService;
         _logger = logger;
     }
 
@@ -74,6 +81,9 @@ public class ReservationService : IReservationService
 
         _logger.LogInformation("Reservation created with ID {ReservationId}", reservation.Id);
         
+        // Invalidar cachés de disponibilidad afectados por la nueva reservación
+        await InvalidateAvailabilityCacheAsync(reservation.HotelId, reservation.RoomId);
+
         // Send SignalR notification
         await _notificationService.NotifyReservationCreatedAsync(reservation.Id, reservation.HotelId);
         
@@ -173,6 +183,9 @@ public class ReservationService : IReservationService
         _logger.LogInformation("Manual reservation created with ID {ReservationId} for guest {GuestId}", 
             reservation.Id, guest.Id);
         
+        // Invalidar cachés de disponibilidad afectados por la nueva reservación manual
+        await InvalidateAvailabilityCacheAsync(reservation.HotelId, reservation.RoomId);
+
         // Send SignalR notification
         await _notificationService.NotifyReservationCreatedAsync(reservation.Id, reservation.HotelId);
         
@@ -351,6 +364,9 @@ public class ReservationService : IReservationService
         _unitOfWork.Reservations.Update(reservation);
         await _unitOfWork.SaveChangesAsync();
 
+        // Invalidar cachés de disponibilidad afectados por la modificación
+        await InvalidateAvailabilityCacheAsync(reservation.HotelId, reservation.RoomId);
+
         // Send SignalR notification
         await _notificationService.NotifyReservationUpdatedAsync(reservation.Id, reservation.HotelId);
 
@@ -388,6 +404,9 @@ public class ReservationService : IReservationService
         _unitOfWork.Reservations.Update(reservation);
         await _unitOfWork.SaveChangesAsync();
 
+        // Invalidar cachés de disponibilidad afectados por el cambio de fechas
+        await InvalidateAvailabilityCacheAsync(reservation.HotelId, reservation.RoomId);
+
         // Broadcast to SignalR
         await _notificationService.NotifyReservationUpdatedAsync(reservation.Id, reservation.HotelId);
 
@@ -423,6 +442,9 @@ public class ReservationService : IReservationService
 
         await _unitOfWork.SaveChangesAsync();
         
+        // Invalidar cachés de disponibilidad: la cancelación libera la habitación
+        await InvalidateAvailabilityCacheAsync(reservation.HotelId, reservation.RoomId);
+
         // Send SignalR notification
         await _notificationService.NotifyReservationCancelledAsync(reservation.Id, reservation.HotelId);
         
@@ -490,6 +512,9 @@ public class ReservationService : IReservationService
 
         await _unitOfWork.SaveChangesAsync();
         
+        // Invalidar caché de disponibilidad si el cambio de estado afecta la ocupación
+        await InvalidateAvailabilityCacheAsync(reservation.HotelId, reservation.RoomId);
+
         // Send SignalR notification
         await _notificationService.NotifyReservationUpdatedAsync(reservation.Id, reservation.HotelId);
         
@@ -660,7 +685,7 @@ public class ReservationService : IReservationService
 
     private async Task<ReservationDto> MapToReservationDto(Reservation reservation)
     {
-        // Load related entities if not already loaded
+        // Cargar entidades relacionadas si no están ya cargadas
         if (reservation.Hotel == null)
         {
             reservation.Hotel = await _unitOfWork.Hotels.GetByIdAsync(reservation.HotelId);
@@ -698,5 +723,27 @@ public class ReservationService : IReservationService
             GuestEmail = reservation.Guest?.Email ?? "",
             GuestPhone = reservation.Guest?.Phone ?? ""
         };
+    }
+
+    /// <summary>
+    /// Invalida las entradas de caché de disponibilidad relacionadas con un hotel y habitación.
+    /// Se llama después de cualquier operación que modifique la disponibilidad (crear, actualizar, cancelar).
+    /// </summary>
+    private async Task InvalidateAvailabilityCacheAsync(int hotelId, int roomId)
+    {
+        // Invalidar caché de disponibilidad del hotel (patrón amplio)
+        var availabilityPattern = $"availability:hotel:{hotelId}*";
+        await _cacheService.RemoveByPatternAsync(availabilityPattern);
+
+        // Invalidar caché de habitaciones disponibles del hotel
+        var availableRoomsPattern = string.Format(CacheKeys.Patterns.HotelSpecific, hotelId);
+        await _cacheService.RemoveByPatternAsync(availableRoomsPattern);
+
+        // Invalidar caché específica de la habitación
+        var roomPattern = string.Format(CacheKeys.Patterns.RoomSpecific, roomId);
+        await _cacheService.RemoveByPatternAsync(roomPattern);
+
+        _logger.LogDebug("Caché de disponibilidad invalidada para hotel {HotelId}, habitación {RoomId}",
+            hotelId, roomId);
     }
 }

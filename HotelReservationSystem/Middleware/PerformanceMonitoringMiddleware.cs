@@ -26,25 +26,24 @@ namespace HotelReservationSystem.Middleware
             finally
             {
                 stopwatch.Stop();
-                
-                // Record API call performance
+
+                // Registrar tiempo de respuesta de la API usando el nuevo método dedicado
+                performanceMonitoring.RecordApiResponseTime(endpoint, stopwatch.Elapsed.TotalMilliseconds);
+
+                // Registrar también con el método existente para compatibilidad con métricas por fecha
                 performanceMonitoring.RecordApiCall(endpoint, stopwatch.Elapsed, context.Response.StatusCode);
 
-                // Log slow requests
+                // Registrar solicitudes lentas (más de 1 segundo)
                 if (stopwatch.ElapsedMilliseconds > 1000)
                 {
-                    _logger.LogWarning("Slow request detected: {Endpoint} took {Duration}ms with status {StatusCode}",
+                    _logger.LogWarning("Solicitud lenta detectada: {Endpoint} tardó {Duration}ms con estado {StatusCode}",
                         endpoint, stopwatch.ElapsedMilliseconds, context.Response.StatusCode);
                 }
 
-                // Add performance headers for debugging (only if response hasn't started)
+                // Agregar cabecera de tiempo de respuesta para depuración (solo si la respuesta no ha iniciado)
                 if (!context.Response.HasStarted)
                 {
-                    if (context.Response.Headers.ContainsKey("X-Response-Time"))
-                    {
-                        context.Response.Headers.Remove("X-Response-Time");
-                    }
-                    context.Response.Headers.Add("X-Response-Time", $"{stopwatch.ElapsedMilliseconds}ms");
+                    context.Response.Headers["X-Response-Time"] = $"{stopwatch.ElapsedMilliseconds}ms";
                 }
             }
         }

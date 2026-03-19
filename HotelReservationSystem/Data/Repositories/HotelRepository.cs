@@ -42,16 +42,19 @@ public class HotelRepository : Repository<Hotel>, IHotelRepository
 
     public async Task<Hotel?> GetHotelWithReservationsAsync(int hotelId, DateTime? fromDate = null, DateTime? toDate = null)
     {
-        var query = _dbSet
+        // AsNoTracking para consulta de solo lectura; AsSplitQuery evita el producto cartesiano
+        // al cargar múltiples colecciones relacionadas (Rooms y Guests)
+        var query = _dbSet.AsNoTracking()
             .Include(h => h.Reservations)
                 .ThenInclude(r => r.Room)
             .Include(h => h.Reservations)
                 .ThenInclude(r => r.Guest)
+            .AsSplitQuery()
             .Where(h => h.Id == hotelId);
 
         if (fromDate.HasValue && toDate.HasValue)
         {
-            query = query.Where(h => h.Reservations.Any(r => 
+            query = query.Where(h => h.Reservations.Any(r =>
                 r.CheckInDate <= toDate.Value && r.CheckOutDate >= fromDate.Value));
         }
 

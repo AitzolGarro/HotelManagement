@@ -13,11 +13,16 @@ namespace HotelReservationSystem.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
+    private readonly ITwoFactorService _twoFactorService;
     private readonly ILogger<AuthController> _logger;
 
-    public AuthController(IAuthService authService, ILogger<AuthController> logger)
+    public AuthController(
+        IAuthService authService,
+        ITwoFactorService twoFactorService,
+        ILogger<AuthController> logger)
     {
         _authService = authService;
+        _twoFactorService = twoFactorService;
         _logger = logger;
     }
 
@@ -266,5 +271,141 @@ public class AuthController : ControllerBase
             _logger.LogError(ex, "Error deactivating user {UserId}", id);
             return StatusCode(500, new { message = "An error occurred while deactivating the user" });
         }
+    }
+
+    // ─────────────────────────────────────────────
+    // Endpoints dedicados de 2FA
+    // ─────────────────────────────────────────────
+
+    /// <summary>
+    /// Genera la configuración inicial de 2FA con clave secreta y URI para QR
+    /// </summary>
+    [HttpPost("2fa/setup")]
+    [Authorize]
+    public async Task<ActionResult<TwoFactorSetupDto>> Setup2FA()
+    {
+        try
+        {
+            var userId = ObtenerUserIdActual();
+            if (userId == null) return Unauthorized();
+
+            var setup = await _twoFactorService.GenerateSetupAsync(userId);
+            return Ok(setup);
+        }
+        catch (ArgumentException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error generando configuración 2FA");
+            return StatusCode(500, new { message = "Error al generar la configuración 2FA" });
+        }
+    }
+
+    /// <summary>
+    /// Habilita 2FA verificando el código TOTP proporcionado
+    /// </summary>
+    [HttpPost("2fa/enable")]
+    [Authorize]
+    public async Task<IActionResult> Enable2FAWithVerification([FromBody] Enable2FARequest request)
+    {
+        try
+        {
+            var userId = ObtenerUserIdActual();
+            if (userId == null) return Unauthorized();
+
+            var habilitado = await _twoFactorService.EnableTwoFactorAsync(userId, request.VerificationCode);
+            if (!habilitado)
+            {
+                return BadRequest(new { message = "Código de verificación inválido. Verifique su app autenticadora." });
+            }
+
+            return Ok(new { message = "Autenticación de dos factores habilitada exitosamente" });
+        }
+        catch (ArgumentException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error habilitando 2FA");
+            return StatusCode(500, new { message = "Error al habilitar 2FA" });
+        }
+    }
+
+    /// <summary>
+    /// Deshabilita 2FA para el usuario autenticado
+    /// </summary>
+    [HttpPost("2fa/disable")]
+    [Authorize]
+    public async Task<IActionResult> Disable2FA()
+    {
+        try
+        {
+            var userId = ObtenerUserIdActual();
+            if (userId == null) return Unauthorized();
+
+            var deshabilitado = await _twoFactorService.DisableTwoFactorAsync(userId);
+            if (!deshabilitado)
+            {
+                return BadRequest(new { message = "No se pudo deshabilitar 2FA" });
+            }
+
+            return Ok(new { message = "Autenticación de dos factores deshabilitada exitosamente" });
+        }
+        catch (ArgumentException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deshabilitando 2FA");
+            return StatusCode(500, new { message = "Error al deshabilitar 2FA" });
+        }
+    }
+
+    /// <summary>
+    /// Verifica un código TOTP durante el flujo de login con 2FA activo
+    /// </summary>
+    [HttpPost("2fa/verify")]
+    [Authorize]
+    public async Task<IActionResult> Verify2FACode([FromBody] Verify2FARequest request)
+    {
+        try
+        {
+            var userId = ObtenerUserIdActual();
+            if (userId == null) return Unauthorized();
+
+            var valido = await _twoFactorService.VerifyCodeAsync(userId, request.Code);
+            if (!valido)
+            {
+                return BadRequest(new { message = "Código 2FA inválido" });
+            }
+
+            return Ok(new { message = "Código 2FA verificado exitosamente" });
+        }
+        catch (ArgumentException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error verificando código 2FA");
+            return StatusCode(500, new { message = "Error al verificar el código 2FA" });
+        }
+    }
+
+    // ─────────────────────────────────────────────
+    // Métodos auxiliares privados
+    // ─────────────────────────────────────────────
+
+    /// <summary>
+    /// Extrae el ID del usuario autenticado del token JWT
+    /// </summary>
+    private string? ObtenerUserIdActual()
+    {
+        var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        return string.IsNullOrEmpty(claim) ? null : claim;
     }
 }

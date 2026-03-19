@@ -7,11 +7,13 @@ namespace HotelReservationSystem.Services;
 public class PricingService : IPricingService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICacheService _cacheService;
     private readonly ILogger<PricingService> _logger;
 
-    public PricingService(IUnitOfWork unitOfWork, ILogger<PricingService> logger)
+    public PricingService(IUnitOfWork unitOfWork, ICacheService cacheService, ILogger<PricingService> logger)
     {
         _unitOfWork = unitOfWork;
+        _cacheService = cacheService;
         _logger = logger;
     }
 
@@ -20,6 +22,7 @@ public class PricingService : IPricingService
         var room = await _unitOfWork.Rooms.GetByIdAsync(roomId);
         if (room == null) throw new Exception("Room not found");
 
+        // Verificar si existe una tarifa manual para esta habitación y fecha
         var manualPricing = (await _unitOfWork.RoomPricings.FindAsync(rp => rp.RoomId == roomId && rp.Date.Date == date.Date)).FirstOrDefault();
         if (manualPricing != null && manualPricing.IsManualOverride)
         {
@@ -27,8 +30,10 @@ public class PricingService : IPricingService
         }
 
         var baseRate = room.BaseRate;
-        var rules = await _unitOfWork.PricingRules.FindAsync(pr => pr.HotelId == room.HotelId && pr.IsActive);
-        
+
+        // Obtener reglas de precios del caché (expiración 15 minutos según especificación)
+        var rules = await GetPricingRulesAsync(room.HotelId);
+
         var finalRate = ApplyRules(baseRate, date, rules);
         return finalRate;
     }
@@ -75,7 +80,32 @@ public class PricingService : IPricingService
         }
 
         await _unitOfWork.SaveChangesAsync();
+
+        // Invalidar caché de reglas de precios del hotel afectado
+        var room2 = await _unitOfWork.Rooms.GetByIdAsync(roomId);
+        if (room2 != null)
+        {
+            var cacheKey = string.Format(CacheKeys.PricingRulesByHotel, room2.HotelId);
+            await _cacheService.RemoveAsync(cacheKey);
+        }
+
         return existing;
+    }
+
+    /// <summary>
+    /// Obtiene las reglas de precios activas para un hotel desde el caché o la base de datos.
+    /// Expiración de 15 minutos según especificación de tarea 2.3.
+    /// </summary>
+    private async Task<IEnumerable<PricingRule>> GetPricingRulesAsync(int hotelId)
+    {
+        var cacheKey = string.Format(CacheKeys.PricingRulesByHotel, hotelId);
+
+        return await _cacheService.GetOrSetAsync(cacheKey, async () =>
+        {
+            _logger.LogDebug("Cargando reglas de precios desde BD para hotel {HotelId}", hotelId);
+            var rules = await _unitOfWork.PricingRules.FindAsync(pr => pr.HotelId == hotelId && pr.IsActive);
+            return rules.ToList();
+        }, CacheKeys.Expiration.PricingRules);
     }
 
     private decimal ApplyRules(decimal baseRate, DateTime date, IEnumerable<PricingRule> rules)

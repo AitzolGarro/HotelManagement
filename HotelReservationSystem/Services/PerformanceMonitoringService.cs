@@ -1,3 +1,4 @@
+using HotelReservationSystem.Models.DTOs;
 using HotelReservationSystem.Services.Interfaces;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -11,6 +12,21 @@ namespace HotelReservationSystem.Services
         private readonly ConcurrentDictionary<string, List<QueryMetric>> _queryMetrics = new();
         private readonly ConcurrentDictionary<string, List<ApiMetric>> _apiMetrics = new();
         private readonly ConcurrentDictionary<string, CacheMetric> _cacheMetrics = new();
+
+        // Contadores de métricas en tiempo real (thread-safe con Interlocked)
+        private long _totalApiRequests = 0;
+        private long _totalDbQueries = 0;
+        private long _totalCacheHits = 0;
+        private long _totalCacheMisses = 0;
+        private long _l1CacheHits = 0;
+        private long _l2CacheHits = 0;
+
+        // Almacenamiento de tiempos para cálculo de estadísticas
+        private readonly ConcurrentBag<double> _apiResponseTimes = new();
+        private readonly ConcurrentBag<double> _dbQueryTimes = new();
+
+        // Umbral para considerar una consulta como lenta (ms)
+        private const double SlowQueryThresholdMs = 1000.0;
 
         public PerformanceMonitoringService(ICacheService cacheService, ILogger<PerformanceMonitoringService> logger)
         {
@@ -156,6 +172,149 @@ namespace HotelReservationSystem.Services
 
                 return slowQueries.OrderByDescending(q => q.Duration).AsEnumerable();
             }, CacheKeys.Expiration.Long);
+        }
+
+        /// <summary>
+        /// Registra el tiempo de respuesta de una llamada a la API en milisegundos.
+        /// También actualiza los contadores de métricas en tiempo real.
+        /// </summary>
+        public void RecordApiResponseTime(string endpoint, double milliseconds)
+        {
+            Interlocked.Increment(ref _totalApiRequests);
+            _apiResponseTimes.Add(milliseconds);
+
+            // Reutilizar el registro existente con TimeSpan para mantener consistencia
+            RecordApiCall(endpoint, TimeSpan.FromMilliseconds(milliseconds), 200);
+
+            _logger.LogDebug("Tiempo de respuesta API registrado: {Endpoint} = {Ms}ms", endpoint, milliseconds);
+        }
+
+        /// <summary>
+        /// Registra el tiempo de ejecución de una consulta a la base de datos en milisegundos.
+        /// Detecta automáticamente consultas lentas que superen el umbral configurado.
+        /// </summary>
+        public void RecordDatabaseQueryTime(string operation, double milliseconds)
+        {
+            Interlocked.Increment(ref _totalDbQueries);
+            _dbQueryTimes.Add(milliseconds);
+
+            // Reutilizar el registro existente con TimeSpan para mantener consistencia
+            RecordQueryExecution(operation, TimeSpan.FromMilliseconds(milliseconds));
+
+            if (milliseconds > SlowQueryThresholdMs)
+            {
+                _logger.LogWarning("Consulta lenta detectada: {Operation} tardó {Ms}ms", operation, milliseconds);
+            }
+        }
+
+        /// <summary>
+        /// Registra una operación de caché indicando si fue un hit o miss y el nivel de caché (L1/L2).
+        /// </summary>
+        public void RecordCacheOperation(bool isHit, string cacheLevel)
+        {
+            if (isHit)
+            {
+                Interlocked.Increment(ref _totalCacheHits);
+
+                // Incrementar contador por nivel de caché
+                if (cacheLevel.Equals("L1", StringComparison.OrdinalIgnoreCase))
+                    Interlocked.Increment(ref _l1CacheHits);
+                else if (cacheLevel.Equals("L2", StringComparison.OrdinalIgnoreCase))
+                    Interlocked.Increment(ref _l2CacheHits);
+            }
+            else
+            {
+                Interlocked.Increment(ref _totalCacheMisses);
+            }
+
+            _logger.LogDebug("Operación de caché: {Level} {Result}", cacheLevel, isHit ? "HIT" : "MISS");
+        }
+
+        /// <summary>
+        /// Retorna un resumen consolidado de todas las métricas de rendimiento en tiempo real.
+        /// Incluye estadísticas de API, base de datos y caché.
+        /// </summary>
+        public PerformanceMetricsSummaryDto GetMetricsSummary()
+        {
+            var summary = new PerformanceMetricsSummaryDto
+            {
+                GeneratedAt = DateTime.UtcNow,
+                TotalApiRequests = Interlocked.Read(ref _totalApiRequests),
+                TotalDbQueries = Interlocked.Read(ref _totalDbQueries),
+                TotalCacheHits = Interlocked.Read(ref _totalCacheHits),
+                TotalCacheMisses = Interlocked.Read(ref _totalCacheMisses),
+                L1CacheHits = Interlocked.Read(ref _l1CacheHits),
+                L2CacheHits = Interlocked.Read(ref _l2CacheHits)
+            };
+
+            // Calcular estadísticas de tiempos de respuesta API
+            CalculateApiResponseStats(summary);
+
+            // Calcular estadísticas de tiempos de consulta DB
+            CalculateDbQueryStats(summary);
+
+            // Calcular ratio de caché
+            var totalCacheOps = summary.TotalCacheHits + summary.TotalCacheMisses;
+            summary.CacheHitRatio = totalCacheOps > 0
+                ? (double)summary.TotalCacheHits / totalCacheOps * 100.0
+                : 0.0;
+
+            // Obtener endpoints y operaciones más lentas del día actual
+            PopulateSlowEndpoints(summary);
+            PopulateSlowDbOperations(summary);
+
+            return summary;
+        }
+
+        /// <summary>Calcula estadísticas de tiempos de respuesta de API (avg/min/max)</summary>
+        private void CalculateApiResponseStats(PerformanceMetricsSummaryDto summary)
+        {
+            var times = _apiResponseTimes.ToArray();
+            if (times.Length == 0) return;
+
+            summary.AvgApiResponseTimeMs = times.Average();
+            summary.MinApiResponseTimeMs = times.Min();
+            summary.MaxApiResponseTimeMs = times.Max();
+        }
+
+        /// <summary>Calcula estadísticas de tiempos de consulta a base de datos (avg/min/max)</summary>
+        private void CalculateDbQueryStats(PerformanceMetricsSummaryDto summary)
+        {
+            var times = _dbQueryTimes.ToArray();
+            if (times.Length == 0) return;
+
+            summary.AvgDbQueryTimeMs = times.Average();
+            summary.MinDbQueryTimeMs = times.Min();
+            summary.MaxDbQueryTimeMs = times.Max();
+            summary.SlowQueryCount = times.Count(t => t > SlowQueryThresholdMs);
+        }
+
+        /// <summary>Obtiene los 10 endpoints más lentos del día actual para el resumen</summary>
+        private void PopulateSlowEndpoints(PerformanceMetricsSummaryDto summary)
+        {
+            var dateKey = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
+            if (!_apiMetrics.TryGetValue(dateKey, out var apiCalls)) return;
+
+            summary.SlowEndpoints = apiCalls
+                .GroupBy(a => a.Endpoint)
+                .Select(g => new { Endpoint = g.Key, AvgMs = g.Average(a => a.Duration.TotalMilliseconds) })
+                .OrderByDescending(x => x.AvgMs)
+                .Take(10)
+                .ToDictionary(x => x.Endpoint, x => x.AvgMs);
+        }
+
+        /// <summary>Obtiene las 10 operaciones de base de datos más lentas del día actual</summary>
+        private void PopulateSlowDbOperations(PerformanceMetricsSummaryDto summary)
+        {
+            var dateKey = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
+            if (!_queryMetrics.TryGetValue(dateKey, out var queries)) return;
+
+            summary.SlowDbOperations = queries
+                .GroupBy(q => q.QueryName)
+                .Select(g => new { Operation = g.Key, AvgMs = g.Average(q => q.Duration.TotalMilliseconds) })
+                .OrderByDescending(x => x.AvgMs)
+                .Take(10)
+                .ToDictionary(x => x.Operation, x => x.AvgMs);
         }
 
         public IDisposable StartTimer(string operationName)

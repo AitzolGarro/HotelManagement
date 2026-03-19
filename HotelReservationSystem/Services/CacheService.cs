@@ -17,6 +17,8 @@ namespace HotelReservationSystem.Services
         private long _misses = 0;
         private long _sets = 0;
         private long _removes = 0;
+        private long _l1Hits = 0;
+        private long _l2Hits = 0;
 
         public CacheService(
             IDistributedCache distributedCache,
@@ -43,6 +45,7 @@ namespace HotelReservationSystem.Services
                 if (_memoryCache.TryGetValue(key, out T? cachedValue))
                 {
                     Interlocked.Increment(ref _hits);
+                    Interlocked.Increment(ref _l1Hits);
                     _logger.LogDebug("Cache hit in memory cache for key: {Key}", key);
                     return cachedValue;
                 }
@@ -52,6 +55,7 @@ namespace HotelReservationSystem.Services
                 if (cachedString != null)
                 {
                     Interlocked.Increment(ref _hits);
+                    Interlocked.Increment(ref _l2Hits);
                     var deserializedValue = JsonSerializer.Deserialize<T>(cachedString, _jsonOptions);
                     
                     // Store in memory cache for faster subsequent access
@@ -60,7 +64,6 @@ namespace HotelReservationSystem.Services
                     _logger.LogDebug("Cache hit in distributed cache for key: {Key}", key);
                     return deserializedValue;
                 }
-
                 Interlocked.Increment(ref _misses);
                 _logger.LogDebug("Cache miss for key: {Key}", key);
                 return null;
@@ -193,7 +196,9 @@ namespace HotelReservationSystem.Services
                 Hits = Interlocked.Read(ref _hits),
                 Misses = Interlocked.Read(ref _misses),
                 Sets = Interlocked.Read(ref _sets),
-                Removes = Interlocked.Read(ref _removes)
+                Removes = Interlocked.Read(ref _removes),
+                L1Hits = Interlocked.Read(ref _l1Hits),
+                L2Hits = Interlocked.Read(ref _l2Hits)
             };
         }
     }

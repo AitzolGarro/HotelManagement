@@ -20,11 +20,13 @@ using Microsoft.Extensions.Caching.Memory;
 using StackExchange.Redis;
 using FluentValidation;
 
-// Configure Serilog
+// Configuración inicial de Serilog (bootstrap) para capturar errores de arranque
 Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .Enrich.FromLogContext()
     .WriteTo.Console()
     .WriteTo.File("logs/hotel-reservation-.txt", rollingInterval: RollingInterval.Day)
-    .CreateLogger();
+    .CreateBootstrapLogger();
 
 try
 {
@@ -32,14 +34,54 @@ try
 
     var builder = WebApplication.CreateBuilder(args);
 
-    // Add Serilog
-    builder.Host.UseSerilog();
+    // Configurar Serilog con enriquecedores, niveles por entorno y sinks estructurados
+    builder.Host.UseSerilog((hostContext, services, loggerConfig) =>
+    {
+        var env = hostContext.HostingEnvironment;
+        var isDev = env.IsDevelopment();
 
-    // Add health checks
+        loggerConfig
+            // Enriquecedores estándar: entorno, proceso, hilo y contexto de log
+            .Enrich.FromLogContext()
+            .Enrich.WithMachineName()
+            .Enrich.WithEnvironmentName()
+            .Enrich.WithProcessId()
+            .Enrich.WithThreadId()
+            // Propiedad de aplicación para filtrar en dashboards de monitoreo
+            .Enrich.WithProperty("Application", "HotelReservationSystem")
+            .Enrich.WithProperty("Environment", env.EnvironmentName)
+            // Nivel mínimo: Debug en desarrollo, Warning en producción
+            .MinimumLevel.Is(isDev
+                ? Serilog.Events.LogEventLevel.Debug
+                : Serilog.Events.LogEventLevel.Warning)
+            // Silenciar ruido de frameworks internos
+            .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft.EntityFrameworkCore", isDev
+                ? Serilog.Events.LogEventLevel.Information
+                : Serilog.Events.LogEventLevel.Warning)
+            .MinimumLevel.Override("System", Serilog.Events.LogEventLevel.Warning)
+            // Sink: consola con formato legible en desarrollo, JSON compacto en producción
+            .WriteTo.Console(
+                outputTemplate: isDev
+                    ? "[{Timestamp:HH:mm:ss} {Level:u3}] [{CorrelationId}] {Message:lj}{NewLine}{Exception}"
+                    : "{Timestamp:o} [{Level:u3}] {CorrelationId} {Message:j}{NewLine}{Exception}")
+            // Sink: archivo rotativo diario, retención de 14 días
+            .WriteTo.File(
+                path: "logs/hotel-reservation-.txt",
+                rollingInterval: RollingInterval.Day,
+                retainedFileCountLimit: 14,
+                outputTemplate: "{Timestamp:o} [{Level:u3}] [{CorrelationId}] [{Application}] {Message:lj}{NewLine}{Exception}");
+    });
+
+    // Registrar verificaciones de salud para base de datos, Redis y API externa
     builder.Services.AddHealthChecks()
-        .AddDbContextCheck<HotelReservationContext>("Database")
-        .AddCheck<HotelReservationSystem.HealthChecks.RedisHealthCheck>("Redis")
-        .AddCheck<HotelReservationSystem.HealthChecks.BookingComHealthCheck>("BookingCom");
+        .AddCheck<HotelReservationSystem.HealthChecks.DatabaseHealthCheck>("Database", tags: new[] { "db", "ready" })
+        .AddCheck<HotelReservationSystem.HealthChecks.RedisHealthCheck>("Redis",
+            failureStatus: Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Degraded,
+            tags: new[] { "cache", "ready" })
+        .AddCheck<HotelReservationSystem.HealthChecks.BookingComHealthCheck>("BookingCom",
+            failureStatus: Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Degraded,
+            tags: new[] { "external", "ready" });
 
     // Add services to the container
     builder.Services.AddControllers();
@@ -65,6 +107,14 @@ try
                   .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
         });
     });
+
+    // Configurar ajustes de limitación de tasa desde appsettings.json
+    builder.Services.Configure<HotelReservationSystem.Configuration.RateLimitSettings>(
+        builder.Configuration.GetSection("RateLimitSettings"));
+
+    // Configurar ajustes de cifrado de datos sensibles
+    builder.Services.Configure<HotelReservationSystem.Configuration.EncryptionSettings>(
+        builder.Configuration.GetSection("EncryptionSettings"));
 
     // Add caching services
     builder.Services.AddMemoryCache();
@@ -136,8 +186,8 @@ try
         options.Password.RequiredLength = 8;
         options.Password.RequiredUniqueChars = 2;
 
-        // Lockout settings
-        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+        // Configuración de bloqueo de cuenta por intentos fallidos
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
         options.Lockout.MaxFailedAccessAttempts = 5;
         options.Lockout.AllowedForNewUsers = true;
 
@@ -205,20 +255,26 @@ try
     builder.Services.AddScoped<IGuestRepository, GuestRepository>();
     builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 
-    // Register caching and performance services
-    builder.Services.AddScoped<ICacheService>(provider =>
+    // Registrar servicio de caché mejorado con estrategia L1 (memoria) + L2 (Redis)
+    // Se registra como Singleton para compartir estadísticas y estado entre solicitudes
+    builder.Services.AddSingleton<ICacheService>(provider =>
     {
         var distributedCache = provider.GetRequiredService<IDistributedCache>();
         var memoryCache = provider.GetRequiredService<IMemoryCache>();
-        var logger = provider.GetRequiredService<ILogger<CacheService>>();
-        var redis = provider.GetService<IConnectionMultiplexer>(); // GetService returns null if not registered
-        return new CacheService(distributedCache, memoryCache, logger, redis);
+        var logger = provider.GetRequiredService<ILogger<EnhancedCacheService>>();
+        var redis = provider.GetService<IConnectionMultiplexer>(); // null si Redis no está disponible
+        return new EnhancedCacheService(distributedCache, memoryCache, logger, redis);
     });
     builder.Services.AddSingleton<IPerformanceMonitoringService, PerformanceMonitoringService>();
     builder.Services.AddScoped<IStaticDataCacheService, StaticDataCacheService>();
 
-    // Register services
+    // Registrar IHttpContextAccessor para acceso al contexto HTTP en servicios
+    builder.Services.AddHttpContextAccessor();
+
+    // Registrar servicio de ID de correlación para propagación a llamadas externas
+    builder.Services.AddScoped<ICorrelationIdService, CorrelationIdService>();    // Register services
     builder.Services.AddScoped<IAuthService, AuthService>();
+    builder.Services.AddScoped<ITwoFactorService, TwoFactorService>();
     builder.Services.AddScoped<IReservationService, ReservationService>();
     builder.Services.AddScoped<IPropertyService, PropertyService>();
     builder.Services.AddScoped<IPaymentGatewayService, StripePaymentGatewayService>();
@@ -227,6 +283,8 @@ try
     builder.Services.AddScoped<IGuestPortalService, GuestPortalService>();
     builder.Services.AddSingleton<IEncryptionService, EncryptionService>();
     builder.Services.AddScoped<HotelReservationSystem.Services.BookingCom.IBookingIntegrationService, HotelReservationSystem.Services.BookingCom.BookingIntegrationService>();
+    // Registrar IBookingIntegrationService del namespace Interfaces para ChannelManagerService
+    builder.Services.AddScoped<HotelReservationSystem.Services.Interfaces.IBookingIntegrationService, HotelReservationSystem.Services.BookingIntegrationService>();
     builder.Services.AddScoped<IExpediaChannelService, ExpediaChannelService>();
     builder.Services.AddScoped<IChannelManagerService, ChannelManagerService>();
     builder.Services.AddScoped<IPricingService, PricingService>();
@@ -273,8 +331,11 @@ try
     // Add global exception handling middleware (should be early in the pipeline)
     app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
     
-    // Add correlation ID middleware
+    // Agregar middleware de correlación ID (debe ir antes del logging de solicitudes)
     app.UseMiddleware<CorrelationIdMiddleware>();
+    
+    // Agregar middleware de logging de solicitudes/respuestas (Debug en dev, Warning en errores)
+    app.UseMiddleware<RequestResponseLoggingMiddleware>();
     
     // Add performance monitoring middleware
     app.UseMiddleware<PerformanceMonitoringMiddleware>();
@@ -287,8 +348,13 @@ try
     
     app.UseRouting();
 
-    // Health check endpoints
-    app.MapHealthChecks("/health");
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+    // Endpoint público de salud: devuelve estado general (Healthy/Degraded/Unhealthy)
+    app.MapHealthChecks("/health").AllowAnonymous();
+
+    // Endpoint detallado de salud: solo accesible para administradores
     app.MapHealthChecks("/health/details", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
     {
         ResponseWriter = async (context, report) =>
@@ -297,20 +363,22 @@ try
             var result = System.Text.Json.JsonSerializer.Serialize(new
             {
                 status = report.Status.ToString(),
+                totalDuration = report.TotalDuration.TotalMilliseconds,
+                verificadoEn = DateTime.UtcNow.ToString("o"),
                 checks = report.Entries.Select(e => new
                 {
-                    name = e.Key,
-                    status = e.Value.Status.ToString(),
-                    description = e.Value.Description,
+                    nombre = e.Key,
+                    estado = e.Value.Status.ToString(),
+                    descripcion = e.Value.Description,
+                    duracionMs = e.Value.Duration.TotalMilliseconds,
+                    etiquetas = e.Value.Tags,
+                    datos = e.Value.Data,
                     error = e.Value.Exception?.Message
                 })
-            });
+            }, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
             await context.Response.WriteAsync(result);
         }
     }).RequireAuthorization(new Microsoft.AspNetCore.Authorization.AuthorizeAttribute { Roles = "Admin" });
-
-    app.UseAuthentication();
-    app.UseAuthorization();
     
     app.MapControllers();
     

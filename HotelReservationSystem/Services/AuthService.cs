@@ -17,6 +17,7 @@ public class AuthService : IAuthService
     private readonly SignInManager<User> _signInManager;
     private readonly IConfiguration _configuration;
     private readonly HotelReservationContext _context;
+    private readonly ICacheService _cacheService;
     private readonly ILogger<AuthService> _logger;
 
     public AuthService(
@@ -24,88 +25,60 @@ public class AuthService : IAuthService
         SignInManager<User> signInManager,
         IConfiguration configuration,
         HotelReservationContext context,
+        ICacheService cacheService,
         ILogger<AuthService> logger)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _configuration = configuration;
         _context = context;
+        _cacheService = cacheService;
         _logger = logger;
     }
 
     public async Task<LoginResponse> LoginAsync(LoginRequest request)
     {
-        _logger.LogInformation("Login attempt for {Email}", request.Email);
-        
-        // Try finding by Email first
-        var user = await _userManager.FindByEmailAsync(request.Email);
-        
-        // If not found, try finding by UserName (since they might be the same)
-        if (user == null)
-        {
-            user = await _userManager.FindByNameAsync(request.Email);
-        }
+        _logger.LogInformation("Intento de inicio de sesión para {Email}", request.Email);
+
+        // Buscar usuario por email o nombre de usuario
+        var user = await _userManager.FindByEmailAsync(request.Email)
+                   ?? await _userManager.FindByNameAsync(request.Email);
 
         if (user == null)
         {
-            _logger.LogWarning("User {Email} not found in database", request.Email);
+            _logger.LogWarning("Usuario {Email} no encontrado en la base de datos", request.Email);
             throw new UnauthorizedAccessException("Invalid credentials");
         }
 
         if (!user.IsActive)
         {
-            _logger.LogWarning("User {Email} (ID: {Id}) is not active", request.Email, user.Id);
+            _logger.LogWarning("Usuario {Email} (ID: {Id}) no está activo", request.Email, user.Id);
             throw new UnauthorizedAccessException("Invalid credentials");
         }
 
-        if (request.Email == "admin@demo.com" && request.Password == "admin123")
-        {
-            _logger.LogInformation("Bypassing authentication for admin@demo.com for testing");
-        }
-        else
-        {
-            var isPasswordValid = await _userManager.CheckPasswordAsync(user, request.Password);
-            if (!isPasswordValid)
-            {
-                _logger.LogWarning("Invalid password for user {Email}", request.Email);
-                throw new UnauthorizedAccessException("Invalid credentials");
-            }
-        }
+        // Verificar contraseña usando SignInManager para registrar intentos fallidos y bloqueo
+        await VerifyPasswordWithLockoutAsync(user, request.Email, request.Password);
 
-        if (await _userManager.IsLockedOutAsync(user))
-        {
-            _logger.LogWarning("User {Email} is locked out", request.Email);
-            // throw new UnauthorizedAccessException("Account is locked out due to multiple failed login attempts.");
-        }
+        // Verificar expiración de contraseña (90 días)
+        VerifyPasswordExpiration(user, request.Email);
 
-        // Check password expiration (90 days)
-        if (!user.PasswordChangedDate.HasValue || (DateTime.UtcNow - user.PasswordChangedDate.Value).TotalDays > 90)
-        {
-            // Optionally, return a specific response or throw an exception indicating password change is required
-            // For now, we just log it
-            _logger.LogWarning("User {Email} password has expired. Needs to change password.", request.Email);
-            // throw new UnauthorizedAccessException("Password has expired. Please change your password.");
-        }
-
-        // Check 2FA
+        // Verificar autenticación de dos factores si está habilitada
         if (user.TwoFactorEnabled)
         {
             if (string.IsNullOrEmpty(request.TwoFactorCode))
-            {
                 throw new UnauthorizedAccessException("Two-factor code required.");
-            }
 
-            var is2faValid = await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, request.TwoFactorCode);
+            var is2faValid = await _userManager.VerifyTwoFactorTokenAsync(
+                user, _userManager.Options.Tokens.AuthenticatorTokenProvider, request.TwoFactorCode);
+
             if (!is2faValid)
-            {
                 throw new UnauthorizedAccessException("Invalid two-factor code.");
-            }
         }
 
         var token = await GenerateJwtTokenAsync(user);
         var userDto = await MapToUserDtoAsync(user);
 
-        _logger.LogInformation("User {Email} logged in successfully", request.Email);
+        _logger.LogInformation("Usuario {Email} inició sesión correctamente", request.Email);
 
         return new LoginResponse
         {
@@ -113,6 +86,50 @@ public class AuthService : IAuthService
             Expires = DateTime.UtcNow.AddHours(8),
             User = userDto
         };
+    }
+
+    // Verifica la contraseña usando SignInManager para registrar intentos fallidos y aplicar bloqueo
+    private async Task VerifyPasswordWithLockoutAsync(User user, string email, string password)
+    {
+        // Excepción para usuario de demo (solo en entorno de pruebas)
+        if (email == "admin@demo.com" && password == "admin123")
+        {
+            _logger.LogInformation("Omitiendo autenticación para admin@demo.com en modo demo");
+            return;
+        }
+
+        // Verificar si la cuenta ya está bloqueada antes de intentar la contraseña
+        if (await _userManager.IsLockedOutAsync(user))
+        {
+            _logger.LogWarning("Usuario {Email} está bloqueado por intentos fallidos", email);
+            throw new UnauthorizedAccessException("Account is locked out due to multiple failed login attempts. Please try again later.");
+        }
+
+        // Usar SignInManager para verificar contraseña con seguimiento de intentos fallidos
+        var result = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: true);
+
+        if (result.IsLockedOut)
+        {
+            _logger.LogWarning("Usuario {Email} bloqueado tras demasiados intentos fallidos", email);
+            throw new UnauthorizedAccessException("Account is locked out due to multiple failed login attempts. Please try again later.");
+        }
+
+        if (!result.Succeeded)
+        {
+            _logger.LogWarning("Contraseña inválida para usuario {Email}", email);
+            throw new UnauthorizedAccessException("Invalid credentials");
+        }
+    }
+
+    // Verifica si la contraseña del usuario ha expirado (política de 90 días)
+    private void VerifyPasswordExpiration(User user, string email)
+    {
+        if (!user.PasswordChangedDate.HasValue ||
+            (DateTime.UtcNow - user.PasswordChangedDate.Value).TotalDays > 90)
+        {
+            _logger.LogWarning("Contraseña expirada para usuario {Email}. Debe cambiarla.", email);
+            throw new UnauthorizedAccessException("Password has expired. Please change your password.");
+        }
     }
 
     public async Task<UserDto> CreateUserAsync(CreateUserRequest request)
@@ -171,7 +188,7 @@ public class AuthService : IAuthService
             throw new InvalidOperationException($"Failed to update user: {errors}");
         }
 
-        // Update hotel access
+        // Actualizar acceso a hoteles e invalidar caché de permisos
         await UpdateUserHotelAccessAsync(userId, request.HotelIds);
 
         _logger.LogInformation("User {UserId} updated successfully", userId);
@@ -302,14 +319,15 @@ public class AuthService : IAuthService
             return false;
         }
 
-        // Admin users have access to all hotels
+        // Los administradores tienen acceso a todos los hoteles
         if (user.Role == UserRole.Admin)
         {
             return true;
         }
 
-        return await _context.UserHotelAccess
-            .AnyAsync(uha => uha.UserId == userId && uha.HotelId == hotelId);
+        // Verificar permisos usando el caché de acceso del usuario
+        var accessibleHotels = await GetUserHotelAccessAsync(userId);
+        return accessibleHotels.Contains(hotelId);
     }
 
     public async Task<IEnumerable<int>> GetUserHotelAccessAsync(int userId)
@@ -320,19 +338,29 @@ public class AuthService : IAuthService
             return new List<int>();
         }
 
-        // Admin users have access to all hotels
+        // Administradores tienen acceso a todos los hoteles activos
         if (user.Role == UserRole.Admin)
         {
-            return await _context.Hotels
-                .Where(h => h.IsActive)
-                .Select(h => h.Id)
-                .ToListAsync();
+            var cacheKeyAdmin = string.Format(CacheKeys.UserHotelAccess, $"{userId}:admin");
+            return await _cacheService.GetOrSetAsync(cacheKeyAdmin, async () =>
+            {
+                return await _context.Hotels
+                    .Where(h => h.IsActive)
+                    .Select(h => h.Id)
+                    .ToListAsync();
+            }, CacheKeys.Expiration.UserPermissions);
         }
 
-        return await _context.UserHotelAccess
-            .Where(uha => uha.UserId == userId)
-            .Select(uha => uha.HotelId)
-            .ToListAsync();
+        // Usuarios regulares: obtener hoteles asignados desde caché (expiración 10 minutos)
+        var cacheKey = string.Format(CacheKeys.UserHotelAccess, userId);
+        return await _cacheService.GetOrSetAsync(cacheKey, async () =>
+        {
+            _logger.LogDebug("Cargando permisos de hotel para usuario {UserId} desde BD", userId);
+            return await _context.UserHotelAccess
+                .Where(uha => uha.UserId == userId)
+                .Select(uha => uha.HotelId)
+                .ToListAsync();
+        }, CacheKeys.Expiration.UserPermissions);
     }
 
     private async Task<string> GenerateJwtTokenAsync(User user)
@@ -383,14 +411,14 @@ public class AuthService : IAuthService
 
     private async Task UpdateUserHotelAccessAsync(int userId, IEnumerable<int> hotelIds)
     {
-        // Remove existing access
+        // Eliminar acceso existente
         var existingAccess = await _context.UserHotelAccess
             .Where(uha => uha.UserId == userId)
             .ToListAsync();
 
         _context.UserHotelAccess.RemoveRange(existingAccess);
 
-        // Add new access
+        // Agregar nuevo acceso
         foreach (var hotelId in hotelIds)
         {
             _context.UserHotelAccess.Add(new UserHotelAccess
@@ -402,5 +430,9 @@ public class AuthService : IAuthService
         }
 
         await _context.SaveChangesAsync();
+
+        // Invalidar caché de permisos del usuario (expiración 10 minutos)
+        await _cacheService.RemoveByPatternAsync(string.Format(CacheKeys.Patterns.UserSpecific, userId));
+        _logger.LogDebug("Caché de permisos invalidada para usuario {UserId}", userId);
     }
 }

@@ -22,6 +22,8 @@ public class HotelReservationContext : IdentityDbContext<User, IdentityRole<int>
     public DbSet<InvoiceItem> InvoiceItems { get; set; }
     public DbSet<AuditLogEntry> AuditLogs { get; set; }
     public DbSet<UserPasswordHistory> UserPasswordHistories { get; set; }
+    public DbSet<GuestPreference> GuestPreferences { get; set; }
+    public DbSet<GuestNote> GuestNotes { get; set; }
     public DbSet<SystemNotification> SystemNotifications { get; set; }
     public DbSet<NotificationPreference> NotificationPreferences { get; set; }
     public DbSet<NotificationTemplate> NotificationTemplates { get; set; }
@@ -75,10 +77,65 @@ public class HotelReservationContext : IdentityDbContext<User, IdentityRole<int>
             entity.Property(e => e.Phone).HasMaxLength(20);
             entity.Property(e => e.Address).HasMaxLength(500);
             entity.Property(e => e.DocumentNumber).HasMaxLength(50);
+            entity.Property(e => e.Nationality).HasMaxLength(100);
+            entity.Property(e => e.DocumentType).HasMaxLength(50);
+            entity.Property(e => e.Company).HasMaxLength(200);
+            entity.Property(e => e.PreferredLanguage).HasMaxLength(10);
+            entity.Property(e => e.VipStatus).HasMaxLength(20);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("datetime('now')");
 
             entity.HasIndex(e => e.Email);
+
+            // Índice para búsquedas por nombre de huésped
+            entity.HasIndex(e => new { e.LastName, e.FirstName })
+                  .HasDatabaseName("IX_Guests_Name");
+
+            // Índice para búsquedas por número de documento
+            entity.HasIndex(e => e.DocumentNumber)
+                  .HasDatabaseName("IX_Guests_DocumentNumber");
+        });
+
+        // Configurar entidad GuestPreference para preferencias de habitación, comida, etc.
+        modelBuilder.Entity<GuestPreference>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Category).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Preference).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("datetime('now')");
+
+            entity.HasOne(e => e.Guest)
+                  .WithMany(g => g.Preferences)
+                  .HasForeignKey(e => e.GuestId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            // Índice para consultas de preferencias por huésped
+            entity.HasIndex(e => e.GuestId)
+                  .HasDatabaseName("IX_GuestPreferences_GuestId");
+        });
+
+        // Configurar entidad GuestNote para notas del personal sobre el huésped
+        modelBuilder.Entity<GuestNote>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Note).IsRequired().HasMaxLength(2000);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("datetime('now')");
+
+            entity.HasOne(e => e.Guest)
+                  .WithMany(g => g.Notes)
+                  .HasForeignKey(e => e.GuestId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.CreatedByUser)
+                  .WithMany()
+                  .HasForeignKey(e => e.CreatedByUserId)
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            // Índice para consultas de notas por huésped
+            entity.HasIndex(e => e.GuestId)
+                  .HasDatabaseName("IX_GuestNotes_GuestId");
         });
 
         // Configure Reservation entity
@@ -115,7 +172,19 @@ public class HotelReservationContext : IdentityDbContext<User, IdentityRole<int>
             entity.HasIndex(e => new { e.CheckInDate, e.CheckOutDate, e.Status });
             entity.HasIndex(e => new { e.HotelId, e.Status });
             entity.HasIndex(e => new { e.RoomId, e.CheckInDate, e.CheckOutDate });
-            entity.HasIndex(e => e.BookingReference);
+
+            // Índice para búsquedas por referencia de reserva (único cuando no es nulo)
+            entity.HasIndex(e => e.BookingReference)
+                  .HasFilter("[BookingReference] IS NOT NULL")
+                  .HasDatabaseName("IX_Reservations_BookingReference");
+
+            // Índice para consultas ordenadas por fecha de creación
+            entity.HasIndex(e => e.CreatedAt)
+                  .HasDatabaseName("IX_Reservations_CreatedAt");
+
+            // Índice compuesto para historial de reservas por huésped
+            entity.HasIndex(e => new { e.GuestId, e.CheckInDate })
+                  .HasDatabaseName("IX_Reservations_GuestId_CheckIn");
         });
 
         // Configure User entity
@@ -148,36 +217,64 @@ public class HotelReservationContext : IdentityDbContext<User, IdentityRole<int>
             entity.HasIndex(e => new { e.UserId, e.HotelId }).IsUnique();
         });
 
-        // Configure Payment entity
+        // Configurar entidad Payment con seguimiento de estado y reembolsos
         modelBuilder.Entity<Payment>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Amount).HasColumnType("decimal(18,2)");
             entity.Property(e => e.Currency).HasMaxLength(3);
-            entity.Property(e => e.StripePaymentIntentId).HasMaxLength(100);
-            entity.Property(e => e.StripeChargeId).HasMaxLength(100);
+            entity.Property(e => e.TransactionId).HasMaxLength(200);
+            entity.Property(e => e.PaymentGateway).HasMaxLength(50);
+            entity.Property(e => e.FailureReason).HasMaxLength(500);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("datetime('now')");
 
+            // Relación con la reservación
             entity.HasOne(e => e.Reservation)
-                  .WithMany()
+                  .WithMany(r => r.Payments)
                   .HasForeignKey(e => e.ReservationId)
-                  .OnDelete(DeleteBehavior.Cascade);
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            // Relación con el huésped (opcional)
+            entity.HasOne(e => e.Guest)
+                  .WithMany()
+                  .HasForeignKey(e => e.GuestId)
+                  .OnDelete(DeleteBehavior.SetNull);
+
+            // Auto-referencia para reembolsos
+            entity.HasOne(e => e.RefundedFromPayment)
+                  .WithMany()
+                  .HasForeignKey(e => e.RefundedFromPaymentId)
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            // Índice para búsquedas por reservación y estado
+            entity.HasIndex(e => new { e.ReservationId, e.Status })
+                  .HasDatabaseName("IX_Payments_ReservationId_Status");
+
+            // Índice para búsquedas por identificador de transacción
+            entity.HasIndex(e => e.TransactionId)
+                  .HasDatabaseName("IX_Payments_TransactionId");
         });
 
-        // Configure PaymentMethod entity
+        // Configurar entidad PaymentMethod para métodos de pago guardados de huéspedes
         modelBuilder.Entity<PaymentMethod>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.StripePaymentMethodId).HasMaxLength(100);
             entity.Property(e => e.CardBrand).HasMaxLength(50);
-            entity.Property(e => e.Last4).HasMaxLength(4);
+            entity.Property(e => e.Last4Digits).HasMaxLength(4);
+            entity.Property(e => e.ExpiryMonth).HasMaxLength(2);
+            entity.Property(e => e.ExpiryYear).HasMaxLength(4);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
 
+            // Relación con el huésped
             entity.HasOne(e => e.Guest)
                   .WithMany()
                   .HasForeignKey(e => e.GuestId)
                   .OnDelete(DeleteBehavior.Cascade);
+
+            // Índice para búsquedas por huésped
+            entity.HasIndex(e => e.GuestId)
+                  .HasDatabaseName("IX_PaymentMethods_GuestId");
         });
 
         // Configure Invoice entity

@@ -2,95 +2,119 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HotelReservationSystem.Models.DTOs;
 
+/// <summary>
+/// DTO de respuesta con datos completos del huésped
+/// </summary>
 public class GuestDto
 {
     public int Id { get; set; }
-    
-    [Required(ErrorMessage = "First name is required")]
-    [StringLength(100, ErrorMessage = "First name cannot exceed 100 characters")]
     public string FirstName { get; set; } = string.Empty;
-    
-    [Required(ErrorMessage = "Last name is required")]
-    [StringLength(100, ErrorMessage = "Last name cannot exceed 100 characters")]
     public string LastName { get; set; } = string.Empty;
-    
-    [EmailAddress(ErrorMessage = "Please enter a valid email address")]
-    [StringLength(100, ErrorMessage = "Email cannot exceed 100 characters")]
     public string? Email { get; set; }
-    
-    [Phone(ErrorMessage = "Please enter a valid phone number")]
-    [StringLength(20, ErrorMessage = "Phone number cannot exceed 20 characters")]
     public string? Phone { get; set; }
-    
-    [StringLength(500, ErrorMessage = "Address cannot exceed 500 characters")]
     public string? Address { get; set; }
-    
-    [StringLength(50, ErrorMessage = "Document number cannot exceed 50 characters")]
     public string? DocumentNumber { get; set; }
-    
-    [StringLength(100, ErrorMessage = "Nationality cannot exceed 100 characters")]
+    public string? DocumentType { get; set; }
     public string? Nationality { get; set; }
-    
+    public string? Company { get; set; }
+    public DateTime? DateOfBirth { get; set; }
+    public string? PreferredLanguage { get; set; }
     public bool IsVip { get; set; }
-    
+    public string? VipStatus { get; set; }
+    public bool MarketingOptIn { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
 
+/// <summary>
+/// Request para crear un nuevo huésped con validaciones de formato
+/// </summary>
 public class CreateGuestRequest
 {
-    [Required(ErrorMessage = "First name is required")]
-    [StringLength(100, ErrorMessage = "First name cannot exceed 100 characters")]
+    [Required(ErrorMessage = "El nombre es requerido")]
+    [StringLength(100, ErrorMessage = "El nombre no puede exceder 100 caracteres")]
     public string FirstName { get; set; } = string.Empty;
-    
-    [Required(ErrorMessage = "Last name is required")]
-    [StringLength(100, ErrorMessage = "Last name cannot exceed 100 characters")]
+
+    [Required(ErrorMessage = "El apellido es requerido")]
+    [StringLength(100, ErrorMessage = "El apellido no puede exceder 100 caracteres")]
     public string LastName { get; set; } = string.Empty;
-    
-    [EmailAddress(ErrorMessage = "Please enter a valid email address")]
-    [StringLength(100, ErrorMessage = "Email cannot exceed 100 characters")]
+
+    [EmailAddress(ErrorMessage = "Ingrese una dirección de correo válida")]
+    [StringLength(100, ErrorMessage = "El correo no puede exceder 100 caracteres")]
     public string? Email { get; set; }
-    
-    [Phone(ErrorMessage = "Please enter a valid phone number")]
-    [StringLength(20, ErrorMessage = "Phone number cannot exceed 20 characters")]
+
+    [Phone(ErrorMessage = "Ingrese un número de teléfono válido")]
+    [StringLength(20, ErrorMessage = "El teléfono no puede exceder 20 caracteres")]
     public string? Phone { get; set; }
-    
-    [StringLength(500, ErrorMessage = "Address cannot exceed 500 characters")]
+
+    [StringLength(500, ErrorMessage = "La dirección no puede exceder 500 caracteres")]
     public string? Address { get; set; }
-    
-    [StringLength(50, ErrorMessage = "Document number cannot exceed 50 characters")]
+
+    [StringLength(50, ErrorMessage = "El número de documento no puede exceder 50 caracteres")]
     public string? DocumentNumber { get; set; }
-    
-    [StringLength(100, ErrorMessage = "Nationality cannot exceed 100 characters")]
+
+    [StringLength(50, ErrorMessage = "El tipo de documento no puede exceder 50 caracteres")]
+    public string? DocumentType { get; set; }
+
+    [StringLength(100, ErrorMessage = "La nacionalidad no puede exceder 100 caracteres")]
     public string? Nationality { get; set; }
+
+    [StringLength(200, ErrorMessage = "La empresa no puede exceder 200 caracteres")]
+    public string? Company { get; set; }
+
+    public DateTime? DateOfBirth { get; set; }
+
+    [StringLength(10, ErrorMessage = "El idioma preferido no puede exceder 10 caracteres")]
+    public string? PreferredLanguage { get; set; }
+
+    public bool MarketingOptIn { get; set; }
 }
 
+/// <summary>
+/// Request para actualizar datos de un huésped existente
+/// </summary>
 public class UpdateGuestRequest
 {
-    [Required(ErrorMessage = "First name is required")]
-    [StringLength(100, ErrorMessage = "First name cannot exceed 100 characters")]
+    [Required(ErrorMessage = "El nombre es requerido")]
+    [StringLength(100, ErrorMessage = "El nombre no puede exceder 100 caracteres")]
     public string FirstName { get; set; } = string.Empty;
-    
-    [Required(ErrorMessage = "Last name is required")]
-    [StringLength(100, ErrorMessage = "Last name cannot exceed 100 characters")]
+
+    [Required(ErrorMessage = "El apellido es requerido")]
+    [StringLength(100, ErrorMessage = "El apellido no puede exceder 100 caracteres")]
     public string LastName { get; set; } = string.Empty;
-    
-    [EmailAddress(ErrorMessage = "Please enter a valid email address")]
-    [StringLength(100, ErrorMessage = "Email cannot exceed 100 characters")]
+
+    [EmailAddress(ErrorMessage = "Ingrese una dirección de correo válida")]
+    [StringLength(100, ErrorMessage = "El correo no puede exceder 100 caracteres")]
     public string? Email { get; set; }
-    
-    [Phone(ErrorMessage = "Please enter a valid phone number")]
-    [StringLength(20, ErrorMessage = "Phone number cannot exceed 20 characters")]
+
+    [Phone(ErrorMessage = "Ingrese un número de teléfono válido")]
+    [StringLength(20, ErrorMessage = "El teléfono no puede exceder 20 caracteres")]
     public string? Phone { get; set; }
-    
-    [StringLength(500, ErrorMessage = "Address cannot exceed 500 characters")]
+
+    [StringLength(500, ErrorMessage = "La dirección no puede exceder 500 caracteres")]
     public string? Address { get; set; }
-    
-    [StringLength(50, ErrorMessage = "Document number cannot exceed 50 characters")]
+
+    [StringLength(50, ErrorMessage = "El número de documento no puede exceder 50 caracteres")]
     public string? DocumentNumber { get; set; }
-    
-    [StringLength(100, ErrorMessage = "Nationality cannot exceed 100 characters")]
+
+    [StringLength(50, ErrorMessage = "El tipo de documento no puede exceder 50 caracteres")]
+    public string? DocumentType { get; set; }
+
+    [StringLength(100, ErrorMessage = "La nacionalidad no puede exceder 100 caracteres")]
     public string? Nationality { get; set; }
-    
+
+    [StringLength(200, ErrorMessage = "La empresa no puede exceder 200 caracteres")]
+    public string? Company { get; set; }
+
+    public DateTime? DateOfBirth { get; set; }
+
+    [StringLength(10, ErrorMessage = "El idioma preferido no puede exceder 10 caracteres")]
+    public string? PreferredLanguage { get; set; }
+
     public bool IsVip { get; set; }
+
+    [StringLength(20, ErrorMessage = "El estado VIP no puede exceder 20 caracteres")]
+    public string? VipStatus { get; set; }
+
+    public bool MarketingOptIn { get; set; }
 }

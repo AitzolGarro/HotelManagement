@@ -20,7 +20,8 @@ public class RoomRepository : Repository<Room>, IRoomRepository
 
     public async Task<IEnumerable<Room>> GetAllRoomsWithHotelAsync()
     {
-        return await _dbSet
+        // Consulta de solo lectura: se agrega AsNoTracking para evitar seguimiento innecesario
+        return await _dbSet.AsNoTracking()
             .Include(r => r.Hotel)
             .OrderBy(r => r.Hotel.Name)
             .ThenBy(r => r.RoomNumber)
@@ -42,9 +43,11 @@ public class RoomRepository : Repository<Room>, IRoomRepository
 
     public async Task<Room?> GetRoomWithReservationsAsync(int roomId, DateTime? fromDate = null, DateTime? toDate = null)
     {
-        var query = _dbSet
+        // AsSplitQuery evita el producto cartesiano al cargar colecciones relacionadas
+        var query = _dbSet.AsNoTracking()
             .Include(r => r.Reservations)
                 .ThenInclude(res => res.Guest)
+            .AsSplitQuery()
             .Where(r => r.Id == roomId);
 
         if (fromDate.HasValue && toDate.HasValue)
@@ -58,25 +61,28 @@ public class RoomRepository : Repository<Room>, IRoomRepository
 
     public async Task<bool> IsRoomAvailableAsync(int roomId, DateTime checkIn, DateTime checkOut, int? excludeReservationId = null)
     {
-        var room = await _dbSet
-            .Include(r => r.Reservations)
-            .FirstOrDefaultAsync(r => r.Id == roomId);
+        // Verificar primero si la habitación existe y está disponible (sin cargar reservaciones)
+        var roomStatus = await _dbSet.AsNoTracking()
+            .Where(r => r.Id == roomId)
+            .Select(r => new { r.Status })
+            .FirstOrDefaultAsync();
 
-        if (room == null || room.Status != RoomStatus.Available)
+        if (roomStatus == null || roomStatus.Status != RoomStatus.Available)
             return false;
 
-        var conflictingReservations = room.Reservations
-            .Where(r => r.Status != ReservationStatus.Cancelled &&
-                       r.CheckInDate < checkOut && 
+        // Filtrar conflictos directamente en SQL, evitando el problema N+1 de cargar todas las reservaciones
+        var query = _context.Set<Reservation>()
+            .Where(r => r.RoomId == roomId &&
+                       r.Status != ReservationStatus.Cancelled &&
+                       r.CheckInDate < checkOut &&
                        r.CheckOutDate > checkIn);
 
         if (excludeReservationId.HasValue)
         {
-            conflictingReservations = conflictingReservations
-                .Where(r => r.Id != excludeReservationId.Value);
+            query = query.Where(r => r.Id != excludeReservationId.Value);
         }
 
-        return !conflictingReservations.Any();
+        return !await query.AnyAsync();
     }
 
     public async Task<IEnumerable<Room>> GetRoomsByStatusAsync(RoomStatus status)
