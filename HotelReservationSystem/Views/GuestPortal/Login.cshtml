@@ -1,6 +1,6 @@
 @{
     Layout = "~/Views/Shared/_GuestPortalLayout.cshtml";
-    ViewData["Title"] = "Guest Sign In";
+    ViewData["Title"] = L["GP_Login_Title"].Value;
 }
 
 <div class="min-vh-100 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); margin: -24px;">
@@ -13,15 +13,15 @@
                     <div class="bg-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:72px;height:72px;box-shadow:0 4px 20px rgba(0,0,0,.15)">
                         <i class="bi bi-building text-primary fs-2"></i>
                     </div>
-                    <h1 class="text-white fw-bold fs-3 mb-1">Guest Portal</h1>
-                    <p class="text-white-50 mb-0">Access your reservations &amp; profile</p>
+                    <h1 class="text-white fw-bold fs-3 mb-1">@L["GP_GuestPortal"]</h1>
+                    <p class="text-white-50 mb-0">@L["GP_Login_Subtitle"]</p>
                 </div>
 
                 <!-- Login Card -->
                 <div class="card border-0 shadow-lg" style="border-radius:16px">
                     <div class="card-body p-4 p-md-5">
-                        <h2 class="fs-5 fw-semibold mb-1">Welcome back</h2>
-                        <p class="text-muted small mb-4">Sign in with your email and booking reference</p>
+                        <h2 class="fs-5 fw-semibold mb-1">@L["GP_Login_WelcomeBack"]</h2>
+                        <p class="text-muted small mb-4">@L["GP_Login_Desc"]</p>
 
                         <div id="loginError" class="alert alert-danger d-none" role="alert">
                             <i class="bi bi-exclamation-triangle-fill me-2"></i>
@@ -30,7 +30,7 @@
 
                         <form id="guestLoginForm" novalidate>
                             <div class="mb-3">
-                                <label for="loginEmail" class="form-label fw-medium">Email Address</label>
+                                <label for="loginEmail" class="form-label fw-medium">@L["GP_Login_Email"]</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light border-end-0">
                                         <i class="bi bi-envelope text-muted"></i>
@@ -38,11 +38,11 @@
                                     <input type="email" class="form-control border-start-0 ps-0" id="loginEmail"
                                            placeholder="your@email.com" required autocomplete="email" />
                                 </div>
-                                <div class="invalid-feedback">Please enter a valid email address.</div>
+                                <div class="invalid-feedback">@L["GP_Login_EmailRequired"]</div>
                             </div>
 
                             <div class="mb-4">
-                                <label for="loginBookingRef" class="form-label fw-medium">Booking Reference</label>
+                                <label for="loginBookingRef" class="form-label fw-medium">@L["GP_Login_BookingRef"]</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light border-end-0">
                                         <i class="bi bi-hash text-muted"></i>
@@ -51,14 +51,14 @@
                                            placeholder="e.g. BK-2024-001" required autocomplete="off"
                                            style="letter-spacing:.05em" />
                                 </div>
-                                <div class="form-text">Found in your booking confirmation email.</div>
-                                <div class="invalid-feedback">Please enter your booking reference.</div>
+                                <div class="form-text">@L["GP_Login_BookingRefHint"]</div>
+                                <div class="invalid-feedback">@L["GP_Login_RefRequired"]</div>
                             </div>
 
                             <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold" id="loginBtn">
-                                <span id="loginBtnText"><i class="bi bi-box-arrow-in-right me-2"></i>Sign In</span>
+                                <span id="loginBtnText"><i class="bi bi-box-arrow-in-right me-2"></i>@L["GP_Login_SignIn"]</span>
                                 <span id="loginBtnSpinner" class="d-none">
-                                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>Signing in…
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>@L["GP_Login_SigningIn"]
                                 </span>
                             </button>
                         </form>
@@ -66,13 +66,13 @@
                         <hr class="my-4">
                         <p class="text-center text-muted small mb-0">
                             <i class="bi bi-shield-lock me-1"></i>
-                            Your data is protected. We never share your information.
+                            @L["GP_Login_DataProtected"]
                         </p>
                     </div>
                 </div>
 
                 <p class="text-center text-white-50 small mt-4">
-                    Need help? Contact our <a href="mailto:support@hotel.com" class="text-white">support team</a>
+                    @L["GP_Login_NeedHelp"] <a href="mailto:support@hotel.com" class="text-white">support</a>
                 </p>
             </div>
         </div>

@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+
+  <!-- Navigation -->
+  <data name="Nav_Dashboard"><value>Dashboard</value></data>
+  <data name="Nav_Calendar"><value>Calendar</value></data>
+  <data name="Nav_Properties"><value>Properties</value></data>
+  <data name="Nav_Reservations"><value>Reservations</value></data>
+  <data name="Nav_Reports"><value>Reports</value></data>
+  <data name="Nav_SignIn"><value>Sign In</value></data>
+  <data name="Nav_SignOut"><value>Sign Out</value></data>
+  <data name="Nav_MyProfile"><value>My Profile</value></data>
+  <data name="Nav_ChangePassword"><value>Change Password</value></data>
+  <data name="Nav_UserManagement"><value>User Management</value></data>
+  <data name="Nav_Settings"><value>Settings</value></data>
+  <data name="Nav_HelpSupport"><value>Help &amp; Support</value></data>
+  <data name="Nav_Notifications"><value>Notifications</value></data>
+  <data name="Nav_Home"><value>Home</value></data>
+  <data name="Nav_Bookings"><value>Bookings</value></data>
+  <data name="Nav_Profile"><value>Profile</value></data>
+
+  <!-- Language selector -->
+  <data name="Lang_SelectLanguage"><value>Language</value></data>
+  <data name="Lang_English"><value>English</value></data>
+  <data name="Lang_Spanish"><value>Español</value></data>
+
+  <!-- Common -->
+  <data name="Common_Loading"><value>Loading...</value></data>
+  <data name="Common_Save"><value>Save</value></data>
+  <data name="Common_Cancel"><value>Cancel</value></data>
+  <data name="Common_Edit"><value>Edit</value></data>
+  <data name="Common_Delete"><value>Delete</value></data>
+  <data name="Common_Close"><value>Close</value></data>
+  <data name="Common_Refresh"><value>Refresh</value></data>
+  <data name="Common_ViewAll"><value>View All</value></data>
+  <data name="Common_Details"><value>Details</value></data>
+  <data name="Common_Back"><value>Back</value></data>
+  <data name="Common_Yes"><value>Yes</value></data>
+  <data name="Common_No"><value>No</value></data>
+  <data name="Common_All"><value>All</value></data>
+  <data name="Common_Search"><value>Search</value></data>
+  <data name="Common_Filter"><value>Filter</value></data>
+  <data name="Common_Reset"><value>Reset</value></data>
+  <data name="Common_Error"><value>An error occurred. Please try again.</value></data>
+  <data name="Common_Success"><value>Operation completed successfully.</value></data>
+  <data name="Common_Required"><value>This field is required.</value></data>
+  <data name="Common_Saving"><value>Saving...</value></data>
+  <data name="Common_Modify"><value>Modify</value></data>
+  <data name="Common_NoData"><value>No data available</value></data>
+
+  <!-- Admin Login -->
+  <data name="Login_Title"><value>Sign In</value></data>
+  <data name="Login_WelcomeBack"><value>Welcome Back</value></data>
+  <data name="Login_Subtitle"><value>Please sign in to your account</value></data>
+  <data name="Login_Email"><value>Email address</value></data>
+  <data name="Login_Password"><value>Password</value></data>
+  <data name="Login_RememberMe"><value>Remember me</value></data>
+  <data name="Login_ForgotPassword"><value>Forgot password?</value></data>
+  <data name="Login_SignIn"><value>Sign In</value></data>
+  <data name="Login_SigningIn"><value>Signing in...</value></data>
+  <data name="Login_NeedHelp"><value>Need help?</value></data>
+  <data name="Login_ContactAdmin"><value>Contact your system administrator for account access</value></data>
+  <data name="Login_SmartBooking"><value>Smart Booking</value></data>
+  <data name="Login_Analytics"><value>Analytics</value></data>
+  <data name="Login_Secure"><value>Secure</value></data>
+  <data name="Login_SystemTitle"><value>Hotel Reservation System</value></data>
+  <data name="Login_SystemSubtitle"><value>Centralized management for all your hotel reservations</value></data>
+
+  <!-- Dashboard (admin) -->
+  <data name="Dashboard_Title"><value>Dashboard</value></data>
+  <data name="Dashboard_DateRange"><value>Date Range</value></data>
+  <data name="Dashboard_AllHotels"><value>All Hotels</value></data>
+  <data name="Dashboard_AutoRefresh"><value>Auto-refresh</value></data>
+  <data name="Dashboard_AddWidget"><value>Add Widget</value></data>
+  <data name="Dashboard_SaveLayout"><value>Save Layout</value></data>
+  <data name="Dashboard_ResetLayout"><value>Reset</value></data>
+  <data name="Dashboard_SelectWidget"><value>Select a widget to add to your dashboard. Already-visible widgets are greyed out.</value></data>
+  <data name="Dashboard_LoadingWidgets"><value>Loading widgets…</value></data>
+
+  <!-- Notifications -->
+  <data name="Notif_Title"><value>Notification Center</value></data>
+  <data name="Notif_Subtitle"><value>Manage and review all your notifications</value></data>
+  <data name="Notif_Settings"><value>Settings</value></data>
+  <data name="Notif_MarkAllRead"><value>Mark all read</value></data>
+  <data name="Notif_Total"><value>Total</value></data>
+  <data name="Notif_Unread"><value>Unread</value></data>
+  <data name="Notif_Today"><value>Today</value></data>
+  <data name="Notif_Read"><value>Read</value></data>
+  <data name="Notif_All"><value>All</value></data>
+  <data name="Notif_Reservations"><value>Reservations</value></data>
+  <data name="Notif_Alerts"><value>Alerts</value></data>
+  <data name="Notif_AllTypes"><value>All types</value></data>
+  <data name="Notif_Empty"><value>No notifications found</value></data>
+  <data name="Notif_LoadingMore"><value>Loading more…</value></data>
+  <data name="Notif_AllLoaded"><value>All notifications loaded</value></data>
+  <data name="Notif_MarkRead"><value>Mark read</value></data>
+  <data name="Notif_JustNow"><value>Just now</value></data>
+  <data name="Notif_Notifications"><value>Notifications</value></data>
+  <data name="Notif_MarkAllReadBtn"><value>Mark all read</value></data>
+  <data name="Notif_ViewAll"><value>View all</value></data>
+  <data name="Notif_NoNotifications"><value>No notifications</value></data>
+
+  <!-- Notification Settings -->
+  <data name="NotifSettings_Title"><value>Notification Settings</value></data>
+  <data name="NotifSettings_Subtitle"><value>Configure how and when you receive notifications</value></data>
+  <data name="NotifSettings_Channels"><value>Notification Channels</value></data>
+  <data name="NotifSettings_ChannelsDesc"><value>Choose how you want to receive notifications.</value></data>
+  <data name="NotifSettings_Email"><value>Email</value></data>
+  <data name="NotifSettings_EmailDesc"><value>Receive notifications via email</value></data>
+  <data name="NotifSettings_Sms"><value>SMS</value></data>
+  <data name="NotifSettings_SmsDesc"><value>Receive text message notifications</value></data>
+  <data name="NotifSettings_BrowserPush"><value>Browser Push</value></data>
+  <data name="NotifSettings_BrowserPushDesc"><value>Receive browser push notifications</value></data>
+  <data name="NotifSettings_Events"><value>Notification Events</value></data>
+  <data name="NotifSettings_EventsDesc"><value>Choose which events trigger notifications.</value></data>
+  <data name="NotifSettings_BookingConf"><value>Booking Confirmations</value></data>
+  <data name="NotifSettings_BookingConfDesc"><value>When a reservation is created</value></data>
+  <data name="NotifSettings_CheckIn"><value>Check-in Reminders</value></data>
+  <data name="NotifSettings_CheckInDesc"><value>24 hours before check-in</value></data>
+  <data name="NotifSettings_CheckOut"><value>Check-out Reminders</value></data>
+  <data name="NotifSettings_CheckOutDesc"><value>On the day of check-out</value></data>
+  <data name="NotifSettings_Modification"><value>Modification Confirmations</value></data>
+  <data name="NotifSettings_ModificationDesc"><value>When a reservation is modified</value></data>
+  <data name="NotifSettings_Promo"><value>Promotional Offers</value></data>
+  <data name="NotifSettings_PromoDesc"><value>Special deals and promotions</value></data>
+  <data name="NotifSettings_SavePrefs"><value>Save Preferences</value></data>
+  <data name="NotifSettings_Saving"><value>Saving…</value></data>
+  <data name="NotifSettings_Saved"><value>Preferences saved successfully</value></data>
+  <data name="NotifSettings_SaveFailed"><value>Failed to save preferences</value></data>
+
+  <!-- Guest Portal Layout -->
+  <data name="GP_GuestPortal"><value>Guest Portal</value></data>
+  <data name="GP_SignIn"><value>Sign In</value></data>
+  <data name="GP_SignOut"><value>Sign Out</value></data>
+  <data name="GP_Dashboard"><value>Dashboard</value></data>
+  <data name="GP_MyReservations"><value>My Reservations</value></data>
+  <data name="GP_MyProfile"><value>My Profile</value></data>
+  <data name="GP_AuthRequired"><value>Please sign in to access your guest portal.</value></data>
+  <data name="GP_Home"><value>Home</value></data>
+  <data name="GP_Bookings"><value>Bookings</value></data>
+  <data name="GP_Profile"><value>Profile</value></data>
+
+  <!-- Guest Portal Login -->
+  <data name="GP_Login_Title"><value>Guest Sign In</value></data>
+  <data name="GP_Login_Subtitle"><value>Access your reservations &amp; profile</value></data>
+  <data name="GP_Login_WelcomeBack"><value>Welcome back</value></data>
+  <data name="GP_Login_Desc"><value>Sign in with your email and booking reference</value></data>
+  <data name="GP_Login_Email"><value>Email Address</value></data>
+  <data name="GP_Login_BookingRef"><value>Booking Reference</value></data>
+  <data name="GP_Login_BookingRefHint"><value>Found in your booking confirmation email.</value></data>
+  <data name="GP_Login_SignIn"><value>Sign In</value></data>
+  <data name="GP_Login_SigningIn"><value>Signing in…</value></data>
+  <data name="GP_Login_InvalidCredentials"><value>Invalid email or booking reference.</value></data>
+  <data name="GP_Login_NetworkError"><value>A network error occurred. Please try again.</value></data>
+  <data name="GP_Login_DataProtected"><value>Your data is protected. We never share your information.</value></data>
+  <data name="GP_Login_NeedHelp"><value>Need help? Contact our support team</value></data>
+  <data name="GP_Login_EmailRequired"><value>Please enter a valid email address.</value></data>
+  <data name="GP_Login_RefRequired"><value>Please enter your booking reference.</value></data>
+
+  <!-- Guest Portal Dashboard -->
+  <data name="GP_Dash_Title"><value>My Dashboard</value></data>
+  <data name="GP_Dash_WelcomeBack"><value>Welcome back</value></data>
+  <data name="GP_Dash_Overview"><value>Here's an overview of your reservations</value></data>
+  <data name="GP_Dash_Upcoming"><value>Upcoming</value></data>
+  <data name="GP_Dash_ActiveStay"><value>Active Stay</value></data>
+  <data name="GP_Dash_PastStays"><value>Past Stays</value></data>
+  <data name="GP_Dash_TotalNights"><value>Total Nights</value></data>
+  <data name="GP_Dash_UpcomingReservations"><value>Upcoming Reservations</value></data>
+  <data name="GP_Dash_NoUpcoming"><value>No upcoming reservations</value></data>
+  <data name="GP_Dash_RecentStays"><value>Recent Stays</value></data>
+  <data name="GP_Dash_NoPastStays"><value>No past stays yet</value></data>
+
+  <!-- Guest Portal Reservations -->
+  <data name="GP_Res_Title"><value>My Reservations</value></data>
+  <data name="GP_Res_Subtitle"><value>Manage all your bookings in one place</value></data>
+  <data name="GP_Res_All"><value>All</value></data>
+  <data name="GP_Res_Upcoming"><value>Upcoming</value></data>
+  <data name="GP_Res_Past"><value>Past</value></data>
+  <data name="GP_Res_Empty"><value>No reservations found</value></data>
+  <data name="GP_Res_EmptyDesc"><value>Your reservations will appear here once you have bookings.</value></data>
+  <data name="GP_Res_CancelTitle"><value>Cancel Reservation</value></data>
+  <data name="GP_Res_CancelAbout"><value>You are about to cancel booking</value></data>
+  <data name="GP_Res_CancelUndone"><value>This action cannot be undone.</value></data>
+  <data name="GP_Res_CancelReason"><value>Reason for cancellation</value></data>
+  <data name="GP_Res_CancelReasonPlaceholder"><value>Please tell us why you're cancelling…</value></data>
+  <data name="GP_Res_KeepReservation"><value>Keep Reservation</value></data>
+  <data name="GP_Res_CancelConfirm"><value>Cancel Reservation</value></data>
+  <data name="GP_Res_Cancelling"><value>Cancelling…</value></data>
+  <data name="GP_Res_ProvideReason"><value>Please provide a reason.</value></data>
+
+  <!-- Guest Portal Profile -->
+  <data name="GP_Prof_Title"><value>My Profile</value></data>
+  <data name="GP_Prof_Subtitle"><value>Manage your contact information and preferences</value></data>
+  <data name="GP_Prof_ContactInfo"><value>Contact Information</value></data>
+  <data name="GP_Prof_FirstName"><value>First Name</value></data>
+  <data name="GP_Prof_LastName"><value>Last Name</value></data>
+  <data name="GP_Prof_Email"><value>Email</value></data>
+  <data name="GP_Prof_Phone"><value>Phone</value></data>
+  <data name="GP_Prof_Address"><value>Address</value></data>
+  <data name="GP_Prof_Nationality"><value>Nationality</value></data>
+  <data name="GP_Prof_PreferredLanguage"><value>Preferred Language</value></data>
+  <data name="GP_Prof_SaveChanges"><value>Save Changes</value></data>
+  <data name="GP_Prof_Marketing"><value>Receive promotional offers and news</value></data>
+  <data name="GP_Prof_NotifPrefs"><value>Notification Preferences</value></data>
+  <data name="GP_Prof_EmailNotif"><value>Email Notifications</value></data>
+  <data name="GP_Prof_BookingConf"><value>Booking confirmations</value></data>
+  <data name="GP_Prof_CheckInReminder"><value>Check-in reminders (24h before)</value></data>
+  <data name="GP_Prof_CheckOutReminder"><value>Check-out reminders</value></data>
+  <data name="GP_Prof_ModificationConf"><value>Modification confirmations</value></data>
+  <data name="GP_Prof_PromoOffers"><value>Promotional offers (opt-in)</value></data>
+  <data name="GP_Prof_Channels"><value>Channels</value></data>
+  <data name="GP_Prof_SavePrefs"><value>Save Preferences</value></data>
+  <data name="GP_Prof_PrefsSaved"><value>Preferences saved successfully!</value></data>
+  <data name="GP_Prof_LoyaltyProgram"><value>Loyalty Program</value></data>
+  <data name="GP_Prof_PointsEarned"><value>Points Earned</value></data>
+
+  <!-- Guest Portal Reservation Detail -->
+  <data name="GP_Detail_Title"><value>Reservation Details</value></data>
+  <data name="GP_Detail_BackToReservations"><value>Back to Reservations</value></data>
+  <data name="GP_Detail_BookingDetails"><value>Booking Details</value></data>
+  <data name="GP_Detail_BookingRef"><value>Booking Reference</value></data>
+  <data name="GP_Detail_Hotel"><value>Hotel</value></data>
+  <data name="GP_Detail_Room"><value>Room</value></data>
+  <data name="GP_Detail_CheckIn"><value>Check-In</value></data>
+  <data name="GP_Detail_CheckOut"><value>Check-Out</value></data>
+  <data name="GP_Detail_Duration"><value>Duration</value></data>
+  <data name="GP_Detail_Guests"><value>Guests</value></data>
+  <data name="GP_Detail_TotalAmount"><value>Total Amount</value></data>
+  <data name="GP_Detail_BookedOn"><value>Booked On</value></data>
+  <data name="GP_Detail_SpecialRequests"><value>Special Requests</value></data>
+  <data name="GP_Detail_NoSpecialRequests"><value>No special requests on file.</value></data>
+  <data name="GP_Detail_EditSpecialReq"><value>Edit Special Requests</value></data>
+  <data name="GP_Detail_SaveRequest"><value>Save Request</value></data>
+  <data name="GP_Detail_ModifyDates"><value>Modify Dates</value></data>
+  <data name="GP_Detail_NewCheckIn"><value>New Check-In</value></data>
+  <data name="GP_Detail_NewCheckOut"><value>New Check-Out</value></data>
+  <data name="GP_Detail_UpdateDates"><value>Update Dates</value></data>
+  <data name="GP_Detail_CancelReservation"><value>Cancel Reservation</value></data>
+  <data name="GP_Detail_CancelWarning"><value>Once cancelled, this action cannot be undone.</value></data>
+  <data name="GP_Detail_CancelReason"><value>Reason for cancellation…</value></data>
+  <data name="GP_Detail_NotFound"><value>Reservation not found</value></data>
+  <data name="GP_Detail_ViewAllReservations"><value>View All Reservations</value></data>
+</root>

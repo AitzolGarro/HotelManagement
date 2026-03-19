@@ -1,8 +1,7 @@
 @{
     var currentPage = ViewContext.RouteData.Values["action"]?.ToString()?.ToLower() ?? "";
     var htmlLang = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
-}
-<!DOCTYPE html>
+}<!DOCTYPE html>
 <html lang="@htmlLang">
 <head>
     <meta charset="utf-8" />
@@ -61,15 +60,43 @@
     <nav class="navbar navbar-expand-md navbar-dark gp-navbar" aria-label="Guest Portal Navigation">
         <div class="container-fluid">
             <a class="navbar-brand" href="/GuestPortal/Dashboard">
-                <i class="bi bi-building me-2" aria-hidden="true"></i>Guest Portal
+                <i class="bi bi-building me-2" aria-hidden="true"></i>@L["GP_GuestPortal"]
             </a>
             <div class="d-flex align-items-center gap-2">
                 <span class="text-white-50 d-none d-md-inline" id="gpGuestName"></span>
+
+                <!-- Language selector -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="@L["Lang_SelectLanguage"]">
+                        <i class="bi bi-translate" aria-hidden="true"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <form method="post" action="/SetLanguage">
+                                <input type="hidden" name="culture" value="en" />
+                                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                <button type="submit" class="dropdown-item @(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "en" ? "active" : "")">
+                                    🇬🇧 @L["Lang_English"]
+                                </button>
+                            </form>
+                        </li>
+                        <li>
+                            <form method="post" action="/SetLanguage">
+                                <input type="hidden" name="culture" value="es" />
+                                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                <button type="submit" class="dropdown-item @(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "es" ? "active" : "")">
+                                    🇪🇸 @L["Lang_Spanish"]
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+
                 <a href="/GuestPortal/Logout" class="btn btn-outline-light btn-sm" id="gpLogoutBtn" style="display:none!important">
-                    <i class="bi bi-box-arrow-right me-1"></i>Sign Out
+                    <i class="bi bi-box-arrow-right me-1"></i>@L["GP_SignOut"]
                 </a>
                 <a href="/GuestPortal/Login" class="btn btn-light btn-sm" id="gpLoginBtn">
-                    <i class="bi bi-box-arrow-in-right me-1"></i>Sign In
+                    <i class="bi bi-box-arrow-in-right me-1"></i>@L["GP_SignIn"]
                 </a>
             </div>
         </div>
@@ -78,7 +105,7 @@
     <!-- Auth required banner (shown when not logged in on protected pages) -->
     <div id="guestAuthRequired" class="alert alert-warning m-3 rounded-3" role="alert">
         <i class="bi bi-lock me-2"></i>
-        Please <a href="/GuestPortal/Login" class="alert-link">sign in</a> to access your guest portal.
+        @L["GP_AuthRequired"] <a href="/GuestPortal/Login" class="alert-link">@L["GP_SignIn"]</a>
     </div>
 
     <div class="container-fluid p-0">
@@ -90,23 +117,23 @@
                        href="/GuestPortal/Dashboard"
                        data-gp-page="dashboard"
                        aria-current="@(currentPage == "dashboard" ? "page" : null)">
-                        <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                        <i class="bi bi-speedometer2 me-2"></i>@L["GP_Dashboard"]
                     </a>
                     <a class="nav-link @(currentPage == "reservations" ? "active" : "")"
                        href="/GuestPortal/Reservations"
                        data-gp-page="reservations"
                        aria-current="@(currentPage == "reservations" ? "page" : null)">
-                        <i class="bi bi-journal-bookmark me-2"></i>My Reservations
+                        <i class="bi bi-journal-bookmark me-2"></i>@L["GP_MyReservations"]
                     </a>
                     <a class="nav-link @(currentPage == "profile" ? "active" : "")"
                        href="/GuestPortal/Profile"
                        data-gp-page="profile"
                        aria-current="@(currentPage == "profile" ? "page" : null)">
-                        <i class="bi bi-person-circle me-2"></i>My Profile
+                        <i class="bi bi-person-circle me-2"></i>@L["GP_MyProfile"]
                     </a>
                     <hr class="mx-3">
                     <a class="nav-link text-danger" href="/GuestPortal/Logout" id="gpSidebarLogout">
-                        <i class="bi bi-box-arrow-right me-2"></i>Sign Out
+                        <i class="bi bi-box-arrow-right me-2"></i>@L["GP_SignOut"]
                     </a>
                 </nav>
             </div>
@@ -134,15 +161,15 @@
     <nav class="gp-mobile-nav" aria-label="Mobile Guest Portal Navigation">
         <a href="/GuestPortal/Dashboard" data-gp-page="dashboard"
            aria-current="@(currentPage == "dashboard" ? "page" : null)">
-            <i class="bi bi-speedometer2"></i>Home
+            <i class="bi bi-speedometer2"></i>@L["GP_Home"]
         </a>
         <a href="/GuestPortal/Reservations" data-gp-page="reservations"
            aria-current="@(currentPage == "reservations" ? "page" : null)">
-            <i class="bi bi-journal-bookmark"></i>Bookings
+            <i class="bi bi-journal-bookmark"></i>@L["GP_Bookings"]
         </a>
         <a href="/GuestPortal/Profile" data-gp-page="profile"
            aria-current="@(currentPage == "profile" ? "page" : null)">
-            <i class="bi bi-person-circle"></i>Profile
+            <i class="bi bi-person-circle"></i>@L["GP_Profile"]
         </a>
     </nav>
 

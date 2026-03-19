@@ -1,21 +1,21 @@
 @{
     Layout = "~/Views/Shared/_GuestPortalLayout.cshtml";
-    ViewData["Title"] = "My Reservations";
+    ViewData["Title"] = L["GP_Res_Title"].Value;
 }
 
 <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-4 gap-2">
     <div>
-        <h1 class="fs-4 fw-bold mb-1"><i class="bi bi-journal-bookmark me-2 text-primary"></i>My Reservations</h1>
-        <p class="text-muted mb-0 small">Manage all your bookings in one place</p>
+        <h1 class="fs-4 fw-bold mb-1"><i class="bi bi-journal-bookmark me-2 text-primary"></i>@L["GP_Res_Title"]</h1>
+        <p class="text-muted mb-0 small">@L["GP_Res_Subtitle"]</p>
     </div>
     <!-- Filter tabs -->
     <div class="btn-group btn-group-sm" role="group" aria-label="Filter reservations">
         <input type="radio" class="btn-check" name="resFilter" id="filterAll" value="all" checked>
-        <label class="btn btn-outline-primary" for="filterAll">All</label>
+        <label class="btn btn-outline-primary" for="filterAll">@L["GP_Res_All"]</label>
         <input type="radio" class="btn-check" name="resFilter" id="filterUpcoming" value="upcoming">
-        <label class="btn btn-outline-primary" for="filterUpcoming">Upcoming</label>
+        <label class="btn btn-outline-primary" for="filterUpcoming">@L["GP_Res_Upcoming"]</label>
         <input type="radio" class="btn-check" name="resFilter" id="filterPast" value="past">
-        <label class="btn btn-outline-primary" for="filterPast">Past</label>
+        <label class="btn btn-outline-primary" for="filterPast">@L["GP_Res_Past"]</label>
     </div>
 </div>
 
@@ -27,8 +27,8 @@
 <!-- Empty state -->
 <div id="resEmpty" class="d-none text-center py-5">
     <i class="bi bi-journal-x fs-1 text-muted opacity-25 d-block mb-3"></i>
-    <h5 class="text-muted">No reservations found</h5>
-    <p class="text-muted small">Your reservations will appear here once you have bookings.</p>
+    <h5 class="text-muted">@L["GP_Res_Empty"]</h5>
+    <p class="text-muted small">@L["GP_Res_EmptyDesc"]</p>
 </div>
 
 <!-- Reservations list -->
@@ -40,20 +40,20 @@
         <div class="modal-content" style="border-radius:16px">
             <div class="modal-header border-0 pb-0">
                 <h5 class="modal-title fw-bold" id="cancelModalLabel">
-                    <i class="bi bi-x-circle text-danger me-2"></i>Cancel Reservation
+                    <i class="bi bi-x-circle text-danger me-2"></i>@L["GP_Res_CancelTitle"]
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p class="text-muted small mb-3">You are about to cancel booking <strong id="cancelRef"></strong>. This action cannot be undone.</p>
-                <label for="cancelReason" class="form-label fw-medium">Reason for cancellation</label>
-                <textarea class="form-control" id="cancelReason" rows="3" placeholder="Please tell us why you're cancelling…" required></textarea>
+                <p class="text-muted small mb-3">@L["GP_Res_CancelAbout"] <strong id="cancelRef"></strong>. @L["GP_Res_CancelUndone"]</p>
+                <label for="cancelReason" class="form-label fw-medium">@L["GP_Res_CancelReason"]</label>
+                <textarea class="form-control" id="cancelReason" rows="3" placeholder="@L["GP_Res_CancelReasonPlaceholder"]" required></textarea>
                 <div id="cancelError" class="alert alert-danger mt-3 d-none small"></div>
             </div>
             <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Keep Reservation</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">@L["GP_Res_KeepReservation"]</button>
                 <button type="button" class="btn btn-danger" id="cancelConfirmBtn">
-                    <span id="cancelBtnText">Cancel Reservation</span>
+                    <span id="cancelBtnText">@L["GP_Res_CancelConfirm"]</span>
                     <span id="cancelBtnSpinner" class="d-none spinner-border spinner-border-sm ms-2" role="status"></span>
                 </button>
             </div>

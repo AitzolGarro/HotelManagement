@@ -38,6 +38,11 @@
         },
         "runtime": {
           "HotelReservationSystem.dll": {}
+        },
+        "resources": {
+          "es/HotelReservationSystem.resources.dll": {
+            "locale": "es"
+          }
         }
       },
       "Azure.Core/1.25.0": {

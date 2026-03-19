@@ -8,8 +8,8 @@
         <i class="bi bi-arrow-left"></i>
     </a>
     <div>
-        <h4 class="mb-0"><i class="bi bi-gear me-2 text-primary"></i>Notification Settings</h4>
-        <small class="text-muted">Configure how and when you receive notifications</small>
+        <h4 class="mb-0"><i class="bi bi-gear me-2 text-primary"></i>@L["NotifSettings_Title"]</h4>
+        <small class="text-muted">@L["NotifSettings_Subtitle"]</small>
     </div>
 </div>
 
@@ -18,15 +18,15 @@
     <div class="col-12 col-lg-6">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-header bg-transparent border-bottom fw-semibold">
-                <i class="bi bi-broadcast me-2 text-primary"></i>Notification Channels
+                <i class="bi bi-broadcast me-2 text-primary"></i>@L["NotifSettings_Channels"]
             </div>
             <div class="card-body">
-                <p class="text-muted small mb-3">Choose how you want to receive notifications.</p>
+                <p class="text-muted small mb-3">@L["NotifSettings_ChannelsDesc"]</p>
 
                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                     <div>
-                        <div class="fw-semibold"><i class="bi bi-envelope me-2 text-primary"></i>Email</div>
-                        <small class="text-muted">Receive notifications via email</small>
+                        <div class="fw-semibold"><i class="bi bi-envelope me-2 text-primary"></i>@L["NotifSettings_Email"]</div>
+                        <small class="text-muted">@L["NotifSettings_EmailDesc"]</small>
                     </div>
                     <div class="form-check form-switch mb-0">
                         <input class="form-check-input pref-toggle" type="checkbox" id="emailEnabled"
@@ -36,8 +36,8 @@
 
                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                     <div>
-                        <div class="fw-semibold"><i class="bi bi-phone me-2 text-success"></i>SMS</div>
-                        <small class="text-muted">Receive text message notifications</small>
+                        <div class="fw-semibold"><i class="bi bi-phone me-2 text-success"></i>@L["NotifSettings_Sms"]</div>
+                        <small class="text-muted">@L["NotifSettings_SmsDesc"]</small>
                     </div>
                     <div class="form-check form-switch mb-0">
                         <input class="form-check-input pref-toggle" type="checkbox" id="smsEnabled"
@@ -47,8 +47,8 @@
 
                 <div class="d-flex justify-content-between align-items-center py-2">
                     <div>
-                        <div class="fw-semibold"><i class="bi bi-browser-chrome me-2 text-warning"></i>Browser Push</div>
-                        <small class="text-muted">Receive browser push notifications</small>
+                        <div class="fw-semibold"><i class="bi bi-browser-chrome me-2 text-warning"></i>@L["NotifSettings_BrowserPush"]</div>
+                        <small class="text-muted">@L["NotifSettings_BrowserPushDesc"]</small>
                     </div>
                     <div class="form-check form-switch mb-0">
                         <input class="form-check-input pref-toggle" type="checkbox" id="browserPushEnabled"
@@ -63,15 +63,15 @@
     <div class="col-12 col-lg-6">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-header bg-transparent border-bottom fw-semibold">
-                <i class="bi bi-list-check me-2 text-primary"></i>Notification Events
+                <i class="bi bi-list-check me-2 text-primary"></i>@L["NotifSettings_Events"]
             </div>
             <div class="card-body">
-                <p class="text-muted small mb-3">Choose which events trigger notifications.</p>
+                <p class="text-muted small mb-3">@L["NotifSettings_EventsDesc"]</p>
 
                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                     <div>
-                        <div class="fw-semibold">Booking Confirmations</div>
-                        <small class="text-muted">When a reservation is created</small>
+                        <div class="fw-semibold">@L["NotifSettings_BookingConf"]</div>
+                        <small class="text-muted">@L["NotifSettings_BookingConfDesc"]</small>
                     </div>
                     <div class="form-check form-switch mb-0">
                         <input class="form-check-input pref-toggle" type="checkbox" id="bookingConfirmations"
@@ -81,8 +81,8 @@
 
                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                     <div>
-                        <div class="fw-semibold">Check-in Reminders</div>
-                        <small class="text-muted">24 hours before check-in</small>
+                        <div class="fw-semibold">@L["NotifSettings_CheckIn"]</div>
+                        <small class="text-muted">@L["NotifSettings_CheckInDesc"]</small>
                     </div>
                     <div class="form-check form-switch mb-0">
                         <input class="form-check-input pref-toggle" type="checkbox" id="checkInReminders"
@@ -92,8 +92,8 @@
 
                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                     <div>
-                        <div class="fw-semibold">Check-out Reminders</div>
-                        <small class="text-muted">On the day of check-out</small>
+                        <div class="fw-semibold">@L["NotifSettings_CheckOut"]</div>
+                        <small class="text-muted">@L["NotifSettings_CheckOutDesc"]</small>
                     </div>
                     <div class="form-check form-switch mb-0">
                         <input class="form-check-input pref-toggle" type="checkbox" id="checkOutReminders"
@@ -103,8 +103,8 @@
 
                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                     <div>
-                        <div class="fw-semibold">Modification Confirmations</div>
-                        <small class="text-muted">When a reservation is modified</small>
+                        <div class="fw-semibold">@L["NotifSettings_Modification"]</div>
+                        <small class="text-muted">@L["NotifSettings_ModificationDesc"]</small>
                     </div>
                     <div class="form-check form-switch mb-0">
                         <input class="form-check-input pref-toggle" type="checkbox" id="modificationConfirmations"
@@ -114,8 +114,8 @@
 
                 <div class="d-flex justify-content-between align-items-center py-2">
                     <div>
-                        <div class="fw-semibold">Promotional Offers</div>
-                        <small class="text-muted">Special deals and promotions</small>
+                        <div class="fw-semibold">@L["NotifSettings_Promo"]</div>
+                        <small class="text-muted">@L["NotifSettings_PromoDesc"]</small>
                     </div>
                     <div class="form-check form-switch mb-0">
                         <input class="form-check-input pref-toggle" type="checkbox" id="promotionalOffers"
@@ -131,7 +131,7 @@
         <div class="d-flex justify-content-between align-items-center">
             <div id="saveStatus" class="text-muted small"></div>
             <button id="savePrefsBtn" class="btn btn-primary">
-                <i class="bi bi-floppy me-1"></i>Save Preferences
+                <i class="bi bi-floppy me-1"></i>@L["NotifSettings_SavePrefs"]
             </button>
         </div>
     </div>

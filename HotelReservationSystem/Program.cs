@@ -83,9 +83,14 @@ try
             failureStatus: Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Degraded,
             tags: new[] { "external", "ready" });
 
+    // Add localization services
+    builder.Services.AddLocalization(opts => opts.ResourcesPath = "Resources");
+
     // Add services to the container
     builder.Services.AddControllers();
-    builder.Services.AddControllersWithViews();
+    builder.Services.AddControllersWithViews()
+        .AddViewLocalization()
+        .AddDataAnnotationsLocalization();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
     
@@ -346,6 +351,13 @@ try
         app.UseSwaggerUI();
     }
 
+    // Configure request localization (en default, es supported)
+    var supportedCultures = new[] { "en", "es" };
+    app.UseRequestLocalization(new Microsoft.AspNetCore.Builder.RequestLocalizationOptions()
+        .SetDefaultCulture("en")
+        .AddSupportedCultures(supportedCultures)
+        .AddSupportedUICultures(supportedCultures));
+
     app.UseHttpsRedirection();
     app.UseStaticFiles();
     
@@ -477,6 +489,12 @@ try
         name: "guestPortalLogout",
         pattern: "GuestPortal/Logout",
         defaults: new { controller = "GuestPortalView", action = "Logout" });
+
+    // Language switcher endpoint
+    app.MapControllerRoute(
+        name: "setLanguage",
+        pattern: "SetLanguage",
+        defaults: new { controller = "Home", action = "SetLanguage" });
 
     app.MapControllerRoute(
         name: "default",

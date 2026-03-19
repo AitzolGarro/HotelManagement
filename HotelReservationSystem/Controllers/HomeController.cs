@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Localization;
 
 namespace HotelReservationSystem.Controllers
 {
@@ -67,6 +68,20 @@ namespace HotelReservationSystem.Controllers
             ViewData["Title"] = "Offline";
             Response.Headers["Cache-Control"] = "no-store";
             return View();
+        }
+
+        /// <summary>
+        /// Sets the UI culture cookie and redirects back to the referring page.
+        /// </summary>
+        [HttpPost]
+        public IActionResult SetLanguage(string culture, string returnUrl)
+        {
+            Response.Cookies.Append(
+                CookieRequestCultureProvider.DefaultCookieName,
+                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1), IsEssential = true }
+            );
+            return LocalRedirect(string.IsNullOrEmpty(returnUrl) ? "/" : returnUrl);
         }
     }
 }

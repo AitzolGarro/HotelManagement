@@ -1,12 +1,12 @@
 @{
     Layout = "~/Views/Shared/_GuestPortalLayout.cshtml";
-    ViewData["Title"] = "My Profile";
+    ViewData["Title"] = L["GP_Prof_Title"].Value;
 }
 
 <div class="d-flex align-items-center justify-content-between mb-4">
     <div>
-        <h1 class="fs-4 fw-bold mb-1"><i class="bi bi-person-circle me-2 text-primary"></i>My Profile</h1>
-        <p class="text-muted mb-0 small">Manage your contact information and preferences</p>
+        <h1 class="fs-4 fw-bold mb-1"><i class="bi bi-person-circle me-2 text-primary"></i>@L["GP_Prof_Title"]</h1>
+        <p class="text-muted mb-0 small">@L["GP_Prof_Subtitle"]</p>
     </div>
 </div>
 
@@ -21,9 +21,9 @@
         <div class="col-12 col-lg-8">
             <div class="gp-card card mb-4">
                 <div class="card-header d-flex align-items-center justify-content-between py-3">
-                    <span class="fw-semibold"><i class="bi bi-person me-2 text-primary"></i>Contact Information</span>
+                    <span class="fw-semibold"><i class="bi bi-person me-2 text-primary"></i>@L["GP_Prof_ContactInfo"]</span>
                     <button class="btn btn-sm btn-outline-primary" id="editProfileBtn">
-                        <i class="bi bi-pencil me-1"></i>Edit
+                        <i class="bi bi-pencil me-1"></i>@L["Common_Edit"]
                     </button>
                 </div>
                 <div class="card-body">
@@ -31,31 +31,31 @@
                     <div id="profileView">
                         <div class="row g-3">
                             <div class="col-6">
-                                <div class="text-muted small mb-1">First Name</div>
+                                <div class="text-muted small mb-1">@L["GP_Prof_FirstName"]</div>
                                 <div class="fw-medium" id="viewFirstName">—</div>
                             </div>
                             <div class="col-6">
-                                <div class="text-muted small mb-1">Last Name</div>
+                                <div class="text-muted small mb-1">@L["GP_Prof_LastName"]</div>
                                 <div class="fw-medium" id="viewLastName">—</div>
                             </div>
                             <div class="col-12 col-md-6">
-                                <div class="text-muted small mb-1">Email</div>
+                                <div class="text-muted small mb-1">@L["GP_Prof_Email"]</div>
                                 <div class="fw-medium" id="viewEmail">—</div>
                             </div>
                             <div class="col-12 col-md-6">
-                                <div class="text-muted small mb-1">Phone</div>
+                                <div class="text-muted small mb-1">@L["GP_Prof_Phone"]</div>
                                 <div class="fw-medium" id="viewPhone">—</div>
                             </div>
                             <div class="col-12">
-                                <div class="text-muted small mb-1">Address</div>
+                                <div class="text-muted small mb-1">@L["GP_Prof_Address"]</div>
                                 <div class="fw-medium" id="viewAddress">—</div>
                             </div>
                             <div class="col-6">
-                                <div class="text-muted small mb-1">Nationality</div>
+                                <div class="text-muted small mb-1">@L["GP_Prof_Nationality"]</div>
                                 <div class="fw-medium" id="viewNationality">—</div>
                             </div>
                             <div class="col-6">
-                                <div class="text-muted small mb-1">Preferred Language</div>
+                                <div class="text-muted small mb-1">@L["GP_Prof_PreferredLanguage"]</div>
                                 <div class="fw-medium" id="viewLanguage">—</div>
                             </div>
                         </div>
@@ -66,31 +66,31 @@
                         <div id="profileEditError" class="alert alert-danger d-none small mb-3" role="alert" aria-live="assertive"></div>
                         <div class="row g-3">
                             <div class="col-12 col-md-6">
-                                <label class="form-label small fw-medium" for="editFirstName">First Name <span class="text-danger" aria-hidden="true">*</span></label>
+                                <label class="form-label small fw-medium" for="editFirstName">@L["GP_Prof_FirstName"] <span class="text-danger" aria-hidden="true">*</span></label>
                                 <input type="text" class="form-control" id="editFirstName" required maxlength="100"
                                        aria-required="true" aria-describedby="editFirstName-error" />
                                 <span id="editFirstName-error" class="invalid-feedback" role="alert"></span>
                             </div>
                             <div class="col-12 col-md-6">
-                                <label class="form-label small fw-medium" for="editLastName">Last Name <span class="text-danger" aria-hidden="true">*</span></label>
+                                <label class="form-label small fw-medium" for="editLastName">@L["GP_Prof_LastName"] <span class="text-danger" aria-hidden="true">*</span></label>
                                 <input type="text" class="form-control" id="editLastName" required maxlength="100"
                                        aria-required="true" aria-describedby="editLastName-error" />
                                 <span id="editLastName-error" class="invalid-feedback" role="alert"></span>
                             </div>
                             <div class="col-12 col-md-6">
-                                <label class="form-label small fw-medium" for="editPhone">Phone</label>
+                                <label class="form-label small fw-medium" for="editPhone">@L["GP_Prof_Phone"]</label>
                                 <input type="tel" class="form-control" id="editPhone" maxlength="20" autocomplete="tel" />
                             </div>
                             <div class="col-12 col-md-6">
-                                <label class="form-label small fw-medium" for="editNationality">Nationality</label>
+                                <label class="form-label small fw-medium" for="editNationality">@L["GP_Prof_Nationality"]</label>
                                 <input type="text" class="form-control" id="editNationality" maxlength="100" />
                             </div>
                             <div class="col-12">
-                                <label class="form-label small fw-medium" for="editAddress">Address</label>
+                                <label class="form-label small fw-medium" for="editAddress">@L["GP_Prof_Address"]</label>
                                 <textarea class="form-control" id="editAddress" rows="2" maxlength="500" autocomplete="street-address"></textarea>
                             </div>
                             <div class="col-12 col-md-6">
-                                <label class="form-label small fw-medium" for="editLanguage">Preferred Language</label>
+                                <label class="form-label small fw-medium" for="editLanguage">@L["GP_Prof_PreferredLanguage"]</label>
                                 <select class="form-select" id="editLanguage">
                                     <option value="">Select language</option>
                                     <option value="en">English</option>
@@ -108,17 +108,17 @@
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="editMarketing" />
                                     <label class="form-check-label small" for="editMarketing">
-                                        Receive promotional offers and news
+                                        @L["GP_Prof_Marketing"]
                                     </label>
                                 </div>
                             </div>
                         </div>
                         <div class="d-flex gap-2 mt-4">
                             <button type="submit" class="btn btn-primary">
-                                <span id="saveProfBtnText"><i class="bi bi-check me-1"></i>Save Changes</span>
+                                <span id="saveProfBtnText"><i class="bi bi-check me-1"></i>@L["GP_Prof_SaveChanges"]</span>
                                 <span id="saveProfSpinner" class="d-none spinner-border spinner-border-sm ms-2" role="status"></span>
                             </button>
-                            <button type="button" class="btn btn-outline-secondary" id="cancelEditBtn">Cancel</button>
+                            <button type="button" class="btn btn-outline-secondary" id="cancelEditBtn">@L["Common_Cancel"]</button>
                         </div>
                     </form>
                 </div>
@@ -127,64 +127,64 @@
             <!-- Notification Preferences -->
             <div class="gp-card card">
                 <div class="card-header py-3">
-                    <i class="bi bi-bell me-2 text-primary"></i>Notification Preferences
+                    <i class="bi bi-bell me-2 text-primary"></i>@L["GP_Prof_NotifPrefs"]
                 </div>
                 <div class="card-body">
                     <div id="notifError" class="alert alert-danger d-none small mb-3"></div>
                     <div id="notifSuccess" class="alert alert-success d-none small mb-3"></div>
 
-                    <h6 class="fw-semibold mb-3 text-muted small text-uppercase">Email Notifications</h6>
+                    <h6 class="fw-semibold mb-3 text-muted small text-uppercase">@L["GP_Prof_EmailNotif"]</h6>
                     <div class="row g-2 mb-4">
                         <div class="col-12 col-sm-6">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="notifBooking" checked>
-                                <label class="form-check-label small" for="notifBooking">Booking confirmations</label>
+                                <label class="form-check-label small" for="notifBooking">@L["GP_Prof_BookingConf"]</label>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="notifCheckIn" checked>
-                                <label class="form-check-label small" for="notifCheckIn">Check-in reminders (24h before)</label>
+                                <label class="form-check-label small" for="notifCheckIn">@L["GP_Prof_CheckInReminder"]</label>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="notifCheckOut" checked>
-                                <label class="form-check-label small" for="notifCheckOut">Check-out reminders</label>
+                                <label class="form-check-label small" for="notifCheckOut">@L["GP_Prof_CheckOutReminder"]</label>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="notifModification" checked>
-                                <label class="form-check-label small" for="notifModification">Modification confirmations</label>
+                                <label class="form-check-label small" for="notifModification">@L["GP_Prof_ModificationConf"]</label>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="notifPromo">
-                                <label class="form-check-label small" for="notifPromo">Promotional offers (opt-in)</label>
+                                <label class="form-check-label small" for="notifPromo">@L["GP_Prof_PromoOffers"]</label>
                             </div>
                         </div>
                     </div>
 
-                    <h6 class="fw-semibold mb-3 text-muted small text-uppercase">Channels</h6>
+                    <h6 class="fw-semibold mb-3 text-muted small text-uppercase">@L["GP_Prof_Channels"]</h6>
                     <div class="row g-2 mb-4">
                         <div class="col-12 col-sm-6">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="notifEmail" checked>
-                                <label class="form-check-label small" for="notifEmail">Email</label>
+                                <label class="form-check-label small" for="notifEmail">@L["NotifSettings_Email"]</label>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="notifSms">
-                                <label class="form-check-label small" for="notifSms">SMS</label>
+                                <label class="form-check-label small" for="notifSms">@L["NotifSettings_Sms"]</label>
                             </div>
                         </div>
                     </div>
 
                     <button class="btn btn-primary btn-sm" id="saveNotifBtn">
-                        <span id="saveNotifBtnText"><i class="bi bi-check me-1"></i>Save Preferences</span>
+                        <span id="saveNotifBtnText"><i class="bi bi-check me-1"></i>@L["GP_Prof_SavePrefs"]</span>
                         <span id="saveNotifSpinner" class="d-none spinner-border spinner-border-sm ms-2" role="status"></span>
                     </button>
                 </div>
@@ -199,10 +199,10 @@
                         <i class="bi bi-award fs-1"></i>
                     </div>
                     <div class="fw-bold fs-5 mb-1" id="loyaltyTierDisplay">Standard Member</div>
-                    <div class="opacity-75 small mb-3">Loyalty Program</div>
+                    <div class="opacity-75 small mb-3">@L["GP_Prof_LoyaltyProgram"]</div>
                     <div class="bg-white bg-opacity-25 rounded-3 p-3 mb-3">
                         <div class="fs-2 fw-bold" id="loyaltyPointsDisplay">0</div>
-                        <div class="small opacity-75">Points Earned</div>
+                        <div class="small opacity-75">@L["GP_Prof_PointsEarned"]</div>
                     </div>
                     <div class="small opacity-75" id="loyaltyNextTier"></div>
                 </div>

@@ -1,12 +1,12 @@
 @{
     Layout = "~/Views/Shared/_GuestPortalLayout.cshtml";
-    ViewData["Title"] = "Reservation Details";
+    ViewData["Title"] = L["GP_Detail_Title"].Value;
     var reservationId = ViewData["ReservationId"];
 }
 
 <div class="mb-3">
     <a href="/GuestPortal/Reservations" class="btn btn-sm btn-outline-secondary">
-        <i class="bi bi-arrow-left me-1"></i>Back to Reservations
+        <i class="bi bi-arrow-left me-1"></i>@L["GP_Detail_BackToReservations"]
     </a>
 </div>
 
@@ -18,8 +18,8 @@
 <!-- Not found -->
 <div id="detailNotFound" class="d-none text-center py-5">
     <i class="bi bi-exclamation-circle fs-1 text-muted opacity-25 d-block mb-3"></i>
-    <h5 class="text-muted">Reservation not found</h5>
-    <a href="/GuestPortal/Reservations" class="btn btn-primary mt-2">View All Reservations</a>
+    <h5 class="text-muted">@L["GP_Detail_NotFound"]</h5>
+    <a href="/GuestPortal/Reservations" class="btn btn-primary mt-2">@L["GP_Detail_ViewAllReservations"]</a>
 </div>
 
 <!-- Detail content -->
@@ -29,45 +29,45 @@
         <div class="col-12 col-lg-8">
             <div class="gp-card card mb-4">
                 <div class="card-header d-flex align-items-center justify-content-between py-3">
-                    <span class="fw-semibold"><i class="bi bi-journal-text me-2 text-primary"></i>Booking Details</span>
+                    <span class="fw-semibold"><i class="bi bi-journal-text me-2 text-primary"></i>@L["GP_Detail_BookingDetails"]</span>
                     <span id="detailStatusBadge"></span>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-6 col-md-4">
-                            <div class="text-muted small mb-1">Booking Reference</div>
+                            <div class="text-muted small mb-1">@L["GP_Detail_BookingRef"]</div>
                             <div class="fw-semibold" id="detailRef">—</div>
                         </div>
                         <div class="col-6 col-md-4">
-                            <div class="text-muted small mb-1">Hotel</div>
+                            <div class="text-muted small mb-1">@L["GP_Detail_Hotel"]</div>
                             <div class="fw-semibold" id="detailHotel">—</div>
                         </div>
                         <div class="col-6 col-md-4">
-                            <div class="text-muted small mb-1">Room</div>
+                            <div class="text-muted small mb-1">@L["GP_Detail_Room"]</div>
                             <div class="fw-semibold" id="detailRoom">—</div>
                         </div>
                         <div class="col-6 col-md-4">
-                            <div class="text-muted small mb-1">Check-In</div>
+                            <div class="text-muted small mb-1">@L["GP_Detail_CheckIn"]</div>
                             <div class="fw-semibold" id="detailCheckIn">—</div>
                         </div>
                         <div class="col-6 col-md-4">
-                            <div class="text-muted small mb-1">Check-Out</div>
+                            <div class="text-muted small mb-1">@L["GP_Detail_CheckOut"]</div>
                             <div class="fw-semibold" id="detailCheckOut">—</div>
                         </div>
                         <div class="col-6 col-md-4">
-                            <div class="text-muted small mb-1">Duration</div>
+                            <div class="text-muted small mb-1">@L["GP_Detail_Duration"]</div>
                             <div class="fw-semibold" id="detailNights">—</div>
                         </div>
                         <div class="col-6 col-md-4">
-                            <div class="text-muted small mb-1">Guests</div>
+                            <div class="text-muted small mb-1">@L["GP_Detail_Guests"]</div>
                             <div class="fw-semibold" id="detailGuests">—</div>
                         </div>
                         <div class="col-6 col-md-4">
-                            <div class="text-muted small mb-1">Total Amount</div>
+                            <div class="text-muted small mb-1">@L["GP_Detail_TotalAmount"]</div>
                             <div class="fw-semibold fs-5 text-primary" id="detailAmount">—</div>
                         </div>
                         <div class="col-6 col-md-4">
-                            <div class="text-muted small mb-1">Booked On</div>
+                            <div class="text-muted small mb-1">@L["GP_Detail_BookedOn"]</div>
                             <div class="fw-semibold" id="detailCreated">—</div>
                         </div>
                     </div>
@@ -77,22 +77,22 @@
             <!-- Special Requests -->
             <div class="gp-card card mb-4">
                 <div class="card-header py-3">
-                    <i class="bi bi-chat-left-text me-2 text-primary"></i>Special Requests
+                    <i class="bi bi-chat-left-text me-2 text-primary"></i>@L["GP_Detail_SpecialRequests"]
                 </div>
                 <div class="card-body">
-                    <p id="detailSpecialRequests" class="text-muted mb-3">No special requests on file.</p>
+                    <p id="detailSpecialRequests" class="text-muted mb-3">@L["GP_Detail_NoSpecialRequests"]</p>
                     <div id="specialRequestForm" class="d-none">
                         <textarea class="form-control mb-2" id="specialRequestInput" rows="3"
                                   placeholder="e.g. High floor, extra pillows, late check-in…" maxlength="1000"></textarea>
                         <div class="d-flex gap-2">
                             <button class="btn btn-primary btn-sm" id="saveSpecialReqBtn">
-                                <i class="bi bi-check me-1"></i>Save Request
+                                <i class="bi bi-check me-1"></i>@L["GP_Detail_SaveRequest"]
                             </button>
-                            <button class="btn btn-outline-secondary btn-sm" id="cancelSpecialReqBtn">Cancel</button>
+                            <button class="btn btn-outline-secondary btn-sm" id="cancelSpecialReqBtn">@L["Common_Cancel"]</button>
                         </div>
                     </div>
                     <button class="btn btn-outline-primary btn-sm" id="editSpecialReqBtn">
-                        <i class="bi bi-pencil me-1"></i>Edit Special Requests
+                        <i class="bi bi-pencil me-1"></i>@L["GP_Detail_EditSpecialReq"]
                     </button>
                 </div>
             </div>
@@ -103,20 +103,20 @@
             <!-- Modify dates -->
             <div class="gp-card card mb-4" id="modifyCard">
                 <div class="card-header py-3">
-                    <i class="bi bi-calendar-range me-2 text-primary"></i>Modify Dates
+                    <i class="bi bi-calendar-range me-2 text-primary"></i>@L["GP_Detail_ModifyDates"]
                 </div>
                 <div class="card-body">
                     <div id="modifyError" class="alert alert-danger d-none small mb-3"></div>
                     <div class="mb-3">
-                        <label class="form-label small fw-medium">New Check-In</label>
+                        <label class="form-label small fw-medium">@L["GP_Detail_NewCheckIn"]</label>
                         <input type="date" class="form-control" id="modifyCheckIn" />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label small fw-medium">New Check-Out</label>
+                        <label class="form-label small fw-medium">@L["GP_Detail_NewCheckOut"]</label>
                         <input type="date" class="form-control" id="modifyCheckOut" />
                     </div>
                     <button class="btn btn-primary w-100" id="modifyBtn">
-                        <span id="modifyBtnText"><i class="bi bi-check me-1"></i>Update Dates</span>
+                        <span id="modifyBtnText"><i class="bi bi-check me-1"></i>@L["GP_Detail_UpdateDates"]</span>
                         <span id="modifyBtnSpinner" class="d-none spinner-border spinner-border-sm ms-2" role="status"></span>
                     </button>
                 </div>
@@ -125,15 +125,15 @@
             <!-- Cancel -->
             <div class="gp-card card" id="cancelCard">
                 <div class="card-header py-3 text-danger">
-                    <i class="bi bi-x-circle me-2"></i>Cancel Reservation
+                    <i class="bi bi-x-circle me-2"></i>@L["GP_Detail_CancelReservation"]
                 </div>
                 <div class="card-body">
-                    <p class="text-muted small mb-3">Once cancelled, this action cannot be undone.</p>
+                    <p class="text-muted small mb-3">@L["GP_Detail_CancelWarning"]</p>
                     <div id="cancelDetailError" class="alert alert-danger d-none small mb-3"></div>
                     <textarea class="form-control mb-3" id="cancelDetailReason" rows="2"
-                              placeholder="Reason for cancellation…" maxlength="500"></textarea>
+                              placeholder="@L["GP_Detail_CancelReason"]" maxlength="500"></textarea>
                     <button class="btn btn-outline-danger w-100" id="cancelDetailBtn">
-                        <span id="cancelDetailBtnText"><i class="bi bi-x-circle me-1"></i>Cancel Reservation</span>
+                        <span id="cancelDetailBtnText"><i class="bi bi-x-circle me-1"></i>@L["GP_Detail_CancelReservation"]</span>
                         <span id="cancelDetailBtnSpinner" class="d-none spinner-border spinner-border-sm ms-2" role="status"></span>
                     </button>
                 </div>

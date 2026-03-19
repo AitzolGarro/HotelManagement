@@ -10,7 +10,7 @@
     <div class="row mb-3 g-2 align-items-center">
         <div class="col-12 col-md-auto">
             <h1 class="h4 mb-0">
-                <i class="bi bi-speedometer2 me-1" aria-hidden="true"></i>Dashboard
+                <i class="bi bi-speedometer2 me-1" aria-hidden="true"></i>@L["Dashboard_Title"]
             </h1>
         </div>
 
@@ -18,7 +18,7 @@
         <div class="col-12 col-sm-6 col-md-auto">
             <input type="text" id="dashboardDateRange"
                    class="form-control form-control-sm"
-                   placeholder="Date Range"
+                   placeholder="@L["Dashboard_DateRange"]"
                    aria-label="Date range filter"
                    style="min-width:200px;" />
         </div>
@@ -27,7 +27,7 @@
         <div class="col-12 col-sm-6 col-md-auto">
             <select class="form-select form-select-sm" id="hotelFilter"
                     aria-label="Hotel filter" style="min-width:140px;">
-                <option value="">All Hotels</option>
+                <option value="">@L["Dashboard_AllHotels"]</option>
             </select>
         </div>
 
@@ -36,7 +36,7 @@
             <div class="form-check form-switch mb-0">
                 <input class="form-check-input" type="checkbox" id="autoRefreshToggle"
                        role="switch" aria-label="Auto-refresh toggle" />
-                <label class="form-check-label small" for="autoRefreshToggle">Auto-refresh</label>
+                <label class="form-check-label small" for="autoRefreshToggle">@L["Dashboard_AutoRefresh"]</label>
             </div>
             <select class="form-select form-select-sm" id="refreshInterval"
                     style="width:auto;" aria-label="Refresh interval">
@@ -52,23 +52,23 @@
             <button class="btn btn-outline-primary btn-sm" id="refreshDashboard"
                     title="Refresh data" aria-label="Refresh dashboard">
                 <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
-                <span class="d-none d-sm-inline">Refresh</span>
+                <span class="d-none d-sm-inline">@L["Common_Refresh"]</span>
             </button>
             <button class="btn btn-outline-secondary btn-sm" id="addWidgetBtn"
                     title="Add widget" aria-label="Add widget"
                     data-bs-toggle="modal" data-bs-target="#addWidgetModal">
                 <i class="bi bi-plus-lg" aria-hidden="true"></i>
-                <span class="d-none d-sm-inline">Add Widget</span>
+                <span class="d-none d-sm-inline">@L["Dashboard_AddWidget"]</span>
             </button>
             <button class="btn btn-outline-success btn-sm" id="saveLayoutBtn"
                     title="Save layout" aria-label="Save layout">
                 <i class="bi bi-save" aria-hidden="true"></i>
-                <span class="d-none d-sm-inline">Save Layout</span>
+                <span class="d-none d-sm-inline">@L["Dashboard_SaveLayout"]</span>
             </button>
             <button class="btn btn-outline-danger btn-sm" id="resetLayoutBtn"
                     title="Reset to default" aria-label="Reset layout">
                 <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i>
-                <span class="d-none d-sm-inline">Reset</span>
+                <span class="d-none d-sm-inline">@L["Dashboard_ResetLayout"]</span>
             </button>
         </div>
     </div>
@@ -105,19 +105,19 @@
             </div>
             <div class="modal-body">
                 <p class="text-muted small mb-3">
-                    Select a widget to add to your dashboard. Already-visible widgets are greyed out.
+                    @L["Dashboard_SelectWidget"]
                 </p>
                 <div id="widgetCatalog" class="row g-3">
                     <div class="col-12 text-center py-4">
                         <div class="spinner-border spinner-border-sm text-primary" role="status">
-                            <span class="visually-hidden">Loading widgets…</span>
+                            <span class="visually-hidden">@L["Dashboard_LoadingWidgets"]</span>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary"
-                        data-bs-dismiss="modal">Close</button>
+                        data-bs-dismiss="modal">@L["Common_Close"]</button>
             </div>
         </div>
     </div>

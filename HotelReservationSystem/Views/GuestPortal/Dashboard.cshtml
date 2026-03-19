@@ -1,6 +1,6 @@
 @{
     Layout = "~/Views/Shared/_GuestPortalLayout.cshtml";
-    ViewData["Title"] = "My Dashboard";
+    ViewData["Title"] = L["GP_Dash_Title"].Value;
 }
 
 <!-- Loading skeleton -->
@@ -29,7 +29,7 @@
     <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-4 gap-3">
         <div>
             <h1 class="fs-4 fw-bold mb-1">Welcome back, <span id="dashGuestName">Guest</span>!</h1>
-            <p class="text-muted mb-0">Here's an overview of your reservations</p>
+            <p class="text-muted mb-0">@L["GP_Dash_Overview"]</p>
         </div>
         <div class="d-flex align-items-center gap-2">
             <span id="dashLoyaltyBadge" class="loyalty-badge"></span>
@@ -43,7 +43,7 @@
             <div class="gp-card card h-100">
                 <div class="card-body text-center py-3">
                     <div class="fs-2 fw-bold text-primary" id="statUpcoming">0</div>
-                    <div class="text-muted small">Upcoming</div>
+                    <div class="text-muted small">@L["GP_Dash_Upcoming"]</div>
                 </div>
             </div>
         </div>
@@ -51,7 +51,7 @@
             <div class="gp-card card h-100">
                 <div class="card-body text-center py-3">
                     <div class="fs-2 fw-bold text-success" id="statActive">0</div>
-                    <div class="text-muted small">Active Stay</div>
+                    <div class="text-muted small">@L["GP_Dash_ActiveStay"]</div>
                 </div>
             </div>
         </div>
@@ -59,7 +59,7 @@
             <div class="gp-card card h-100">
                 <div class="card-body text-center py-3">
                     <div class="fs-2 fw-bold text-secondary" id="statPast">0</div>
-                    <div class="text-muted small">Past Stays</div>
+                    <div class="text-muted small">@L["GP_Dash_PastStays"]</div>
                 </div>
             </div>
         </div>
@@ -67,7 +67,7 @@
             <div class="gp-card card h-100">
                 <div class="card-body text-center py-3">
                     <div class="fs-2 fw-bold text-warning" id="statNights">0</div>
-                    <div class="text-muted small">Total Nights</div>
+                    <div class="text-muted small">@L["GP_Dash_TotalNights"]</div>
                 </div>
             </div>
         </div>
@@ -76,14 +76,14 @@
     <!-- Upcoming reservations -->
     <div class="gp-card card mb-4">
         <div class="card-header d-flex align-items-center justify-content-between py-3">
-            <span><i class="bi bi-calendar-check me-2 text-primary"></i>Upcoming Reservations</span>
-            <a href="/GuestPortal/Reservations" class="btn btn-sm btn-outline-primary">View All</a>
+            <span><i class="bi bi-calendar-check me-2 text-primary"></i>@L["GP_Dash_UpcomingReservations"]</span>
+            <a href="/GuestPortal/Reservations" class="btn btn-sm btn-outline-primary">@L["Common_ViewAll"]</a>
         </div>
         <div class="card-body p-0">
             <div id="upcomingList">
                 <div class="text-center py-5 text-muted">
                     <i class="bi bi-calendar-x fs-1 d-block mb-2 opacity-25"></i>
-                    No upcoming reservations
+                    @L["GP_Dash_NoUpcoming"]
                 </div>
             </div>
         </div>
@@ -92,13 +92,13 @@
     <!-- Recent past stays -->
     <div class="gp-card card">
         <div class="card-header py-3">
-            <i class="bi bi-clock-history me-2 text-secondary"></i>Recent Stays
+            <i class="bi bi-clock-history me-2 text-secondary"></i>@L["GP_Dash_RecentStays"]
         </div>
         <div class="card-body p-0">
             <div id="pastList">
                 <div class="text-center py-5 text-muted">
                     <i class="bi bi-building fs-1 d-block mb-2 opacity-25"></i>
-                    No past stays yet
+                    @L["GP_Dash_NoPastStays"]
                 </div>
             </div>
         </div>

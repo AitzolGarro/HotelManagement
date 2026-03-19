@@ -239,3 +239,9 @@ C:\Users\aitzol\Documents\repos\hostalavila\HotelReservationSystem\obj\Debug\net
 C:\Users\aitzol\Documents\repos\hostalavila\HotelReservationSystem\obj\Debug\net8.0\HotelReservationSystem.pdb
 C:\Users\aitzol\Documents\repos\hostalavila\HotelReservationSystem\obj\Debug\net8.0\HotelReservationSystem.genruntimeconfig.cache
 C:\Users\aitzol\Documents\repos\hostalavila\HotelReservationSystem\obj\Debug\net8.0\ref\HotelReservationSystem.dll
+C:\Users\aitzol\Documents\repos\hostalavila\HotelReservationSystem\bin\Debug\net8.0\es\HotelReservationSystem.resources.dll
+C:\Users\aitzol\Documents\repos\hostalavila\HotelReservationSystem\obj\Debug\net8.0\HotelReservationSystem.Resources.SharedResource.resources
+C:\Users\aitzol\Documents\repos\hostalavila\HotelReservationSystem\obj\Debug\net8.0\HotelReservationSystem.Resources.SharedResource.es.resources
+C:\Users\aitzol\Documents\repos\hostalavila\HotelReservationSystem\obj\Debug\net8.0\HotelReservationSystem.csproj.GenerateResource.cache
+C:\Users\aitzol\Documents\repos\hostalavila\HotelReservationSystem\obj\Debug\net8.0\es\HotelReservationSystem.resources.cs
+C:\Users\aitzol\Documents\repos\hostalavila\HotelReservationSystem\obj\Debug\net8.0\es\HotelReservationSystem.resources.dll
