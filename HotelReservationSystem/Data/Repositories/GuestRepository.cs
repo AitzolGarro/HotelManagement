@@ -76,4 +76,21 @@ public class GuestRepository : Repository<Guest>, IGuestRepository
     {
         return await _dbSet.AnyAsync(g => g.DocumentNumber == documentNumber);
     }
+
+    public async Task<(IEnumerable<Guest> Items, int TotalCount)> SearchAsync(
+        Models.DTOs.GuestSearchCriteria criteria, int pageNumber, int pageSize)
+    {
+        var query = _dbSet.AsNoTracking()
+            .ApplyCriteria(criteria);
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .ApplySort(criteria.SortBy, criteria.SortDirection)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
+    }
 }

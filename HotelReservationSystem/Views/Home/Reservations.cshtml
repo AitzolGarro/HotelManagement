@@ -23,60 +23,7 @@
     </div>
 </div>
 
-<!-- Filters -->
-<div class="card mb-4">
-    <div class="card-body">
-        <div class="row align-items-end">
-            <div class="col-md-2">
-                <label for="dateFromFilter" class="form-label">From Date</label>
-                <input type="date" class="form-control" id="dateFromFilter">
-            </div>
-            <div class="col-md-2">
-                <label for="dateToFilter" class="form-label">To Date</label>
-                <input type="date" class="form-control" id="dateToFilter">
-            </div>
-            <div class="col-md-2">
-                <label for="hotelFilterRes" class="form-label">Hotel</label>
-                <select class="form-select" id="hotelFilterRes">
-                    <option value="">All Hotels</option>
-                    <!-- Options will be populated dynamically -->
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label for="statusFilterRes" class="form-label">Status</label>
-                <select class="form-select" id="statusFilterRes">
-                    <option value="">All Statuses</option>
-                    <option value="pending">Pending</option>
-                    <option value="confirmed">Confirmed</option>
-                    <option value="checkedin">Checked In</option>
-                    <option value="checkedout">Checked Out</option>
-                    <option value="cancelled">Cancelled</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label for="sourceFilter" class="form-label">Source</label>
-                <select class="form-select" id="sourceFilter">
-                    <option value="">All Sources</option>
-                    <option value="manual">Manual</option>
-                    <option value="booking">Booking.com</option>
-                    <option value="direct">Direct</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-primary" id="applyReservationFilters">
-                        <i class="bi bi-funnel"></i>
-                        Filter
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary" id="clearReservationFilters">
-                        <i class="bi bi-x-circle"></i>
-                        Clear
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+@await Html.PartialAsync("_SearchFilters")
 
 <!-- Reservations Table -->
 <div class="card">
@@ -84,12 +31,32 @@
         <h5 class="mb-0">
             <i class="bi bi-list-ul"></i>
             Reservations List
+            <span class="badge bg-secondary ms-2 fs-6" id="resultCountBadge" style="display:none;"></span>
         </h5>
         <div class="d-flex gap-2">
-            <button type="button" class="btn btn-outline-primary btn-sm">
-                <i class="bi bi-download"></i>
-                Export
-            </button>
+            <div class="dropdown">
+                <button type="button" class="btn btn-outline-success btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="exportDropdownBtn">
+                    <i class="bi bi-download me-1"></i>Export
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="exportDropdownBtn">
+                    <li><h6 class="dropdown-header">Export Results</h6></li>
+                    <li>
+                        <a class="dropdown-item" href="#" id="exportCsvBtn">
+                            <i class="bi bi-filetype-csv me-2 text-success"></i>CSV
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#" id="exportExcelBtn">
+                            <i class="bi bi-file-earmark-spreadsheet me-2 text-success"></i>Excel (.xlsx)
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#" id="exportPdfBtn">
+                            <i class="bi bi-file-earmark-pdf me-2 text-danger"></i>PDF
+                        </a>
+                    </li>
+                </ul>
+            </div>
             <button type="button" class="btn btn-outline-secondary btn-sm" id="refreshReservations">
                 <i class="bi bi-arrow-clockwise"></i>
                 Refresh
@@ -364,6 +331,8 @@
 @section Scripts {
     <!-- Reservations module -->
     <script src="~/js/modules/reservations.js" asp-append-version="true"></script>
+    <!-- Advanced search module -->
+    <script src="~/js/modules/advancedSearch.js" asp-append-version="true"></script>
     
     <script>
         // Initialize the new reservations manager
@@ -371,6 +340,9 @@
         
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('Reservations page loaded - using new ReservationsManager');
+            
+            // Initialize advanced search UI
+            AdvancedSearch.init();
             
             // Initialize reservations manager
             reservationsManager = new ReservationsManager();
@@ -1097,24 +1069,18 @@
         }
 
         function applyReservationFilters() {
-            const filters = {
-                dateFrom: document.getElementById('dateFromFilter').value,
-                dateTo: document.getElementById('dateToFilter').value,
-                hotel: document.getElementById('hotelFilterRes').value,
-                status: document.getElementById('statusFilterRes').value,
-                source: document.getElementById('sourceFilter').value
-            };
-            
-            loadReservationsData(filters);
+            // Use AdvancedSearch to build criteria and call the search endpoint
+            AdvancedSearch.search(1, 20).then(result => {
+                const reservations = (result && result.items) ? result.items : (result || []);
+                displayReservations(reservations);
+            }).catch(err => {
+                console.error('Search error:', err);
+                UI.showError('Failed to search reservations');
+            });
         }
 
         function clearReservationFilters() {
-            document.getElementById('dateFromFilter').value = '';
-            document.getElementById('dateToFilter').value = '';
-            document.getElementById('hotelFilterRes').value = '';
-            document.getElementById('statusFilterRes').value = '';
-            document.getElementById('sourceFilter').value = '';
-            
+            AdvancedSearch.clearAll();
             loadReservationsData();
         }
 

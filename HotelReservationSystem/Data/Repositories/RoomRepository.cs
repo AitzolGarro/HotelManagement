@@ -112,4 +112,22 @@ public class RoomRepository : Repository<Room>, IRoomRepository
         return await _dbSet
             .FirstOrDefaultAsync(r => r.HotelId == hotelId && r.RoomNumber == roomNumber);
     }
+
+    public async Task<(IEnumerable<Room> Items, int TotalCount)> SearchAsync(
+        Models.DTOs.RoomSearchCriteria criteria, int pageNumber, int pageSize)
+    {
+        var query = _dbSet.AsNoTracking()
+            .Include(r => r.Hotel)
+            .ApplyCriteria(criteria);
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .ApplySort(criteria.SortBy, criteria.SortDirection)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
+    }
 }

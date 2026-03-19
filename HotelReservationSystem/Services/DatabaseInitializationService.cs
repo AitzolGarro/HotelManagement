@@ -55,6 +55,9 @@ public class DatabaseInitializationService
                     await CreateSchemaManuallyAsync();
                 }
 
+                // Ensure new tables added in later migrations exist (safe for existing DBs)
+                await EnsureNewTablesExistAsync();
+
                 // Seed demo data if needed
                 await SeedDemoDataIfNeededAsync();
             }
@@ -273,12 +276,22 @@ public class DatabaseInitializationService
 
                 CREATE TABLE IF NOT EXISTS NotificationPreferences (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    UserId INTEGER NOT NULL,
+                    UserId INTEGER NULL,
+                    GuestId INTEGER NULL,
                     EmailEnabled INTEGER DEFAULT 1,
                     SmsEnabled INTEGER DEFAULT 0,
                     BrowserPushEnabled INTEGER DEFAULT 1,
                     Channels TEXT,
-                    FOREIGN KEY (UserId) REFERENCES AspNetUsers(Id) ON DELETE CASCADE
+                    BookingConfirmations INTEGER DEFAULT 1,
+                    CheckInReminders INTEGER DEFAULT 1,
+                    CheckOutReminders INTEGER DEFAULT 1,
+                    ModificationConfirmations INTEGER DEFAULT 1,
+                    PromotionalOffers INTEGER DEFAULT 0,
+                    EmailChannel INTEGER DEFAULT 1,
+                    SmsChannel INTEGER DEFAULT 0,
+                    UpdatedAt TEXT DEFAULT (datetime('now')),
+                    FOREIGN KEY (UserId) REFERENCES AspNetUsers(Id) ON DELETE CASCADE,
+                    FOREIGN KEY (GuestId) REFERENCES Guests(Id) ON DELETE CASCADE
                 );
 
                 CREATE TABLE IF NOT EXISTS NotificationTemplates (
@@ -375,6 +388,16 @@ public class DatabaseInitializationService
                     UNIQUE(UserId, HotelId)
                 );
 
+                CREATE TABLE IF NOT EXISTS UserDashboardPreferences (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    UserId INTEGER NOT NULL,
+                    WidgetConfigurationsJson TEXT NOT NULL DEFAULT '[]',
+                    CreatedAt TEXT DEFAULT (datetime('now')),
+                    UpdatedAt TEXT DEFAULT (datetime('now')),
+                    FOREIGN KEY (UserId) REFERENCES AspNetUsers(Id) ON DELETE CASCADE,
+                    UNIQUE(UserId)
+                );
+
                 CREATE TABLE IF NOT EXISTS __EFMigrationsHistory (
                     MigrationId TEXT NOT NULL PRIMARY KEY,
                     ProductVersion TEXT NOT NULL
@@ -391,6 +414,33 @@ public class DatabaseInitializationService
         {
             _logger.LogError(ex, "Failed to create database schema manually");
             throw;
+        }
+    }
+
+    /// <summary>
+    /// Idempotently creates tables added after the initial schema creation.
+    /// Safe to run on both new and existing databases.
+    /// </summary>
+    private async Task EnsureNewTablesExistAsync()
+    {
+        try
+        {
+            await _context.Database.ExecuteSqlRawAsync(@"
+                CREATE TABLE IF NOT EXISTS UserDashboardPreferences (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    UserId INTEGER NOT NULL,
+                    WidgetConfigurationsJson TEXT NOT NULL DEFAULT '[]',
+                    CreatedAt TEXT DEFAULT (datetime('now')),
+                    UpdatedAt TEXT DEFAULT (datetime('now')),
+                    FOREIGN KEY (UserId) REFERENCES AspNetUsers(Id) ON DELETE CASCADE,
+                    UNIQUE(UserId)
+                );
+            ");
+            _logger.LogInformation("Ensured UserDashboardPreferences table exists");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Could not ensure new tables exist");
         }
     }
 

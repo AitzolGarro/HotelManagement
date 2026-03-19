@@ -293,8 +293,32 @@ try
     builder.Services.AddScoped<IDashboardService, DashboardService>();
     builder.Services.AddScoped<IReportingService, ReportingService>();
 
+    // Dashboard customization – widget system (Task 13)
+    builder.Services.AddScoped<HotelReservationSystem.Services.Interfaces.IDashboardWidget,
+        HotelReservationSystem.Services.Widgets.OccupancyRateWidget>();
+    builder.Services.AddScoped<HotelReservationSystem.Services.Interfaces.IDashboardWidget,
+        HotelReservationSystem.Services.Widgets.RevenueWidget>();
+    builder.Services.AddScoped<HotelReservationSystem.Services.Interfaces.IDashboardWidget,
+        HotelReservationSystem.Services.Widgets.UpcomingCheckInsWidget>();
+    builder.Services.AddScoped<HotelReservationSystem.Services.Interfaces.IDashboardWidget,
+        HotelReservationSystem.Services.Widgets.UpcomingCheckOutsWidget>();
+    builder.Services.AddScoped<HotelReservationSystem.Services.Interfaces.IDashboardWidget,
+        HotelReservationSystem.Services.Widgets.RecentReservationsWidget>();
+    builder.Services.AddScoped<HotelReservationSystem.Services.Interfaces.IDashboardWidget,
+        HotelReservationSystem.Services.Widgets.NotificationsWidget>();
+    builder.Services.AddScoped<HotelReservationSystem.Services.Interfaces.IDashboardWidget,
+        HotelReservationSystem.Services.Widgets.QuickActionsWidget>();
+    builder.Services.AddScoped<HotelReservationSystem.Services.Interfaces.IDashboardWidget,
+        HotelReservationSystem.Services.Widgets.RevenueChartWidget>();
+    builder.Services.AddScoped<HotelReservationSystem.Services.Interfaces.IDashboardWidget,
+        HotelReservationSystem.Services.Widgets.OccupancyBreakdownWidget>();
+    builder.Services.AddScoped<HotelReservationSystem.Services.Interfaces.IWidgetRegistry,
+        HotelReservationSystem.Services.Widgets.WidgetRegistry>();
+    builder.Services.AddScoped<IDashboardCustomizationService, DashboardCustomizationService>();
+
     // Register background services
     builder.Services.AddHostedService<HotelReservationSystem.Services.BackgroundServices.ReservationSyncBackgroundService>();
+    builder.Services.AddHostedService<HotelReservationSystem.Services.BackgroundServices.GuestPortalReminderService>();
 
     // Configure Booking.com integration services
     var bookingComConfig = new BookingComConfiguration();
@@ -407,7 +431,53 @@ try
         name: "reports",
         pattern: "reports",
         defaults: new { controller = "Home", action = "Reports" });
+
+    app.MapControllerRoute(
+        name: "notifications",
+        pattern: "notifications",
+        defaults: new { controller = "Home", action = "Notifications" });
+
+    app.MapControllerRoute(
+        name: "notificationSettings",
+        pattern: "notifications/settings",
+        defaults: new { controller = "Home", action = "NotificationSettings" });
     
+    // Guest Portal MVC routes
+    app.MapControllerRoute(
+        name: "guestPortalLogin",
+        pattern: "GuestPortal/Login",
+        defaults: new { controller = "GuestPortalView", action = "Login" });
+
+    app.MapControllerRoute(
+        name: "guestPortalDashboard",
+        pattern: "GuestPortal/Dashboard",
+        defaults: new { controller = "GuestPortalView", action = "Dashboard" });
+
+    app.MapControllerRoute(
+        name: "guestPortalRoot",
+        pattern: "GuestPortal",
+        defaults: new { controller = "GuestPortalView", action = "Dashboard" });
+
+    app.MapControllerRoute(
+        name: "guestPortalReservations",
+        pattern: "GuestPortal/Reservations",
+        defaults: new { controller = "GuestPortalView", action = "Reservations" });
+
+    app.MapControllerRoute(
+        name: "guestPortalReservationDetail",
+        pattern: "GuestPortal/Reservation/{id:int}",
+        defaults: new { controller = "GuestPortalView", action = "ReservationDetail" });
+
+    app.MapControllerRoute(
+        name: "guestPortalProfile",
+        pattern: "GuestPortal/Profile",
+        defaults: new { controller = "GuestPortalView", action = "Profile" });
+
+    app.MapControllerRoute(
+        name: "guestPortalLogout",
+        pattern: "GuestPortal/Logout",
+        defaults: new { controller = "GuestPortalView", action = "Logout" });
+
     app.MapControllerRoute(
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}");

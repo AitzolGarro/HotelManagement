@@ -1,0 +1,347 @@
+@{
+    ViewData["Title"] = "Notification Center";
+    Layout = "_Layout";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+        <h4 class="mb-0"><i class="bi bi-bell me-2 text-primary"></i>Notification Center</h4>
+        <small class="text-muted">Manage and review all your notifications</small>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <a href="/notifications/settings" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-gear me-1"></i>Settings
+        </a>
+        <button id="markAllReadBtn" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-check2-all me-1"></i>Mark all read
+        </button>
+    </div>
+</div>
+
+<!-- Stats row -->
+<div class="row g-3 mb-4" id="notifStatsRow">
+    <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm text-center py-3">
+            <div class="fs-3 fw-bold text-primary" id="statTotal">—</div>
+            <div class="small text-muted">Total</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm text-center py-3">
+            <div class="fs-3 fw-bold text-danger" id="statUnread">—</div>
+            <div class="small text-muted">Unread</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm text-center py-3">
+            <div class="fs-3 fw-bold text-warning" id="statToday">—</div>
+            <div class="small text-muted">Today</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm text-center py-3">
+            <div class="fs-3 fw-bold text-success" id="statRead">—</div>
+            <div class="small text-muted">Read</div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-body py-2 px-3">
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+            <div class="d-flex gap-1" role="group" aria-label="Filter notifications">
+                <button class="btn btn-sm btn-primary notif-page-tab" data-filter="all">All</button>
+                <button class="btn btn-sm btn-outline-secondary notif-page-tab" data-filter="unread">Unread</button>
+                <button class="btn btn-sm btn-outline-secondary notif-page-tab" data-filter="reservations">Reservations</button>
+                <button class="btn btn-sm btn-outline-secondary notif-page-tab" data-filter="alerts">Alerts</button>
+            </div>
+            <div class="ms-auto d-flex gap-2 align-items-center">
+                <select id="typeFilter" class="form-select form-select-sm" style="width:auto;">
+                    <option value="">All types</option>
+                    <option value="1">Info</option>
+                    <option value="2">Warning</option>
+                    <option value="3">Error</option>
+                    <option value="4">Success</option>
+                    <option value="5">Reservation Update</option>
+                    <option value="6">Conflict</option>
+                    <option value="7">System Alert</option>
+                </select>
+                <button id="refreshNotifBtn" class="btn btn-sm btn-outline-secondary" title="Refresh">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notification list -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div id="notifPageList">
+            <div class="text-center py-5 text-muted" id="notifPageEmpty">
+                <i class="bi bi-bell-slash fs-1 d-block mb-2 opacity-50"></i>
+                <p class="mb-0">No notifications found</p>
+            </div>
+        </div>
+        <!-- Infinite scroll sentinel -->
+        <div id="notifScrollSentinel" class="py-2 text-center text-muted small" style="display:none;">
+            <div class="spinner-border spinner-border-sm me-2" role="status"></div>Loading more…
+        </div>
+        <div id="notifEndMessage" class="py-3 text-center text-muted small" style="display:none;">
+            All notifications loaded
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+(function () {
+    'use strict';
+
+    const PAGE_SIZE = 25;
+    let currentPage = 1;
+    let isLoading = false;
+    let hasMore = true;
+    let currentFilter = 'all';
+    let currentType = '';
+    let unreadOnly = false;
+
+    // ── Init ──────────────────────────────────────────────────────────────────
+    async function init() {
+        await loadStats();
+        await loadNotifications(true);
+        setupFilters();
+        setupInfiniteScroll();
+        setupMarkAllRead();
+        setupRefresh();
+        listenSignalR();
+    }
+
+    // ── Stats ─────────────────────────────────────────────────────────────────
+    async function loadStats() {
+        try {
+            const api = new ApiClient();
+            const stats = await api.get('/notifications/stats');
+            document.getElementById('statTotal').textContent = stats.totalCount ?? 0;
+            document.getElementById('statUnread').textContent = stats.unreadCount ?? 0;
+            document.getElementById('statToday').textContent = stats.todayCount ?? 0;
+            document.getElementById('statRead').textContent = (stats.totalCount - stats.unreadCount) ?? 0;
+        } catch (e) { console.error('Stats load failed', e); }
+    }
+
+    // ── Load notifications ────────────────────────────────────────────────────
+    async function loadNotifications(reset = false) {
+        if (isLoading || (!hasMore && !reset)) return;
+        isLoading = true;
+
+        if (reset) {
+            currentPage = 1;
+            hasMore = true;
+            document.getElementById('notifPageList').innerHTML = '';
+            document.getElementById('notifPageEmpty').style.display = 'none';
+            document.getElementById('notifEndMessage').style.display = 'none';
+        }
+
+        document.getElementById('notifScrollSentinel').style.display = 'block';
+
+        try {
+            const api = new ApiClient();
+            const params = new URLSearchParams({
+                page: currentPage,
+                pageSize: PAGE_SIZE,
+                unreadOnly: unreadOnly
+            });
+            if (currentType) params.set('type', currentType);
+
+            const result = await api.get(`/notifications?${params}`);
+            const items = result.items ?? [];
+            const total = result.totalCount ?? 0;
+
+            renderItems(items);
+
+            hasMore = (currentPage * PAGE_SIZE) < total;
+            currentPage++;
+
+            if (items.length === 0 && currentPage === 2) {
+                document.getElementById('notifPageEmpty').style.display = 'block';
+            }
+            if (!hasMore) {
+                document.getElementById('notifEndMessage').style.display = 'block';
+            }
+        } catch (e) {
+            console.error('Load notifications failed', e);
+        } finally {
+            isLoading = false;
+            document.getElementById('notifScrollSentinel').style.display = 'none';
+        }
+    }
+
+    // ── Render ────────────────────────────────────────────────────────────────
+    function renderItems(items) {
+        const list = document.getElementById('notifPageList');
+        items.forEach(n => {
+            const el = buildNotificationRow(n);
+            list.appendChild(el);
+        });
+    }
+
+    function buildNotificationRow(n) {
+        const div = document.createElement('div');
+        div.className = `notification-row d-flex align-items-start px-3 py-3 border-bottom ${n.isRead ? '' : 'bg-primary-subtle'}`;
+        div.dataset.id = n.id;
+
+        const priorityDot = getPriorityDot(n.priority);
+        const icon = getTypeIcon(n.type);
+        const timeAgo = getTimeAgo(new Date(n.createdAt));
+
+        div.innerHTML = `
+            <div class="me-3 mt-1">${priorityDot}<i class="${icon} fs-5"></i></div>
+            <div class="flex-grow-1 min-w-0">
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                    <span class="fw-semibold text-truncate">${escHtml(n.title)}</span>
+                    <small class="text-muted text-nowrap">${timeAgo}</small>
+                </div>
+                <p class="mb-1 small text-muted text-truncate-2">${escHtml(n.message)}</p>
+                <div class="d-flex gap-2 mt-1">
+                    ${!n.isRead ? `<button class="btn btn-link btn-sm p-0 text-primary mark-read-btn" data-id="${n.id}">Mark read</button>` : '<span class="small text-muted">Read</span>'}
+                    <button class="btn btn-link btn-sm p-0 text-danger delete-notif-btn" data-id="${n.id}">Delete</button>
+                </div>
+            </div>`;
+
+        div.querySelector('.mark-read-btn')?.addEventListener('click', () => markRead(n.id, div));
+        div.querySelector('.delete-notif-btn').addEventListener('click', () => deleteNotif(n.id, div));
+        return div;
+    }
+
+    // ── Actions ───────────────────────────────────────────────────────────────
+    async function markRead(id, el) {
+        try {
+            const api = new ApiClient();
+            await api.request(`/notifications/${id}/read`, { method: 'PUT' });
+            el.classList.remove('bg-primary-subtle');
+            el.querySelector('.mark-read-btn')?.replaceWith(Object.assign(document.createElement('span'), { className: 'small text-muted', textContent: 'Read' }));
+            await loadStats();
+        } catch (e) { console.error('Mark read failed', e); }
+    }
+
+    async function deleteNotif(id, el) {
+        try {
+            const api = new ApiClient();
+            await api.request(`/notifications/${id}`, { method: 'DELETE' });
+            el.style.transition = 'opacity .3s';
+            el.style.opacity = '0';
+            setTimeout(() => el.remove(), 300);
+            await loadStats();
+        } catch (e) { console.error('Delete failed', e); }
+    }
+
+    function setupMarkAllRead() {
+        document.getElementById('markAllReadBtn').addEventListener('click', async () => {
+            try {
+                const api = new ApiClient();
+                await api.request('/notifications/read-all', { method: 'PUT' });
+                document.querySelectorAll('.notification-row.bg-primary-subtle').forEach(el => {
+                    el.classList.remove('bg-primary-subtle');
+                    el.querySelector('.mark-read-btn')?.replaceWith(Object.assign(document.createElement('span'), { className: 'small text-muted', textContent: 'Read' }));
+                });
+                await loadStats();
+            } catch (e) { console.error('Mark all read failed', e); }
+        });
+    }
+
+    // ── Filters ───────────────────────────────────────────────────────────────
+    function setupFilters() {
+        document.querySelectorAll('.notif-page-tab').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.notif-page-tab').forEach(b => {
+                    b.classList.remove('btn-primary');
+                    b.classList.add('btn-outline-secondary');
+                });
+                btn.classList.add('btn-primary');
+                btn.classList.remove('btn-outline-secondary');
+
+                currentFilter = btn.dataset.filter;
+                unreadOnly = currentFilter === 'unread';
+                currentType = currentFilter === 'reservations' ? '5'
+                    : currentFilter === 'alerts' ? '7' : '';
+                document.getElementById('typeFilter').value = currentType;
+                loadNotifications(true);
+            });
+        });
+
+        document.getElementById('typeFilter').addEventListener('change', e => {
+            currentType = e.target.value;
+            loadNotifications(true);
+        });
+    }
+
+    function setupRefresh() {
+        document.getElementById('refreshNotifBtn').addEventListener('click', async () => {
+            await loadStats();
+            await loadNotifications(true);
+        });
+    }
+
+    // ── Infinite scroll ───────────────────────────────────────────────────────
+    function setupInfiniteScroll() {
+        const sentinel = document.getElementById('notifScrollSentinel');
+        const observer = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting && hasMore && !isLoading) {
+                loadNotifications(false);
+            }
+        }, { rootMargin: '200px' });
+        observer.observe(sentinel);
+    }
+
+    // ── SignalR live updates ──────────────────────────────────────────────────
+    function listenSignalR() {
+        if (!window.notificationManager?.connection) return;
+        window.notificationManager.connection.on('NewNotification', () => {
+            loadStats();
+            if (currentPage === 2) loadNotifications(true); // refresh first page
+        });
+        window.notificationManager.connection.on('NotificationDeleted', id => {
+            document.querySelector(`.notification-row[data-id="${id}"]`)?.remove();
+        });
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    function getTypeIcon(type) {
+        const map = { 1:'bi bi-info-circle text-info', 2:'bi bi-exclamation-triangle text-warning',
+            3:'bi bi-x-circle text-danger', 4:'bi bi-check-circle text-success',
+            5:'bi bi-calendar-check text-primary', 6:'bi bi-exclamation-octagon text-danger',
+            7:'bi bi-gear text-secondary', 8:'bi bi-arrow-repeat text-info', 9:'bi bi-lightning text-danger' };
+        return map[type] ?? 'bi bi-bell text-secondary';
+    }
+
+    function getPriorityDot(priority) {
+        if (priority >= 3) return '<span class="badge bg-danger me-1 p-1 rounded-circle" style="width:8px;height:8px;"></span>';
+        if (priority === 2) return '';
+        return '';
+    }
+
+    function getTimeAgo(date) {
+        const diff = Date.now() - date;
+        const m = Math.floor(diff / 60000), h = Math.floor(diff / 3600000), d = Math.floor(diff / 86400000);
+        if (m < 1) return 'Just now';
+        if (m < 60) return `${m}m ago`;
+        if (h < 24) return `${h}h ago`;
+        if (d < 7) return `${d}d ago`;
+        return date.toLocaleDateString();
+    }
+
+    function escHtml(str) {
+        const d = document.createElement('div');
+        d.textContent = str ?? '';
+        return d.innerHTML;
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+<style>
+.text-truncate-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.notification-row:hover { background-color: var(--bs-light) !important; }
+</style>
+}

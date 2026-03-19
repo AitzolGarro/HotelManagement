@@ -28,6 +28,12 @@ function initializeApp() {
     
     // Setup periodic token refresh check
     setupPeriodicChecks();
+
+    // Initialize mobile features (Task 10)
+    if (typeof MobileManager !== 'undefined') {
+        window.mobileManager = new MobileManager();
+        window.mobileManager.initialize();
+    }
 }
 
 async function initializeSignalR() {

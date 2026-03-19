@@ -97,6 +97,12 @@ class NotificationManager {
             this.showBrowserNotification(request);
         });
 
+        // Handle notification deleted
+        this.connection.on("NotificationDeleted", (notificationId) => {
+            this.notifications = this.notifications.filter(n => n.id !== notificationId);
+            this.updateNotificationsList();
+        });
+
         // Handle connection events
         this.connection.onreconnecting(() => {
             console.log('SignalR reconnecting...');
@@ -164,56 +170,22 @@ class NotificationManager {
         
         // Set up event listeners
         this.setupEventListeners();
+
+        // Show bell once user is authenticated
+        this.showBellWhenAuthenticated();
+    }
+
+    showBellWhenAuthenticated() {
+        const token = localStorage.getItem('jwt_token') || localStorage.getItem('token');
+        const container = document.getElementById('notificationBellContainer');
+        if (container && token) {
+            container.style.display = '';
+        }
     }
 
     createNotificationUI() {
-        // Check if notification elements already exist
+        // Bell is now in _Layout.cshtml — skip dynamic creation if already present
         if (document.getElementById('notification-bell')) return;
-
-        // Create notification bell icon
-        const bellHtml = `
-            <div class="notification-container">
-                <button id="notification-bell" class="btn btn-link position-relative p-2" type="button" data-bs-toggle="dropdown">
-                    <i class="fas fa-bell fs-5"></i>
-                    <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
-                        0
-                    </span>
-                </button>
-                <div class="dropdown-menu dropdown-menu-end notification-dropdown" style="width: 350px; max-height: 400px; overflow-y: auto;">
-                    <div class="dropdown-header d-flex justify-content-between align-items-center">
-                        <span>Notifications</span>
-                        <button id="mark-all-read" class="btn btn-sm btn-outline-primary">Mark All Read</button>
-                    </div>
-                    <div id="notifications-list">
-                        <div class="text-center p-3 text-muted">No notifications</div>
-                    </div>
-                    <div class="dropdown-divider"></div>
-                    <div class="dropdown-item text-center">
-                        <a href="#" id="view-all-notifications" class="text-decoration-none">View All Notifications</a>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        // Add to navbar or appropriate location
-        const navbar = document.querySelector('.navbar-nav');
-        if (navbar) {
-            const li = document.createElement('li');
-            li.className = 'nav-item dropdown';
-            li.innerHTML = bellHtml;
-            navbar.appendChild(li);
-        }
-
-        // Create connection status indicator
-        const statusHtml = `
-            <div id="connection-status" class="position-fixed bottom-0 end-0 m-3" style="z-index: 1050;">
-                <div class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;">
-                    <i class="fas fa-wifi me-2"></i>
-                    <span id="connection-message">Connected</span>
-                </div>
-            </div>
-        `;
-        document.body.insertAdjacentHTML('beforeend', statusHtml);
     }
 
     setupEventListeners() {
@@ -223,6 +195,34 @@ class NotificationManager {
             markAllReadBtn.addEventListener('click', () => this.markAllAsRead());
         }
 
+        // Dropdown filter tabs
+        document.querySelectorAll('.notif-tab').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.notif-tab').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Update aria-selected and tabindex for tab pattern
+                document.querySelectorAll('.notif-tab[role="tab"]').forEach(tab => {
+                    const isActive = tab === btn;
+                    tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                    tab.setAttribute('tabindex', isActive ? '0' : '-1');
+                });
+                // Update tabpanel labelledby to active tab
+                const activeTab = document.querySelector('.notif-tab.active[role="tab"]');
+                if (activeTab) {
+                    document.getElementById('notifications-list')?.setAttribute('aria-labelledby', activeTab.id);
+                }
+
+                const filter = btn.dataset.filter;
+                const filtered = filter === 'unread'
+                    ? this.notifications.filter(n => !n.isRead)
+                    : filter === 'reservations'
+                        ? this.notifications.filter(n => n.type === 5)
+                        : this.notifications;
+                this.renderFilteredList(filtered);
+            });
+        });
+
         // Individual notification clicks
         document.addEventListener('click', (e) => {
             if (e.target.closest('.notification-item')) {
@@ -230,6 +230,38 @@ class NotificationManager {
                 this.markAsRead(parseInt(notificationId));
             }
         });
+    }
+
+    renderFilteredList(items) {
+        const container = document.getElementById('notifications-list');
+        if (!container) return;
+
+        if (items.length === 0) {
+            container.innerHTML = '<div class="text-center p-3 text-muted small">No notifications</div>';
+            return;
+        }
+
+        const html = items.slice(0, 10).map(notification => {
+            const timeAgo = this.getTimeAgo(new Date(notification.createdAt));
+            const priorityClass = this.getPriorityClass(notification.priority);
+            const typeIcon = this.getTypeIcon(notification.type);
+
+            return `
+                <div class="dropdown-item notification-item px-3 py-2 ${notification.isRead ? '' : 'bg-primary-subtle'} ${priorityClass}"
+                     data-notification-id="${notification.id}" style="cursor:pointer; white-space:normal;">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="${typeIcon} mt-1 flex-shrink-0"></i>
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="fw-semibold small text-truncate">${this.escapeHtml(notification.title)}</div>
+                            <div class="small text-muted text-truncate">${this.escapeHtml(notification.message)}</div>
+                            <div class="small text-muted">${timeAgo}</div>
+                        </div>
+                        ${!notification.isRead ? '<span class="badge bg-primary rounded-pill flex-shrink-0">New</span>' : ''}
+                    </div>
+                </div>`;
+        }).join('');
+
+        container.innerHTML = html;
     }
 
     handleNewNotification(notification) {
@@ -344,38 +376,7 @@ class NotificationManager {
     }
 
     updateNotificationsList() {
-        const container = document.getElementById('notifications-list');
-        if (!container) return;
-
-        if (this.notifications.length === 0) {
-            container.innerHTML = '<div class="text-center p-3 text-muted">No notifications</div>';
-            return;
-        }
-
-        const html = this.notifications.slice(0, 10).map(notification => {
-            const timeAgo = this.getTimeAgo(new Date(notification.createdAt));
-            const priorityClass = this.getPriorityClass(notification.priority);
-            const typeIcon = this.getTypeIcon(notification.type);
-            
-            return `
-                <div class="dropdown-item notification-item ${notification.isRead ? '' : 'bg-light'} ${priorityClass}" 
-                     data-notification-id="${notification.id}">
-                    <div class="d-flex align-items-start">
-                        <div class="me-2">
-                            <i class="${typeIcon}"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <div class="fw-semibold">${this.escapeHtml(notification.title)}</div>
-                            <div class="small text-muted">${this.escapeHtml(notification.message)}</div>
-                            <div class="small text-muted">${timeAgo}</div>
-                        </div>
-                        ${!notification.isRead ? '<div class="badge bg-primary rounded-pill">New</div>' : ''}
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        container.innerHTML = html;
+        this.renderFilteredList(this.notifications);
     }
 
     updateUnreadBadge() {
@@ -383,9 +384,12 @@ class NotificationManager {
         if (!badge) return;
 
         if (this.unreadCount > 0) {
+            const count = this.unreadCount > 99 ? 99 : this.unreadCount;
             badge.textContent = this.unreadCount > 99 ? '99+' : this.unreadCount.toString();
+            badge.setAttribute('aria-label', count + ' unread notification' + (count !== 1 ? 's' : ''));
             badge.style.display = 'block';
         } else {
+            badge.setAttribute('aria-label', '0 unread notifications');
             badge.style.display = 'none';
         }
     }

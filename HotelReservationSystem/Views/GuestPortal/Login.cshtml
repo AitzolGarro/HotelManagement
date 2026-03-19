@@ -1,0 +1,141 @@
+@{
+    Layout = "~/Views/Shared/_GuestPortalLayout.cshtml";
+    ViewData["Title"] = "Guest Sign In";
+}
+
+<div class="min-vh-100 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); margin: -24px;">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-10 col-md-7 col-lg-5 col-xl-4">
+
+                <!-- Logo / Brand -->
+                <div class="text-center mb-4">
+                    <div class="bg-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:72px;height:72px;box-shadow:0 4px 20px rgba(0,0,0,.15)">
+                        <i class="bi bi-building text-primary fs-2"></i>
+                    </div>
+                    <h1 class="text-white fw-bold fs-3 mb-1">Guest Portal</h1>
+                    <p class="text-white-50 mb-0">Access your reservations &amp; profile</p>
+                </div>
+
+                <!-- Login Card -->
+                <div class="card border-0 shadow-lg" style="border-radius:16px">
+                    <div class="card-body p-4 p-md-5">
+                        <h2 class="fs-5 fw-semibold mb-1">Welcome back</h2>
+                        <p class="text-muted small mb-4">Sign in with your email and booking reference</p>
+
+                        <div id="loginError" class="alert alert-danger d-none" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <span id="loginErrorMsg">Invalid email or booking reference.</span>
+                        </div>
+
+                        <form id="guestLoginForm" novalidate>
+                            <div class="mb-3">
+                                <label for="loginEmail" class="form-label fw-medium">Email Address</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="bi bi-envelope text-muted"></i>
+                                    </span>
+                                    <input type="email" class="form-control border-start-0 ps-0" id="loginEmail"
+                                           placeholder="your@email.com" required autocomplete="email" />
+                                </div>
+                                <div class="invalid-feedback">Please enter a valid email address.</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="loginBookingRef" class="form-label fw-medium">Booking Reference</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="bi bi-hash text-muted"></i>
+                                    </span>
+                                    <input type="text" class="form-control border-start-0 ps-0 text-uppercase" id="loginBookingRef"
+                                           placeholder="e.g. BK-2024-001" required autocomplete="off"
+                                           style="letter-spacing:.05em" />
+                                </div>
+                                <div class="form-text">Found in your booking confirmation email.</div>
+                                <div class="invalid-feedback">Please enter your booking reference.</div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold" id="loginBtn">
+                                <span id="loginBtnText"><i class="bi bi-box-arrow-in-right me-2"></i>Sign In</span>
+                                <span id="loginBtnSpinner" class="d-none">
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>Signing in…
+                                </span>
+                            </button>
+                        </form>
+
+                        <hr class="my-4">
+                        <p class="text-center text-muted small mb-0">
+                            <i class="bi bi-shield-lock me-1"></i>
+                            Your data is protected. We never share your information.
+                        </p>
+                    </div>
+                </div>
+
+                <p class="text-center text-white-50 small mt-4">
+                    Need help? Contact our <a href="mailto:support@hotel.com" class="text-white">support team</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+(function () {
+    // If already logged in, redirect to dashboard
+    if (localStorage.getItem('guestToken')) {
+        window.location.href = '/GuestPortal/Dashboard';
+        return;
+    }
+
+    const form = document.getElementById('guestLoginForm');
+    const errorBox = document.getElementById('loginError');
+    const errorMsg = document.getElementById('loginErrorMsg');
+    const btnText = document.getElementById('loginBtnText');
+    const btnSpinner = document.getElementById('loginBtnSpinner');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!form.checkValidity()) { form.classList.add('was-validated'); return; }
+
+        const email = document.getElementById('loginEmail').value.trim();
+        const bookingRef = document.getElementById('loginBookingRef').value.trim().toUpperCase();
+
+        btnText.classList.add('d-none');
+        btnSpinner.classList.remove('d-none');
+        errorBox.classList.add('d-none');
+
+        try {
+            const res = await fetch('/api/guest-portal/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, bookingReference: bookingRef })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                errorMsg.textContent = data.message || 'Invalid email or booking reference.';
+                errorBox.classList.remove('d-none');
+                return;
+            }
+
+            // Store token and guest info
+            localStorage.setItem('guestToken', data.token);
+            localStorage.setItem('guestExpires', data.expires);
+            localStorage.setItem('guestProfile', JSON.stringify(data.guest));
+
+            const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
+            window.location.href = returnUrl || '/GuestPortal/Dashboard';
+
+        } catch (err) {
+            errorMsg.textContent = 'A network error occurred. Please try again.';
+            errorBox.classList.remove('d-none');
+        } finally {
+            btnText.classList.remove('d-none');
+            btnSpinner.classList.add('d-none');
+        }
+    });
+})();
+</script>
+}

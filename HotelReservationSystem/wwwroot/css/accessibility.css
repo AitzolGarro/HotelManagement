@@ -1,0 +1,372 @@
+/* ============================================================
+   Accessibility Improvements - Task 14
+   Hotel Reservation Management System
+   ============================================================ */
+
+/* ── Skip Navigation Link ───────────────────────────────────── */
+/* Already in site.css but enhance here for robustness */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: #0d6efd;
+    color: #fff;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 0 0 4px 4px;
+    z-index: 10000;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: top 0.2s ease;
+    white-space: nowrap;
+}
+
+.skip-link:focus {
+    top: 0;
+    color: #fff;
+    outline: 3px solid #fff;
+    outline-offset: 2px;
+}
+
+/* ── Enhanced Focus Indicators ──────────────────────────────── */
+/* Override Bootstrap's default focus ring with a more visible one */
+:focus-visible {
+    outline: 3px solid #0d6efd !important;
+    outline-offset: 3px !important;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.25) !important;
+}
+
+/* Remove focus ring for mouse users (only show for keyboard) */
+:focus:not(:focus-visible) {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Restore Bootstrap's focus ring for form controls (always visible) */
+.form-control:focus,
+.form-select:focus {
+    outline: 2px solid #0d6efd !important;
+    outline-offset: 0 !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+}
+
+/* ── High-contrast focus for dark backgrounds ───────────────── */
+.navbar :focus-visible,
+.gp-navbar :focus-visible {
+    outline: 3px solid #fff !important;
+    outline-offset: 3px !important;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ── Button focus states ────────────────────────────────────── */
+.btn:focus-visible {
+    outline: 3px solid #0d6efd !important;
+    outline-offset: 3px !important;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.25) !important;
+}
+
+.btn-danger:focus-visible {
+    outline-color: #dc3545 !important;
+    box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.25) !important;
+}
+
+.btn-success:focus-visible {
+    outline-color: #198754 !important;
+    box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.25) !important;
+}
+
+/* ── Link focus states ──────────────────────────────────────── */
+a:focus-visible {
+    outline: 3px solid #0d6efd !important;
+    outline-offset: 3px !important;
+    border-radius: 2px;
+}
+
+/* ── Dropdown item focus ────────────────────────────────────── */
+.dropdown-item:focus-visible {
+    background-color: #e9ecef;
+    outline: 2px solid #0d6efd !important;
+    outline-offset: -2px !important;
+}
+
+/* ── Modal focus ────────────────────────────────────────────── */
+.modal-content:focus-visible {
+    outline: none !important;
+}
+
+/* ── Calendar event focus ───────────────────────────────────── */
+.fc-event:focus-visible,
+.fc-timeline-event:focus-visible {
+    outline: 3px solid #fff !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 5px rgba(13, 110, 253, 0.5) !important;
+    z-index: 20 !important;
+}
+
+/* ── Dashboard widget focus ─────────────────────────────────── */
+.grid-stack-item:focus-visible {
+    outline: 3px solid #0d6efd !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.2) !important;
+}
+
+/* ── Notification item focus ────────────────────────────────── */
+.notification-item:focus-visible {
+    outline: 2px solid #0d6efd !important;
+    outline-offset: -2px !important;
+    background-color: rgba(13, 110, 253, 0.05) !important;
+}
+
+/* ── Mobile bottom nav focus ────────────────────────────────── */
+.mobile-bottom-nav .nav-item:focus-visible {
+    outline: 3px solid #0d6efd !important;
+    outline-offset: 2px !important;
+    background-color: rgba(13, 110, 253, 0.1) !important;
+}
+
+/* ── Tab panel focus ────────────────────────────────────────── */
+[role="tab"]:focus-visible {
+    outline: 2px solid #0d6efd !important;
+    outline-offset: 2px !important;
+    border-radius: 4px;
+}
+
+/* ── Keyboard shortcut hint ─────────────────────────────────── */
+.kbd-hint {
+    display: inline-block;
+    padding: 0.1em 0.4em;
+    font-size: 0.75em;
+    font-family: 'Courier New', monospace;
+    background: #f8f9fa;
+    border: 1px solid #adb5bd;
+    border-radius: 3px;
+    box-shadow: 0 1px 0 rgba(0,0,0,.2);
+    color: #495057;
+    white-space: nowrap;
+}
+
+/* ── Dashboard keyboard instructions ───────────────────────── */
+.dashboard-keyboard-hint {
+    font-size: 0.8125rem;
+    color: #6c757d;
+    padding: 0.5rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.dashboard-keyboard-hint .kbd-hint {
+    font-size: 0.7rem;
+}
+
+/* ── Focus trap indicator (for modals) ──────────────────────── */
+.modal.show .modal-content {
+    /* Subtle indicator that focus is trapped */
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15), 0 0.5rem 1rem rgba(0,0,0,.15);
+}
+
+/* ── Visually hidden but focusable ──────────────────────────── */
+.visually-hidden-focusable:not(:focus):not(:focus-within) {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* ── Reduced motion support ─────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .skip-link {
+        transition: none;
+    }
+}
+
+/* ── Color contrast overrides (WCAG AA 4.5:1) ───────────────── */
+/* Bootstrap's .text-muted (#6c757d) fails 4.5:1 on white — override to #595c5f */
+.text-muted {
+    color: #595c5f !important;
+}
+
+/* Ensure placeholder text meets 3:1 minimum (decorative) */
+::placeholder {
+    color: #6b7280 !important;
+    opacity: 1;
+}
+
+/* Small/secondary text used in cards and tables inherits parent color — do not lighten below 4.5:1 */
+
+/* Status badges — ensure text contrast on colored backgrounds */
+.badge.bg-warning,
+.badge.text-bg-warning {
+    color: #1a1a1a !important; /* dark text on yellow */
+}
+
+.badge.bg-info,
+.badge.text-bg-info {
+    color: #0a2533 !important; /* dark text on cyan */
+}
+
+/* ── Form validation error styling ──────────────────────────── */
+/* Ensure error messages are clearly visible and associated */
+.invalid-feedback {
+    display: block; /* always reserve space when .is-invalid is set */
+    font-size: 0.875rem;
+    color: #b91c1c; /* darker red — passes 4.5:1 on white */
+    margin-top: 0.25rem;
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid {
+    border-color: #b91c1c;
+    background-image: none; /* remove Bootstrap's icon — we use text error */
+    padding-right: 0.75rem; /* restore normal padding */
+}
+
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+    border-color: #b91c1c;
+    box-shadow: 0 0 0 0.25rem rgba(185, 28, 28, 0.25) !important;
+    outline: 2px solid #b91c1c !important;
+}
+
+/* ── Required field indicator ────────────────────────────────── */
+/* Ensure the asterisk is not the only indicator — label text must also convey required */
+.form-label .text-danger[aria-hidden="true"] {
+    margin-left: 0.2em;
+    font-weight: 700;
+}
+
+/* ── High contrast mode support (expanded) ───────────────────── */
+@media (forced-colors: active) {
+    /* Skip link */
+    .skip-link {
+        forced-color-adjust: none;
+        background: ButtonFace;
+        color: ButtonText;
+        border: 2px solid ButtonText;
+    }
+
+    /* Focus rings */
+    :focus-visible {
+        outline: 3px solid Highlight !important;
+        outline-offset: 3px !important;
+        box-shadow: none !important;
+    }
+
+    /* Buttons */
+    .btn {
+        forced-color-adjust: none;
+        border: 2px solid ButtonText;
+    }
+
+    .btn-primary {
+        background: Highlight;
+        color: HighlightText;
+        border-color: Highlight;
+    }
+
+    .btn-outline-primary,
+    .btn-outline-secondary,
+    .btn-outline-danger {
+        background: ButtonFace;
+        color: ButtonText;
+        border-color: ButtonText;
+    }
+
+    /* Form controls */
+    .form-control,
+    .form-select {
+        forced-color-adjust: none;
+        background: Field;
+        color: FieldText;
+        border: 2px solid ButtonText;
+    }
+
+    .form-control.is-invalid,
+    .form-select.is-invalid {
+        border-color: LinkText;
+        outline: 2px solid LinkText;
+    }
+
+    .invalid-feedback {
+        forced-color-adjust: none;
+        color: LinkText;
+    }
+
+    /* Badges and status indicators */
+    .badge,
+    .status-badge {
+        forced-color-adjust: none;
+        background: Highlight;
+        color: HighlightText;
+        border: 1px solid HighlightText;
+    }
+
+    /* Calendar legend dots */
+    .cal-legend-dot {
+        forced-color-adjust: none;
+        border: 2px solid ButtonText;
+    }
+
+    /* Navbar */
+    .navbar,
+    .gp-navbar {
+        forced-color-adjust: none;
+        background: Canvas !important;
+        border-bottom: 2px solid ButtonText;
+    }
+
+    .navbar .nav-link,
+    .gp-navbar .navbar-brand {
+        color: LinkText !important;
+    }
+
+    /* Cards */
+    .card,
+    .gp-card {
+        border: 2px solid ButtonText !important;
+        box-shadow: none !important;
+    }
+
+    /* Alerts */
+    .alert {
+        forced-color-adjust: none;
+        border: 2px solid ButtonText;
+    }
+
+    /* Loading spinner */
+    .spinner-border {
+        forced-color-adjust: none;
+        border-color: ButtonText;
+        border-right-color: transparent;
+    }
+
+    /* Mobile bottom nav */
+    .mobile-bottom-nav,
+    .gp-mobile-nav {
+        forced-color-adjust: none;
+        background: Canvas;
+        border-top: 2px solid ButtonText;
+    }
+
+    /* Notification badge */
+    #notification-badge {
+        forced-color-adjust: none;
+        background: Highlight !important;
+        color: HighlightText !important;
+    }
+}

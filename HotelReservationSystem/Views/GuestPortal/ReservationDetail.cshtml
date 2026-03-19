@@ -1,0 +1,302 @@
+@{
+    Layout = "~/Views/Shared/_GuestPortalLayout.cshtml";
+    ViewData["Title"] = "Reservation Details";
+    var reservationId = ViewData["ReservationId"];
+}
+
+<div class="mb-3">
+    <a href="/GuestPortal/Reservations" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Back to Reservations
+    </a>
+</div>
+
+<!-- Loading -->
+<div id="detailLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading…</span></div>
+</div>
+
+<!-- Not found -->
+<div id="detailNotFound" class="d-none text-center py-5">
+    <i class="bi bi-exclamation-circle fs-1 text-muted opacity-25 d-block mb-3"></i>
+    <h5 class="text-muted">Reservation not found</h5>
+    <a href="/GuestPortal/Reservations" class="btn btn-primary mt-2">View All Reservations</a>
+</div>
+
+<!-- Detail content -->
+<div id="detailContent" class="d-none">
+    <div class="row g-4">
+        <!-- Main details -->
+        <div class="col-12 col-lg-8">
+            <div class="gp-card card mb-4">
+                <div class="card-header d-flex align-items-center justify-content-between py-3">
+                    <span class="fw-semibold"><i class="bi bi-journal-text me-2 text-primary"></i>Booking Details</span>
+                    <span id="detailStatusBadge"></span>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-6 col-md-4">
+                            <div class="text-muted small mb-1">Booking Reference</div>
+                            <div class="fw-semibold" id="detailRef">—</div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="text-muted small mb-1">Hotel</div>
+                            <div class="fw-semibold" id="detailHotel">—</div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="text-muted small mb-1">Room</div>
+                            <div class="fw-semibold" id="detailRoom">—</div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="text-muted small mb-1">Check-In</div>
+                            <div class="fw-semibold" id="detailCheckIn">—</div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="text-muted small mb-1">Check-Out</div>
+                            <div class="fw-semibold" id="detailCheckOut">—</div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="text-muted small mb-1">Duration</div>
+                            <div class="fw-semibold" id="detailNights">—</div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="text-muted small mb-1">Guests</div>
+                            <div class="fw-semibold" id="detailGuests">—</div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="text-muted small mb-1">Total Amount</div>
+                            <div class="fw-semibold fs-5 text-primary" id="detailAmount">—</div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="text-muted small mb-1">Booked On</div>
+                            <div class="fw-semibold" id="detailCreated">—</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Special Requests -->
+            <div class="gp-card card mb-4">
+                <div class="card-header py-3">
+                    <i class="bi bi-chat-left-text me-2 text-primary"></i>Special Requests
+                </div>
+                <div class="card-body">
+                    <p id="detailSpecialRequests" class="text-muted mb-3">No special requests on file.</p>
+                    <div id="specialRequestForm" class="d-none">
+                        <textarea class="form-control mb-2" id="specialRequestInput" rows="3"
+                                  placeholder="e.g. High floor, extra pillows, late check-in…" maxlength="1000"></textarea>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-primary btn-sm" id="saveSpecialReqBtn">
+                                <i class="bi bi-check me-1"></i>Save Request
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" id="cancelSpecialReqBtn">Cancel</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline-primary btn-sm" id="editSpecialReqBtn">
+                        <i class="bi bi-pencil me-1"></i>Edit Special Requests
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions sidebar -->
+        <div class="col-12 col-lg-4">
+            <!-- Modify dates -->
+            <div class="gp-card card mb-4" id="modifyCard">
+                <div class="card-header py-3">
+                    <i class="bi bi-calendar-range me-2 text-primary"></i>Modify Dates
+                </div>
+                <div class="card-body">
+                    <div id="modifyError" class="alert alert-danger d-none small mb-3"></div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-medium">New Check-In</label>
+                        <input type="date" class="form-control" id="modifyCheckIn" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-medium">New Check-Out</label>
+                        <input type="date" class="form-control" id="modifyCheckOut" />
+                    </div>
+                    <button class="btn btn-primary w-100" id="modifyBtn">
+                        <span id="modifyBtnText"><i class="bi bi-check me-1"></i>Update Dates</span>
+                        <span id="modifyBtnSpinner" class="d-none spinner-border spinner-border-sm ms-2" role="status"></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Cancel -->
+            <div class="gp-card card" id="cancelCard">
+                <div class="card-header py-3 text-danger">
+                    <i class="bi bi-x-circle me-2"></i>Cancel Reservation
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Once cancelled, this action cannot be undone.</p>
+                    <div id="cancelDetailError" class="alert alert-danger d-none small mb-3"></div>
+                    <textarea class="form-control mb-3" id="cancelDetailReason" rows="2"
+                              placeholder="Reason for cancellation…" maxlength="500"></textarea>
+                    <button class="btn btn-outline-danger w-100" id="cancelDetailBtn">
+                        <span id="cancelDetailBtnText"><i class="bi bi-x-circle me-1"></i>Cancel Reservation</span>
+                        <span id="cancelDetailBtnSpinner" class="d-none spinner-border spinner-border-sm ms-2" role="status"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+(function () {
+    const token = localStorage.getItem('guestToken');
+    if (!token) { window.location.href = '/GuestPortal/Login'; return; }
+
+    const reservationId = @reservationId;
+    let reservation = null;
+
+    function statusBadge(status) {
+        const map = {
+            0: ['Pending','status-pending'],
+            1: ['Confirmed','status-confirmed'],
+            2: ['Checked In','status-checkedin'],
+            3: ['Checked Out','status-checkedout'],
+            4: ['Cancelled','status-cancelled'],
+            5: ['No Show','status-cancelled']
+        };
+        const [label, cls] = map[status] || ['Unknown','status-pending'];
+        return `<span class="status-badge ${cls}">${label}</span>`;
+    }
+
+    function fmt(d) { return new Date(d).toLocaleDateString('en-US', { weekday:'short', month:'long', day:'numeric', year:'numeric' }); }
+    function toInputDate(d) { return new Date(d).toISOString().split('T')[0]; }
+
+    async function loadDetail() {
+        try {
+            const res = await fetch(`/api/guest-portal/reservations/${reservationId}`, {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (res.status === 401) { localStorage.clear(); window.location.href = '/GuestPortal/Login'; return; }
+            if (res.status === 404) { document.getElementById('detailNotFound').classList.remove('d-none'); return; }
+
+            reservation = await res.json();
+            const nights = Math.round((new Date(reservation.checkOutDate) - new Date(reservation.checkInDate)) / 86400000);
+            const canAct = reservation.status === 0 || reservation.status === 1;
+
+            document.getElementById('detailStatusBadge').innerHTML = statusBadge(reservation.status);
+            document.getElementById('detailRef').textContent = reservation.bookingReference || 'N/A';
+            document.getElementById('detailHotel').textContent = reservation.hotelName;
+            document.getElementById('detailRoom').textContent = `${reservation.roomNumber} (${reservation.roomType})`;
+            document.getElementById('detailCheckIn').textContent = fmt(reservation.checkInDate);
+            document.getElementById('detailCheckOut').textContent = fmt(reservation.checkOutDate);
+            document.getElementById('detailNights').textContent = `${nights} night${nights !== 1 ? 's' : ''}`;
+            document.getElementById('detailGuests').textContent = reservation.numberOfGuests;
+            document.getElementById('detailAmount').textContent = `$${reservation.totalAmount.toFixed(2)}`;
+            document.getElementById('detailCreated').textContent = fmt(reservation.createdAt);
+            document.getElementById('detailSpecialRequests').textContent = reservation.specialRequests || 'No special requests on file.';
+            document.getElementById('specialRequestInput').value = reservation.specialRequests || '';
+
+            // Pre-fill modify dates
+            document.getElementById('modifyCheckIn').value = toInputDate(reservation.checkInDate);
+            document.getElementById('modifyCheckOut').value = toInputDate(reservation.checkOutDate);
+
+            // Show/hide action cards
+            if (!canAct) {
+                document.getElementById('modifyCard').classList.add('d-none');
+                document.getElementById('cancelCard').classList.add('d-none');
+                document.getElementById('editSpecialReqBtn').classList.add('d-none');
+            }
+
+            document.getElementById('detailContent').classList.remove('d-none');
+        } catch (err) {
+            console.error(err);
+        } finally {
+            document.getElementById('detailLoading').classList.add('d-none');
+        }
+    }
+
+    // Special requests toggle
+    document.getElementById('editSpecialReqBtn').addEventListener('click', () => {
+        document.getElementById('specialRequestForm').classList.remove('d-none');
+        document.getElementById('editSpecialReqBtn').classList.add('d-none');
+    });
+    document.getElementById('cancelSpecialReqBtn').addEventListener('click', () => {
+        document.getElementById('specialRequestForm').classList.add('d-none');
+        document.getElementById('editSpecialReqBtn').classList.remove('d-none');
+    });
+    document.getElementById('saveSpecialReqBtn').addEventListener('click', async () => {
+        const text = document.getElementById('specialRequestInput').value.trim();
+        try {
+            const res = await fetch(`/api/guest-portal/reservations/${reservationId}/special-requests`, {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ specialRequests: text })
+            });
+            if (res.ok) {
+                document.getElementById('detailSpecialRequests').textContent = text || 'No special requests on file.';
+                document.getElementById('specialRequestForm').classList.add('d-none');
+                document.getElementById('editSpecialReqBtn').classList.remove('d-none');
+            }
+        } catch (err) { console.error(err); }
+    });
+
+    // Modify dates
+    document.getElementById('modifyBtn').addEventListener('click', async () => {
+        const checkIn = document.getElementById('modifyCheckIn').value;
+        const checkOut = document.getElementById('modifyCheckOut').value;
+        const errEl = document.getElementById('modifyError');
+        errEl.classList.add('d-none');
+
+        if (!checkIn || !checkOut) { errEl.textContent = 'Please select both dates.'; errEl.classList.remove('d-none'); return; }
+        if (new Date(checkOut) <= new Date(checkIn)) { errEl.textContent = 'Check-out must be after check-in.'; errEl.classList.remove('d-none'); return; }
+
+        const btnText = document.getElementById('modifyBtnText');
+        const spinner = document.getElementById('modifyBtnSpinner');
+        btnText.classList.add('d-none'); spinner.classList.remove('d-none');
+
+        try {
+            const res = await fetch(`/api/guest-portal/reservations/${reservationId}/dates`, {
+                method: 'PATCH',
+                headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ checkInDate: checkIn, checkOutDate: checkOut })
+            });
+            const data = await res.json();
+            if (!res.ok) { errEl.textContent = data.message; errEl.classList.remove('d-none'); return; }
+            // Reload to show updated data
+            await loadDetail();
+        } catch (err) {
+            errEl.textContent = 'An error occurred. Please try again.';
+            errEl.classList.remove('d-none');
+        } finally {
+            btnText.classList.remove('d-none'); spinner.classList.add('d-none');
+        }
+    });
+
+    // Cancel
+    document.getElementById('cancelDetailBtn').addEventListener('click', async () => {
+        const reason = document.getElementById('cancelDetailReason').value.trim();
+        const errEl = document.getElementById('cancelDetailError');
+        errEl.classList.add('d-none');
+        if (!reason) { errEl.textContent = 'Please provide a reason.'; errEl.classList.remove('d-none'); return; }
+
+        const btnText = document.getElementById('cancelDetailBtnText');
+        const spinner = document.getElementById('cancelDetailBtnSpinner');
+        btnText.classList.add('d-none'); spinner.classList.remove('d-none');
+
+        try {
+            const res = await fetch(`/api/guest-portal/reservations/${reservationId}/cancel`, {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reason })
+            });
+            const data = await res.json();
+            if (!res.ok) { errEl.textContent = data.message; errEl.classList.remove('d-none'); return; }
+            window.location.href = '/GuestPortal/Reservations';
+        } catch (err) {
+            errEl.textContent = 'An error occurred. Please try again.';
+            errEl.classList.remove('d-none');
+        } finally {
+            btnText.classList.remove('d-none'); spinner.classList.add('d-none');
+        }
+    });
+
+    loadDetail();
+})();
+</script>
+}

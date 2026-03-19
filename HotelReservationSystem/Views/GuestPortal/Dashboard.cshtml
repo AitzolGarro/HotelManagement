@@ -1,0 +1,206 @@
+@{
+    Layout = "~/Views/Shared/_GuestPortalLayout.cshtml";
+    ViewData["Title"] = "My Dashboard";
+}
+
+<!-- Loading skeleton -->
+<div id="dashboardSkeleton">
+    <div class="placeholder-glow mb-4">
+        <span class="placeholder col-4 rounded" style="height:32px"></span>
+    </div>
+    <div class="row g-3 mb-4">
+        @for (int i = 0; i < 3; i++) {
+            <div class="col-12 col-sm-4">
+                <div class="card border-0 shadow-sm" style="border-radius:12px">
+                    <div class="card-body placeholder-glow">
+                        <span class="placeholder col-6 mb-2 d-block" style="height:16px"></span>
+                        <span class="placeholder col-4" style="height:28px"></span>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Dashboard content (hidden until loaded) -->
+<div id="dashboardContent" class="d-none">
+
+    <!-- Welcome header -->
+    <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-4 gap-3">
+        <div>
+            <h1 class="fs-4 fw-bold mb-1">Welcome back, <span id="dashGuestName">Guest</span>!</h1>
+            <p class="text-muted mb-0">Here's an overview of your reservations</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span id="dashLoyaltyBadge" class="loyalty-badge"></span>
+            <span class="text-muted small"><i class="bi bi-star-fill text-warning me-1"></i><span id="dashPoints">0</span> pts</span>
+        </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="gp-card card h-100">
+                <div class="card-body text-center py-3">
+                    <div class="fs-2 fw-bold text-primary" id="statUpcoming">0</div>
+                    <div class="text-muted small">Upcoming</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="gp-card card h-100">
+                <div class="card-body text-center py-3">
+                    <div class="fs-2 fw-bold text-success" id="statActive">0</div>
+                    <div class="text-muted small">Active Stay</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="gp-card card h-100">
+                <div class="card-body text-center py-3">
+                    <div class="fs-2 fw-bold text-secondary" id="statPast">0</div>
+                    <div class="text-muted small">Past Stays</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="gp-card card h-100">
+                <div class="card-body text-center py-3">
+                    <div class="fs-2 fw-bold text-warning" id="statNights">0</div>
+                    <div class="text-muted small">Total Nights</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming reservations -->
+    <div class="gp-card card mb-4">
+        <div class="card-header d-flex align-items-center justify-content-between py-3">
+            <span><i class="bi bi-calendar-check me-2 text-primary"></i>Upcoming Reservations</span>
+            <a href="/GuestPortal/Reservations" class="btn btn-sm btn-outline-primary">View All</a>
+        </div>
+        <div class="card-body p-0">
+            <div id="upcomingList">
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-calendar-x fs-1 d-block mb-2 opacity-25"></i>
+                    No upcoming reservations
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent past stays -->
+    <div class="gp-card card">
+        <div class="card-header py-3">
+            <i class="bi bi-clock-history me-2 text-secondary"></i>Recent Stays
+        </div>
+        <div class="card-body p-0">
+            <div id="pastList">
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-building fs-1 d-block mb-2 opacity-25"></i>
+                    No past stays yet
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+(function () {
+    const token = localStorage.getItem('guestToken');
+    if (!token) { window.location.href = '/GuestPortal/Login?returnUrl=/GuestPortal/Dashboard'; return; }
+
+    const profile = JSON.parse(localStorage.getItem('guestProfile') || '{}');
+
+    function statusBadge(status) {
+        const map = {
+            0: ['Pending','status-pending'],
+            1: ['Confirmed','status-confirmed'],
+            2: ['CheckedIn','status-checkedin'],
+            3: ['CheckedOut','status-checkedout'],
+            4: ['Cancelled','status-cancelled'],
+            5: ['NoShow','status-cancelled']
+        };
+        const [label, cls] = map[status] || ['Unknown','status-pending'];
+        return `<span class="status-badge ${cls}">${label}</span>`;
+    }
+
+    function formatDate(d) {
+        return new Date(d).toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+    }
+
+    function reservationCard(r) {
+        return `
+        <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between p-3 border-bottom gap-2">
+            <div class="d-flex align-items-start gap-3">
+                <div class="bg-primary bg-opacity-10 rounded-3 p-2 text-center" style="min-width:52px">
+                    <div class="fs-5 fw-bold text-primary lh-1">${new Date(r.checkInDate).getDate()}</div>
+                    <div class="text-primary small">${new Date(r.checkInDate).toLocaleString('en-US',{month:'short'})}</div>
+                </div>
+                <div>
+                    <div class="fw-semibold">${r.hotelName}</div>
+                    <div class="text-muted small">Room ${r.roomNumber} &bull; ${r.roomType} &bull; ${r.nights ?? Math.round((new Date(r.checkOutDate)-new Date(r.checkInDate))/(86400000))} nights</div>
+                    <div class="text-muted small">${formatDate(r.checkInDate)} → ${formatDate(r.checkOutDate)}</div>
+                </div>
+            </div>
+            <div class="d-flex flex-row flex-sm-column align-items-center align-items-sm-end gap-2">
+                ${statusBadge(r.status)}
+                <div class="fw-semibold">$${r.totalAmount.toFixed(2)}</div>
+                <a href="/GuestPortal/Reservation/${r.id}" class="btn btn-sm btn-outline-primary">Details</a>
+            </div>
+        </div>`;
+    }
+
+    async function loadDashboard() {
+        try {
+            const res = await fetch('/api/guest-portal/reservations', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (res.status === 401) { localStorage.clear(); window.location.href = '/GuestPortal/Login'; return; }
+            const reservations = await res.json();
+
+            const now = new Date();
+            const upcoming = reservations.filter(r => new Date(r.checkInDate) > now && r.status !== 4);
+            const active   = reservations.filter(r => r.status === 2);
+            const past     = reservations.filter(r => r.status === 3 || new Date(r.checkOutDate) < now);
+            const totalNights = past.reduce((s, r) => s + Math.round((new Date(r.checkOutDate)-new Date(r.checkInDate))/86400000), 0);
+
+            // Update stats
+            document.getElementById('statUpcoming').textContent = upcoming.length;
+            document.getElementById('statActive').textContent   = active.length;
+            document.getElementById('statPast').textContent     = past.length;
+            document.getElementById('statNights').textContent   = totalNights;
+
+            // Upcoming list
+            const upcomingEl = document.getElementById('upcomingList');
+            if (upcoming.length) {
+                upcomingEl.innerHTML = upcoming.slice(0,3).map(reservationCard).join('');
+            }
+
+            // Past list
+            const pastEl = document.getElementById('pastList');
+            if (past.length) {
+                pastEl.innerHTML = past.slice(0,3).map(reservationCard).join('');
+            }
+
+        } catch (err) {
+            console.error('Dashboard load error:', err);
+        } finally {
+            document.getElementById('dashboardSkeleton').classList.add('d-none');
+            document.getElementById('dashboardContent').classList.remove('d-none');
+        }
+    }
+
+    // Populate header
+    document.getElementById('dashGuestName').textContent = profile.firstName || 'Guest';
+    document.getElementById('dashPoints').textContent = profile.loyaltyPoints || 0;
+    const tier = (profile.loyaltyTier || 'Standard').toLowerCase();
+    const badge = document.getElementById('dashLoyaltyBadge');
+    badge.textContent = profile.loyaltyTier || 'Standard';
+    badge.className = `loyalty-badge ${tier}`;
+
+    loadDashboard();
+})();
+</script>
+}

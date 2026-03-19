@@ -3,370 +3,175 @@
 }
 
 <div id="dashboardContainer">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h3 mb-0">
-                    <i class="bi bi-speedometer2"></i>
-                    Dashboard
-                </h1>
-                <div class="d-flex gap-2">
-                    <input type="text" id="dashboardDateRange" class="form-control form-control-sm" style="width: 200px;" placeholder="Date Range">
-                    <select class="form-select form-select-sm" id="hotelFilter" style="width: auto;">
-                        <option value="">All Hotels</option>
-                        <!-- Hotel options will be populated by JavaScript -->
-                    </select>
-                    <button class="btn btn-outline-primary btn-sm" id="refreshDashboard">
-                        <i class="bi bi-arrow-clockwise"></i>
-                        Refresh
-                    </button>
-                    <button class="btn btn-outline-secondary btn-sm" id="saveLayoutBtn">
-                        <i class="bi bi-layout-text-window"></i> Save Layout
-                    </button>
-                </div>
+
+    <div id="dashboard-status" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- ── Toolbar ──────────────────────────────────────────────────────── -->
+    <div class="row mb-3 g-2 align-items-center">
+        <div class="col-12 col-md-auto">
+            <h1 class="h4 mb-0">
+                <i class="bi bi-speedometer2 me-1" aria-hidden="true"></i>Dashboard
+            </h1>
+        </div>
+
+        <!-- Date range -->
+        <div class="col-12 col-sm-6 col-md-auto">
+            <input type="text" id="dashboardDateRange"
+                   class="form-control form-control-sm"
+                   placeholder="Date Range"
+                   aria-label="Date range filter"
+                   style="min-width:200px;" />
+        </div>
+
+        <!-- Hotel filter -->
+        <div class="col-12 col-sm-6 col-md-auto">
+            <select class="form-select form-select-sm" id="hotelFilter"
+                    aria-label="Hotel filter" style="min-width:140px;">
+                <option value="">All Hotels</option>
+            </select>
+        </div>
+
+        <!-- Auto-refresh -->
+        <div class="col-12 col-sm-auto d-flex align-items-center gap-2">
+            <div class="form-check form-switch mb-0">
+                <input class="form-check-input" type="checkbox" id="autoRefreshToggle"
+                       role="switch" aria-label="Auto-refresh toggle" />
+                <label class="form-check-label small" for="autoRefreshToggle">Auto-refresh</label>
             </div>
+            <select class="form-select form-select-sm" id="refreshInterval"
+                    style="width:auto;" aria-label="Refresh interval">
+                <option value="60">1 min</option>
+                <option value="300" selected>5 min</option>
+                <option value="600">10 min</option>
+                <option value="1800">30 min</option>
+            </select>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="col-12 col-sm-auto ms-md-auto d-flex flex-wrap gap-2">
+            <button class="btn btn-outline-primary btn-sm" id="refreshDashboard"
+                    title="Refresh data" aria-label="Refresh dashboard">
+                <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+                <span class="d-none d-sm-inline">Refresh</span>
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" id="addWidgetBtn"
+                    title="Add widget" aria-label="Add widget"
+                    data-bs-toggle="modal" data-bs-target="#addWidgetModal">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                <span class="d-none d-sm-inline">Add Widget</span>
+            </button>
+            <button class="btn btn-outline-success btn-sm" id="saveLayoutBtn"
+                    title="Save layout" aria-label="Save layout">
+                <i class="bi bi-save" aria-hidden="true"></i>
+                <span class="d-none d-sm-inline">Save Layout</span>
+            </button>
+            <button class="btn btn-outline-danger btn-sm" id="resetLayoutBtn"
+                    title="Reset to default" aria-label="Reset layout">
+                <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i>
+                <span class="d-none d-sm-inline">Reset</span>
+            </button>
         </div>
     </div>
 
-    <!-- Error Container -->
-    <div id="dashboardError" style="display: none;"></div>
+    <!-- ── Error banner ──────────────────────────────────────────────────── -->
+    <div id="dashboardError" style="display:none;" role="alert" aria-live="assertive"></div>
 
-    <!-- KPI Cards Row -->
-    <div class="grid-stack" id="dashboardGrid">
-        <div class="grid-stack-item" gs-x="0" gs-y="0" gs-w="3" gs-h="2">
-            <div class="grid-stack-item-content card dashboard-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <div class="dashboard-stat" id="occupancyRate">--</div>
-                            <div class="dashboard-label">Occupancy Rate</div>
-                            <div class="dashboard-subtitle small text-muted" id="occupancySubtitle">--</div>
-                            <div class="dashboard-trend" id="occupancyTrend"></div>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="bi bi-graph-up fs-1 text-primary"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="grid-stack-item" gs-x="3" gs-y="0" gs-w="3" gs-h="2">
-            <div class="grid-stack-item-content card dashboard-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <div class="dashboard-stat" id="monthlyRevenue">--</div>
-                            <div class="dashboard-label">Monthly Revenue</div>
-                            <div class="dashboard-subtitle small text-muted" id="monthlyRevenueSubtitle">--</div>
-                            <div class="dashboard-trend" id="monthlyRevenueTrend"></div>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="bi bi-currency-dollar fs-1 text-success"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="grid-stack-item" gs-x="6" gs-y="0" gs-w="3" gs-h="2">
-            <div class="grid-stack-item-content card dashboard-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <div class="dashboard-stat" id="todayRevenue">--</div>
-                            <div class="dashboard-label">Today's Revenue</div>
-                            <div class="dashboard-subtitle small text-muted" id="todayRevenueSubtitle">--</div>
-                            <div class="dashboard-trend" id="todayRevenueTrend"></div>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="bi bi-cash-coin fs-1 text-info"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="grid-stack-item" gs-x="9" gs-y="0" gs-w="3" gs-h="2">
-            <div class="grid-stack-item-content card dashboard-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <div class="dashboard-stat" id="projectedRevenue">--</div>
-                            <div class="dashboard-label">Projected Revenue</div>
-                            <div class="dashboard-subtitle small text-muted" id="projectedRevenueSubtitle">--</div>
-                            <div class="dashboard-trend" id="projectedRevenueTrend"></div>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="bi bi-graph-up-arrow fs-1 text-warning"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- ── GridStack container ───────────────────────────────────────────── -->
+    <div class="dashboard-keyboard-hint mb-2" aria-hidden="true">
+        <span><kbd class="kbd-hint">Tab</kbd> to navigate widgets</span>
+        <span><kbd class="kbd-hint">Alt</kbd>+<kbd class="kbd-hint">/</kbd> for all shortcuts</span>
+    </div>
+    <div class="grid-stack" id="dashboardGrid" aria-label="Dashboard widgets"
+         aria-describedby="dashboardGrid-hint">
+        <!-- Widgets are rendered dynamically by dashboard.js -->
+    </div>
+    <div id="dashboardGrid-hint" class="visually-hidden">
+        Dashboard widget grid. Use Tab to navigate between widgets. Press Alt+Slash to view all keyboard shortcuts.
+    </div>
 
-        <div class="grid-stack-item" gs-x="0" gs-y="2" gs-w="12" gs-h="4">
-            <div class="grid-stack-item-content card">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="bi bi-pie-chart"></i>
-                        Occupancy Breakdown
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div id="occupancyBreakdown">
-                        <div class="text-center text-muted py-3">
-                            <i class="bi bi-hourglass-split"></i>
-                            Loading occupancy data...
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+</div><!-- /#dashboardContainer -->
 
-        <!-- Today's Activity -->
-        <div class="grid-stack-item" gs-x="0" gs-y="6" gs-w="8" gs-h="5">
-            <div class="grid-stack-item-content card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">
-                        <i class="bi bi-calendar-day"></i>
-                        Today's Activity
-                    </h5>
-                    <small class="text-muted" id="todayDate"></small>
-                </div>
-                <div class="card-body overflow-auto">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h6 class="border-start border-success border-3 ps-3 mb-0">Check-ins</h6>
-                                <span class="badge bg-success" id="checkInCount">0</span>
-                            </div>
-                            <div id="todayCheckIns" class="mb-4">
-                                <div class="text-center text-muted py-3">
-                                    <i class="bi bi-clock-history fs-1"></i>
-                                    <p class="mt-2">Loading check-ins...</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h6 class="border-start border-warning border-3 ps-3 mb-0">Check-outs</h6>
-                                <span class="badge bg-warning" id="checkOutCount">0</span>
-                            </div>
-                            <div id="todayCheckOuts">
-                                <div class="text-center text-muted py-3">
-                                    <i class="bi bi-clock-history fs-1"></i>
-                                    <p class="mt-2">Loading check-outs...</p>
-                                </div>
-                            </div>
+<!-- ── Add Widget Modal ──────────────────────────────────────────────────── -->
+<div class="modal fade" id="addWidgetModal" tabindex="-1"
+     aria-labelledby="addWidgetModalLabel" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addWidgetModalLabel">
+                    <i class="bi bi-grid-3x3-gap me-2" aria-hidden="true"></i>Add Widget
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted small mb-3">
+                    Select a widget to add to your dashboard. Already-visible widgets are greyed out.
+                </p>
+                <div id="widgetCatalog" class="row g-3">
+                    <div class="col-12 text-center py-4">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                            <span class="visually-hidden">Loading widgets…</span>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Notifications & Alerts -->
-        <div class="grid-stack-item" gs-x="8" gs-y="6" gs-w="4" gs-h="5">
-            <div class="grid-stack-item-content card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">
-                        <i class="bi bi-bell"></i>
-                        Notifications
-                        <span class="badge bg-danger ms-2" id="notificationBadge" style="display: none;">0</span>
-                    </h5>
-                </div>
-                <div class="card-body overflow-auto">
-                    <!-- Notification Summary -->
-                    <div class="row text-center mb-3">
-                        <div class="col-4">
-                            <div class="notification-summary">
-                                <div class="fw-bold text-danger" id="criticalNotificationCount">0</div>
-                                <div class="small text-muted">Critical</div>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="notification-summary">
-                                <div class="fw-bold text-warning" id="warningNotificationCount">0</div>
-                                <div class="small text-muted">Warning</div>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="notification-summary">
-                                <div class="fw-bold text-info" id="infoNotificationCount">0</div>
-                                <div class="small text-muted">Info</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div id="notificationsList">
-                        <div class="text-center text-muted py-3">
-                            <i class="bi bi-bell-slash fs-1"></i>
-                            <p class="mt-2">Loading notifications...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Revenue Chart -->
-        <div class="grid-stack-item" gs-x="0" gs-y="11" gs-w="12" gs-h="5">
-            <div class="grid-stack-item-content card">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="bi bi-graph-up"></i>
-                        Revenue Trend (Last 30 Days)
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div style="height: 100%; position: relative;">
-                        <canvas id="revenueChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Reservations -->
-        <div class="grid-stack-item" gs-x="0" gs-y="16" gs-w="12" gs-h="5">
-            <div class="grid-stack-item-content card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">
-                        <i class="bi bi-clock-history"></i>
-                        Recent Reservations
-                    </h5>
-                    <a href="/reservations" class="btn btn-outline-primary btn-sm">
-                        View All
-                    </a>
-                </div>
-                <div class="card-body overflow-auto">
-                    <div class="table-responsive">
-                        <table class="table table-hover" id="recentReservationsTable">
-                            <thead>
-                                <tr>
-                                    <th>Booking Ref</th>
-                                    <th>Guest</th>
-                                    <th>Hotel</th>
-                                    <th>Room</th>
-                                    <th>Check-in</th>
-                                    <th>Check-out</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td colspan="8" class="text-center text-muted py-4">
-                                        <i class="bi bi-hourglass-split fs-1"></i>
-                                        <p class="mt-2">Loading recent reservations...</p>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
-</div> <!-- End dashboardContainer -->
+</div>
 
 @section Scripts {
-    <!-- Chart.js for revenue charts -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- GridStack.js -->
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- GridStack JS (all-in-one includes drag/resize) -->
     <script src="https://cdn.jsdelivr.net/npm/gridstack@7.2.1/dist/gridstack-all.js"></script>
-    
-    <!-- Dashboard module -->
-    <script src="~/js/modules/dashboard.js"></script>
-    
+    <!-- Dashboard customization module -->
+    <script src="~/js/modules/dashboard.js" asp-append-version="true"></script>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set today's date
-            const todayDateElement = document.getElementById('todayDate');
-            if (todayDateElement) {
-                todayDateElement.textContent = new Date().toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
-            }
-            
-            // Initialize Date Range Picker
+        document.addEventListener('DOMContentLoaded', function () {
+            // Date range picker
             $('#dashboardDateRange').daterangepicker({
-                startDate: moment().subtract(29, 'days'),
-                endDate: moment(),
-                ranges: {
-                    'Today': [moment(), moment()],
-                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                startDate : moment().subtract(29, 'days'),
+                endDate   : moment(),
+                ranges    : {
+                    'Today'       : [moment(), moment()],
+                    'Yesterday'   : [moment().subtract(1,'days'), moment().subtract(1,'days')],
+                    'Last 7 Days' : [moment().subtract(6,'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29,'days'), moment()],
+                    'This Month'  : [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month'  : [moment().subtract(1,'month').startOf('month'),
+                                     moment().subtract(1,'month').endOf('month')]
+                }
+            }, function (start, end) {
+                if (window.dashboardManager) {
+                    window.dashboardManager.setDateRange(start.toDate(), end.toDate());
                 }
             });
-            
-            // Initialize GridStack
-            const grid = GridStack.init({
-                margin: 10,
-                cellHeight: '100px',
-                handle: '.card-header, .card-body', // allow dragging by card body or header
-            });
-            
-            // Load saved layout if exists
-            const savedLayout = localStorage.getItem('dashboardLayout');
-            if (savedLayout) {
-                grid.load(JSON.parse(savedLayout));
-            }
-            
-            document.getElementById('saveLayoutBtn').addEventListener('click', () => {
-                const layout = grid.save();
-                localStorage.setItem('dashboardLayout', JSON.stringify(layout));
-                
-                const toastStr = `
-                    <div class="toast align-items-center text-bg-success border-0 position-fixed bottom-0 end-0 m-3" role="alert" aria-live="assertive" aria-atomic="true" id="layoutSavedToast">
-                      <div class="d-flex">
-                        <div class="toast-body">
-                          Dashboard layout saved successfully.
-                        </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                      </div>
-                    </div>`;
-                document.body.insertAdjacentHTML('beforeend', toastStr);
-                const toastEl = document.getElementById('layoutSavedToast');
-                const toast = new bootstrap.Toast(toastEl);
-                toast.show();
-                
-                setTimeout(() => toastEl.remove(), 3000);
-            });
-            
-            // Load hotel options for filter
+
+            // Load hotel options
             loadHotelOptions();
         });
-        
+
         async function loadHotelOptions() {
             try {
-                console.log('Loading hotel options - TIMESTAMP: 2025-12-30-12:30'); // Force cache bust
-                const apiClient = new ApiClient();
-                const response = await apiClient.get('/hotels');
-                console.log('API call made to /hotels, response:', response); // Debug the response
-                const hotelFilter = document.getElementById('hotelFilter');
-                
-                const hotels = (response && response.items) ? response.items : (response || []);
-                
-                if (hotelFilter && hotels) {
-                    // Clear existing options except "All Hotels"
-                    hotelFilter.innerHTML = '<option value="">All Hotels</option>';
-                    
-                    // Add hotel options
-                    hotels.forEach(hotel => {
-                        const option = document.createElement('option');
-                        option.value = hotel.id;
-                        option.textContent = hotel.name;
-                        hotelFilter.appendChild(option);
+                const api      = new ApiClient();
+                const response = await api.get('/hotels');
+                const hotels   = (response && response.items) ? response.items : (response || []);
+                const sel      = document.getElementById('hotelFilter');
+                if (sel && hotels.length) {
+                    hotels.forEach(h => {
+                        const opt = document.createElement('option');
+                        opt.value       = h.id;
+                        opt.textContent = h.name;
+                        sel.appendChild(opt);
                     });
                 }
-            } catch (error) {
-                console.error('Error loading hotel options:', error);
+            } catch (e) {
+                console.warn('Could not load hotel options:', e);
             }
         }
     </script>

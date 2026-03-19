@@ -1,0 +1,209 @@
+@{
+    ViewData["Title"] = "Notification Settings";
+    Layout = "_Layout";
+}
+
+<div class="d-flex align-items-center gap-2 mb-4">
+    <a href="/notifications" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <div>
+        <h4 class="mb-0"><i class="bi bi-gear me-2 text-primary"></i>Notification Settings</h4>
+        <small class="text-muted">Configure how and when you receive notifications</small>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Channels -->
+    <div class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-transparent border-bottom fw-semibold">
+                <i class="bi bi-broadcast me-2 text-primary"></i>Notification Channels
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-3">Choose how you want to receive notifications.</p>
+
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                    <div>
+                        <div class="fw-semibold"><i class="bi bi-envelope me-2 text-primary"></i>Email</div>
+                        <small class="text-muted">Receive notifications via email</small>
+                    </div>
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input pref-toggle" type="checkbox" id="emailEnabled"
+                               data-pref="emailEnabled" role="switch" aria-label="Email notifications">
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                    <div>
+                        <div class="fw-semibold"><i class="bi bi-phone me-2 text-success"></i>SMS</div>
+                        <small class="text-muted">Receive text message notifications</small>
+                    </div>
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input pref-toggle" type="checkbox" id="smsEnabled"
+                               data-pref="smsEnabled" role="switch" aria-label="SMS notifications">
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center py-2">
+                    <div>
+                        <div class="fw-semibold"><i class="bi bi-browser-chrome me-2 text-warning"></i>Browser Push</div>
+                        <small class="text-muted">Receive browser push notifications</small>
+                    </div>
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input pref-toggle" type="checkbox" id="browserPushEnabled"
+                               data-pref="browserPushEnabled" role="switch" aria-label="Browser push notifications">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event types -->
+    <div class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-transparent border-bottom fw-semibold">
+                <i class="bi bi-list-check me-2 text-primary"></i>Notification Events
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-3">Choose which events trigger notifications.</p>
+
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                    <div>
+                        <div class="fw-semibold">Booking Confirmations</div>
+                        <small class="text-muted">When a reservation is created</small>
+                    </div>
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input pref-toggle" type="checkbox" id="bookingConfirmations"
+                               data-pref="bookingConfirmations" role="switch">
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                    <div>
+                        <div class="fw-semibold">Check-in Reminders</div>
+                        <small class="text-muted">24 hours before check-in</small>
+                    </div>
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input pref-toggle" type="checkbox" id="checkInReminders"
+                               data-pref="checkInReminders" role="switch">
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                    <div>
+                        <div class="fw-semibold">Check-out Reminders</div>
+                        <small class="text-muted">On the day of check-out</small>
+                    </div>
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input pref-toggle" type="checkbox" id="checkOutReminders"
+                               data-pref="checkOutReminders" role="switch">
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                    <div>
+                        <div class="fw-semibold">Modification Confirmations</div>
+                        <small class="text-muted">When a reservation is modified</small>
+                    </div>
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input pref-toggle" type="checkbox" id="modificationConfirmations"
+                               data-pref="modificationConfirmations" role="switch">
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center py-2">
+                    <div>
+                        <div class="fw-semibold">Promotional Offers</div>
+                        <small class="text-muted">Special deals and promotions</small>
+                    </div>
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input pref-toggle" type="checkbox" id="promotionalOffers"
+                               data-pref="promotionalOffers" role="switch">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save -->
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div id="saveStatus" class="text-muted small"></div>
+            <button id="savePrefsBtn" class="btn btn-primary">
+                <i class="bi bi-floppy me-1"></i>Save Preferences
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+(function () {
+    'use strict';
+
+    const PREF_KEYS = [
+        'emailEnabled', 'smsEnabled', 'browserPushEnabled',
+        'bookingConfirmations', 'checkInReminders', 'checkOutReminders',
+        'modificationConfirmations', 'promotionalOffers'
+    ];
+
+    async function init() {
+        try {
+            const api = new ApiClient();
+            const prefs = await api.get('/notifications/preferences');
+            PREF_KEYS.forEach(key => {
+                const el = document.getElementById(key);
+                if (el) el.checked = prefs[key] ?? false;
+            });
+        } catch (e) {
+            console.error('Failed to load preferences', e);
+            showStatus('Failed to load preferences', 'danger');
+        }
+    }
+
+    document.getElementById('savePrefsBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('savePrefsBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Saving…';
+
+        try {
+            const api = new ApiClient();
+            const body = {};
+            PREF_KEYS.forEach(key => {
+                const el = document.getElementById(key);
+                body[key] = el ? el.checked : false;
+            });
+
+            await api.request('/notifications/preferences', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+
+            showStatus('Preferences saved successfully', 'success');
+
+            // Request browser push permission if enabled
+            if (body.browserPushEnabled && Notification.permission === 'default') {
+                await Notification.requestPermission();
+            }
+        } catch (e) {
+            console.error('Save failed', e);
+            showStatus('Failed to save preferences', 'danger');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-floppy me-1"></i>Save Preferences';
+        }
+    });
+
+    function showStatus(msg, type) {
+        const el = document.getElementById('saveStatus');
+        el.className = `text-${type} small`;
+        el.textContent = msg;
+        setTimeout(() => { el.textContent = ''; }, 4000);
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+}

@@ -225,51 +225,17 @@ public class ReservationRepository : Repository<Reservation>, IReservationReposi
 
     public async Task<(IEnumerable<Reservation> Items, int TotalCount)> SearchReservationsAsync(Models.DTOs.ReservationSearchCriteria criteria, int pageNumber, int pageSize)
     {
-        // Búsqueda paginada con múltiples filtros opcionales aplicados a nivel SQL
+        // Búsqueda paginada con múltiples filtros opcionales aplicados a nivel SQL via SearchExtensions
         var query = _dbSet.AsNoTracking()
             .Include(r => r.Hotel)
             .Include(r => r.Room)
             .Include(r => r.Guest)
-            .AsQueryable();
-
-        if (criteria.DateFrom.HasValue)
-            query = query.Where(r => r.CheckOutDate >= criteria.DateFrom.Value);
-
-        if (criteria.DateTo.HasValue)
-            query = query.Where(r => r.CheckInDate <= criteria.DateTo.Value);
-
-        if (criteria.HotelId.HasValue)
-            query = query.Where(r => r.HotelId == criteria.HotelId.Value);
-
-        if (criteria.Statuses != null && criteria.Statuses.Any())
-            query = query.Where(r => criteria.Statuses.Contains(r.Status));
-
-        if (criteria.Sources != null && criteria.Sources.Any())
-            query = query.Where(r => criteria.Sources.Contains(r.Source));
-
-        if (criteria.MinAmount.HasValue)
-            query = query.Where(r => r.TotalAmount >= criteria.MinAmount.Value);
-
-        if (criteria.MaxAmount.HasValue)
-            query = query.Where(r => r.TotalAmount <= criteria.MaxAmount.Value);
-
-        if (!string.IsNullOrEmpty(criteria.GuestName))
-        {
-            var term = criteria.GuestName.ToLower();
-            query = query.Where(r => r.Guest != null &&
-                (r.Guest.FirstName.ToLower().Contains(term) || r.Guest.LastName.ToLower().Contains(term)));
-        }
-
-        if (!string.IsNullOrEmpty(criteria.BookingReference))
-        {
-            var term = criteria.BookingReference.ToLower();
-            query = query.Where(r => r.BookingReference != null && r.BookingReference.ToLower().Contains(term));
-        }
+            .ApplyCriteria(criteria);
 
         var totalCount = await query.CountAsync();
 
         var items = await query
-            .OrderByDescending(r => r.CreatedAt)
+            .ApplySort(criteria.SortBy, criteria.SortDirection)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();

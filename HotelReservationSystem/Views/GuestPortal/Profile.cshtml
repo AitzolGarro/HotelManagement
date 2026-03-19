@@ -1,0 +1,393 @@
+@{
+    Layout = "~/Views/Shared/_GuestPortalLayout.cshtml";
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h1 class="fs-4 fw-bold mb-1"><i class="bi bi-person-circle me-2 text-primary"></i>My Profile</h1>
+        <p class="text-muted mb-0 small">Manage your contact information and preferences</p>
+    </div>
+</div>
+
+<!-- Loading -->
+<div id="profileLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading…</span></div>
+</div>
+
+<div id="profileContent" class="d-none">
+    <div class="row g-4">
+        <!-- Profile card -->
+        <div class="col-12 col-lg-8">
+            <div class="gp-card card mb-4">
+                <div class="card-header d-flex align-items-center justify-content-between py-3">
+                    <span class="fw-semibold"><i class="bi bi-person me-2 text-primary"></i>Contact Information</span>
+                    <button class="btn btn-sm btn-outline-primary" id="editProfileBtn">
+                        <i class="bi bi-pencil me-1"></i>Edit
+                    </button>
+                </div>
+                <div class="card-body">
+                    <!-- View mode -->
+                    <div id="profileView">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="text-muted small mb-1">First Name</div>
+                                <div class="fw-medium" id="viewFirstName">—</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-muted small mb-1">Last Name</div>
+                                <div class="fw-medium" id="viewLastName">—</div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="text-muted small mb-1">Email</div>
+                                <div class="fw-medium" id="viewEmail">—</div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="text-muted small mb-1">Phone</div>
+                                <div class="fw-medium" id="viewPhone">—</div>
+                            </div>
+                            <div class="col-12">
+                                <div class="text-muted small mb-1">Address</div>
+                                <div class="fw-medium" id="viewAddress">—</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-muted small mb-1">Nationality</div>
+                                <div class="fw-medium" id="viewNationality">—</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-muted small mb-1">Preferred Language</div>
+                                <div class="fw-medium" id="viewLanguage">—</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Edit mode -->
+                    <form id="profileEditForm" class="d-none" novalidate>
+                        <div id="profileEditError" class="alert alert-danger d-none small mb-3" role="alert" aria-live="assertive"></div>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label small fw-medium" for="editFirstName">First Name <span class="text-danger" aria-hidden="true">*</span></label>
+                                <input type="text" class="form-control" id="editFirstName" required maxlength="100"
+                                       aria-required="true" aria-describedby="editFirstName-error" />
+                                <span id="editFirstName-error" class="invalid-feedback" role="alert"></span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label small fw-medium" for="editLastName">Last Name <span class="text-danger" aria-hidden="true">*</span></label>
+                                <input type="text" class="form-control" id="editLastName" required maxlength="100"
+                                       aria-required="true" aria-describedby="editLastName-error" />
+                                <span id="editLastName-error" class="invalid-feedback" role="alert"></span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label small fw-medium" for="editPhone">Phone</label>
+                                <input type="tel" class="form-control" id="editPhone" maxlength="20" autocomplete="tel" />
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label small fw-medium" for="editNationality">Nationality</label>
+                                <input type="text" class="form-control" id="editNationality" maxlength="100" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-medium" for="editAddress">Address</label>
+                                <textarea class="form-control" id="editAddress" rows="2" maxlength="500" autocomplete="street-address"></textarea>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label small fw-medium" for="editLanguage">Preferred Language</label>
+                                <select class="form-select" id="editLanguage">
+                                    <option value="">Select language</option>
+                                    <option value="en">English</option>
+                                    <option value="es">Spanish</option>
+                                    <option value="fr">French</option>
+                                    <option value="de">German</option>
+                                    <option value="it">Italian</option>
+                                    <option value="pt">Portuguese</option>
+                                    <option value="zh">Chinese</option>
+                                    <option value="ja">Japanese</option>
+                                    <option value="ar">Arabic</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="editMarketing" />
+                                    <label class="form-check-label small" for="editMarketing">
+                                        Receive promotional offers and news
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <span id="saveProfBtnText"><i class="bi bi-check me-1"></i>Save Changes</span>
+                                <span id="saveProfSpinner" class="d-none spinner-border spinner-border-sm ms-2" role="status"></span>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" id="cancelEditBtn">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Notification Preferences -->
+            <div class="gp-card card">
+                <div class="card-header py-3">
+                    <i class="bi bi-bell me-2 text-primary"></i>Notification Preferences
+                </div>
+                <div class="card-body">
+                    <div id="notifError" class="alert alert-danger d-none small mb-3"></div>
+                    <div id="notifSuccess" class="alert alert-success d-none small mb-3"></div>
+
+                    <h6 class="fw-semibold mb-3 text-muted small text-uppercase">Email Notifications</h6>
+                    <div class="row g-2 mb-4">
+                        <div class="col-12 col-sm-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="notifBooking" checked>
+                                <label class="form-check-label small" for="notifBooking">Booking confirmations</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="notifCheckIn" checked>
+                                <label class="form-check-label small" for="notifCheckIn">Check-in reminders (24h before)</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="notifCheckOut" checked>
+                                <label class="form-check-label small" for="notifCheckOut">Check-out reminders</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="notifModification" checked>
+                                <label class="form-check-label small" for="notifModification">Modification confirmations</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="notifPromo">
+                                <label class="form-check-label small" for="notifPromo">Promotional offers (opt-in)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h6 class="fw-semibold mb-3 text-muted small text-uppercase">Channels</h6>
+                    <div class="row g-2 mb-4">
+                        <div class="col-12 col-sm-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="notifEmail" checked>
+                                <label class="form-check-label small" for="notifEmail">Email</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="notifSms">
+                                <label class="form-check-label small" for="notifSms">SMS</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary btn-sm" id="saveNotifBtn">
+                        <span id="saveNotifBtnText"><i class="bi bi-check me-1"></i>Save Preferences</span>
+                        <span id="saveNotifSpinner" class="d-none spinner-border spinner-border-sm ms-2" role="status"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loyalty sidebar -->
+        <div class="col-12 col-lg-4">
+            <div class="gp-card card mb-4" style="background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); color: #fff;">
+                <div class="card-body text-center py-4">
+                    <div class="mb-2">
+                        <i class="bi bi-award fs-1"></i>
+                    </div>
+                    <div class="fw-bold fs-5 mb-1" id="loyaltyTierDisplay">Standard Member</div>
+                    <div class="opacity-75 small mb-3">Loyalty Program</div>
+                    <div class="bg-white bg-opacity-25 rounded-3 p-3 mb-3">
+                        <div class="fs-2 fw-bold" id="loyaltyPointsDisplay">0</div>
+                        <div class="small opacity-75">Points Earned</div>
+                    </div>
+                    <div class="small opacity-75" id="loyaltyNextTier"></div>
+                </div>
+            </div>
+
+            <!-- VIP Status -->
+            <div class="gp-card card" id="vipCard" style="display:none!important">
+                <div class="card-body text-center py-3">
+                    <i class="bi bi-star-fill text-warning fs-3 mb-2 d-block"></i>
+                    <div class="fw-bold">VIP Member</div>
+                    <div class="text-muted small" id="vipStatusDisplay"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+(function () {
+    const token = localStorage.getItem('guestToken');
+    if (!token) { window.location.href = '/GuestPortal/Login?returnUrl=/GuestPortal/Profile'; return; }
+
+    let profile = null;
+
+    function populateView(p) {
+        document.getElementById('viewFirstName').textContent = p.firstName || '—';
+        document.getElementById('viewLastName').textContent  = p.lastName  || '—';
+        document.getElementById('viewEmail').textContent     = p.email     || '—';
+        document.getElementById('viewPhone').textContent     = p.phone     || '—';
+        document.getElementById('viewAddress').textContent   = p.address   || '—';
+        document.getElementById('viewNationality').textContent = p.nationality || '—';
+        document.getElementById('viewLanguage').textContent  = p.preferredLanguage || '—';
+
+        // Loyalty
+        const tier = (p.loyaltyTier || 'Standard').toLowerCase();
+        document.getElementById('loyaltyTierDisplay').textContent = `${p.loyaltyTier || 'Standard'} Member`;
+        document.getElementById('loyaltyPointsDisplay').textContent = p.loyaltyPoints || 0;
+
+        const nextTierMap = { standard: 'Earn 50 pts for Silver', silver: 'Earn 100 pts for Gold', gold: 'Earn 200 pts for Platinum', platinum: 'You\'ve reached the top tier!' };
+        document.getElementById('loyaltyNextTier').textContent = nextTierMap[tier] || '';
+
+        if (p.isVip) {
+            document.getElementById('vipCard').style.removeProperty('display');
+            document.getElementById('vipStatusDisplay').textContent = p.vipStatus || 'VIP';
+        }
+    }
+
+    function populateEditForm(p) {
+        document.getElementById('editFirstName').value   = p.firstName || '';
+        document.getElementById('editLastName').value    = p.lastName  || '';
+        document.getElementById('editPhone').value       = p.phone     || '';
+        document.getElementById('editAddress').value     = p.address   || '';
+        document.getElementById('editNationality').value = p.nationality || '';
+        document.getElementById('editLanguage').value    = p.preferredLanguage || '';
+        document.getElementById('editMarketing').checked = p.marketingOptIn || false;
+    }
+
+    async function loadProfile() {
+        try {
+            const res = await fetch('/api/guest-portal/me', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (res.status === 401) { localStorage.clear(); window.location.href = '/GuestPortal/Login'; return; }
+            profile = await res.json();
+            populateView(profile);
+            populateEditForm(profile);
+        } catch (err) { console.error(err); }
+        finally {
+            document.getElementById('profileLoading').classList.add('d-none');
+            document.getElementById('profileContent').classList.remove('d-none');
+        }
+    }
+
+    async function loadNotifPrefs() {
+        try {
+            const res = await fetch('/api/guest-portal/me/notification-preferences', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (!res.ok) return;
+            const prefs = await res.json();
+            document.getElementById('notifBooking').checked      = prefs.bookingConfirmations;
+            document.getElementById('notifCheckIn').checked      = prefs.checkInReminders;
+            document.getElementById('notifCheckOut').checked     = prefs.checkOutReminders;
+            document.getElementById('notifModification').checked = prefs.modificationConfirmations;
+            document.getElementById('notifPromo').checked        = prefs.promotionalOffers;
+            document.getElementById('notifEmail').checked        = prefs.emailChannel;
+            document.getElementById('notifSms').checked          = prefs.smsChannel;
+        } catch (err) { console.error(err); }
+    }
+
+    // Edit toggle
+    document.getElementById('editProfileBtn').addEventListener('click', () => {
+        document.getElementById('profileView').classList.add('d-none');
+        document.getElementById('profileEditForm').classList.remove('d-none');
+        document.getElementById('editProfileBtn').classList.add('d-none');
+    });
+    document.getElementById('cancelEditBtn').addEventListener('click', () => {
+        document.getElementById('profileView').classList.remove('d-none');
+        document.getElementById('profileEditForm').classList.add('d-none');
+        document.getElementById('editProfileBtn').classList.remove('d-none');
+        document.getElementById('profileEditError').classList.add('d-none');
+    });
+
+    // Save profile
+    document.getElementById('profileEditForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const errEl = document.getElementById('profileEditError');
+        errEl.classList.add('d-none');
+        const btnText = document.getElementById('saveProfBtnText');
+        const spinner = document.getElementById('saveProfSpinner');
+        btnText.classList.add('d-none'); spinner.classList.remove('d-none');
+
+        const payload = {
+            ...profile,
+            firstName: document.getElementById('editFirstName').value.trim(),
+            lastName:  document.getElementById('editLastName').value.trim(),
+            phone:     document.getElementById('editPhone').value.trim() || null,
+            address:   document.getElementById('editAddress').value.trim() || null,
+            nationality: document.getElementById('editNationality').value.trim() || null,
+            preferredLanguage: document.getElementById('editLanguage').value || null,
+            marketingOptIn: document.getElementById('editMarketing').checked
+        };
+
+        try {
+            const res = await fetch('/api/guest-portal/me', {
+                method: 'PUT',
+                headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (!res.ok) { errEl.textContent = data.message; errEl.classList.remove('d-none'); return; }
+            profile = data;
+            localStorage.setItem('guestProfile', JSON.stringify(profile));
+            populateView(profile);
+            document.getElementById('profileView').classList.remove('d-none');
+            document.getElementById('profileEditForm').classList.add('d-none');
+            document.getElementById('editProfileBtn').classList.remove('d-none');
+        } catch (err) {
+            errEl.textContent = 'An error occurred. Please try again.';
+            errEl.classList.remove('d-none');
+        } finally {
+            btnText.classList.remove('d-none'); spinner.classList.add('d-none');
+        }
+    });
+
+    // Save notification preferences
+    document.getElementById('saveNotifBtn').addEventListener('click', async () => {
+        const errEl = document.getElementById('notifError');
+        const succEl = document.getElementById('notifSuccess');
+        errEl.classList.add('d-none'); succEl.classList.add('d-none');
+        const btnText = document.getElementById('saveNotifBtnText');
+        const spinner = document.getElementById('saveNotifSpinner');
+        btnText.classList.add('d-none'); spinner.classList.remove('d-none');
+
+        const payload = {
+            bookingConfirmations:    document.getElementById('notifBooking').checked,
+            checkInReminders:        document.getElementById('notifCheckIn').checked,
+            checkOutReminders:       document.getElementById('notifCheckOut').checked,
+            modificationConfirmations: document.getElementById('notifModification').checked,
+            promotionalOffers:       document.getElementById('notifPromo').checked,
+            emailChannel:            document.getElementById('notifEmail').checked,
+            smsChannel:              document.getElementById('notifSms').checked
+        };
+
+        try {
+            const res = await fetch('/api/guest-portal/me/notification-preferences', {
+                method: 'PUT',
+                headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) { errEl.textContent = 'Failed to save preferences.'; errEl.classList.remove('d-none'); return; }
+            succEl.textContent = 'Preferences saved successfully!';
+            succEl.classList.remove('d-none');
+            setTimeout(() => succEl.classList.add('d-none'), 3000);
+        } catch (err) {
+            errEl.textContent = 'An error occurred. Please try again.';
+            errEl.classList.remove('d-none');
+        } finally {
+            btnText.classList.remove('d-none'); spinner.classList.add('d-none');
+        }
+    });
+
+    loadProfile();
+    loadNotifPrefs();
+})();
+</script>
+}

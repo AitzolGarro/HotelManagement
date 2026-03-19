@@ -1,21 +1,59 @@
 {
   "name": "Hotel Reservation System",
   "short_name": "HotelRes",
-  "description": "Enterprise Hotel Reservation Management System",
+  "description": "Enterprise Hotel Reservation Management System – manage bookings, calendar, and guests from any device.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#ffffff",
   "theme_color": "#0d6efd",
+  "lang": "en",
+  "categories": ["business", "productivity"],
   "icons": [
     {
       "src": "/images/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/images/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New Reservation",
+      "short_name": "New Booking",
+      "description": "Create a new reservation",
+      "url": "/Home/reservations?action=new",
+      "icons": [{ "src": "/images/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Calendar",
+      "short_name": "Calendar",
+      "description": "View reservation calendar",
+      "url": "/Home/calendar",
+      "icons": [{ "src": "/images/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/images/screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard view on desktop"
+    },
+    {
+      "src": "/images/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Dashboard view on mobile"
     }
   ]
 }

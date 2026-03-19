@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using HotelReservationSystem.Data;
+using HotelReservationSystem.Data.Repositories;
 using HotelReservationSystem.Data.Repositories.Interfaces;
 using HotelReservationSystem.Models;
 using HotelReservationSystem.Models.DTOs;
@@ -57,12 +58,13 @@ public class GuestManagementService : IGuestManagementService
     // Buscar huéspedes con criterios múltiples y paginación
     public async Task<PagedResultDto<GuestDto>> SearchGuestsAsync(GuestSearchCriteria criteria, int pageNumber = 1, int pageSize = 20)
     {
-        var query = BuildSearchQuery(criteria);
+        var query = _context.Guests.AsNoTracking()
+            .ApplyCriteria(criteria);
+
         var totalCount = await query.CountAsync();
 
         var items = await query
-            .OrderBy(g => g.LastName)
-            .ThenBy(g => g.FirstName)
+            .ApplySort(criteria.SortBy, criteria.SortDirection)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
@@ -201,31 +203,6 @@ public class GuestManagementService : IGuestManagementService
         _context.GuestNotes.Add(note);
         await _context.SaveChangesAsync();
         return note;
-    }
-
-    // Construir query de búsqueda con filtros dinámicos
-    private IQueryable<Guest> BuildSearchQuery(GuestSearchCriteria criteria)
-    {
-        var query = _context.Guests.AsNoTracking().AsQueryable();
-
-        if (!string.IsNullOrEmpty(criteria.SearchTerm))
-        {
-            var term = criteria.SearchTerm.ToLower();
-            query = query.Where(g =>
-                g.FirstName.ToLower().Contains(term) ||
-                g.LastName.ToLower().Contains(term) ||
-                (g.Email != null && g.Email.ToLower().Contains(term)) ||
-                (g.Phone != null && g.Phone.Contains(criteria.SearchTerm)) ||
-                (g.DocumentNumber != null && g.DocumentNumber.ToLower().Contains(term)));
-        }
-
-        if (!string.IsNullOrEmpty(criteria.Nationality))
-            query = query.Where(g => g.Nationality == criteria.Nationality);
-
-        if (criteria.IsVip.HasValue)
-            query = query.Where(g => g.IsVip == criteria.IsVip.Value);
-
-        return query;
     }
 
     // Mapear request de creación a entidad Guest

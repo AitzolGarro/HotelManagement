@@ -352,25 +352,59 @@ namespace HotelReservationSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("BookingConfirmations")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("BrowserPushEnabled")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Channels")
                         .IsRequired()
+                        .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("CheckInReminders")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("CheckOutReminders")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("EmailChannel")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("EmailEnabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("GuestId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("ModificationConfirmations")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("PromotionalOffers")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("SmsChannel")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("SmsEnabled")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("UserId")
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("datetime('now')");
+
+                    b.Property<int?>("UserId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("GuestId")
+                        .HasDatabaseName("IX_NotificationPreferences_GuestId");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_NotificationPreferences_UserId");
 
                     b.ToTable("NotificationPreferences");
                 });
@@ -385,18 +419,37 @@ namespace HotelReservationSystem.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Channel")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(true);
+
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("SubjectTemplate")
-                        .IsRequired()
+                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Type")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EventType", "Channel", "IsActive")
+                        .HasDatabaseName("IX_NotificationTemplates_EventChannel");
 
                     b.ToTable("NotificationTemplates");
                 });
@@ -654,33 +707,62 @@ namespace HotelReservationSystem.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("HotelId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsRead")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Message")
                         .IsRequired()
+                        .HasMaxLength(2000)
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("Priority")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(2);
 
                     b.Property<int?>("RelatedEntityId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("RelatedEntityType")
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
                         .IsRequired()
+                        .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Type")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("UserId")
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IsRead", "IsDeleted", "CreatedAt")
+                        .HasDatabaseName("IX_SystemNotifications_ReadDeletedCreated");
+
+                    b.HasIndex("UserId", "IsDeleted")
+                        .HasDatabaseName("IX_SystemNotifications_UserId");
+
+                    b.HasIndex("HotelId", "IsDeleted")
+                        .HasDatabaseName("IX_SystemNotifications_HotelId");
 
                     b.ToTable("SystemNotifications");
                 });
@@ -782,6 +864,39 @@ namespace HotelReservationSystem.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("HotelReservationSystem.Models.UserDashboardPreference", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("WidgetConfigurationsJson")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("[]");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("datetime('now')");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("datetime('now')");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_UserDashboardPreferences_UserId");
+
+                    b.ToTable("UserDashboardPreferences");
                 });
 
             modelBuilder.Entity("HotelReservationSystem.Models.UserHotelAccess", b =>
@@ -1014,11 +1129,17 @@ namespace HotelReservationSystem.Migrations
 
             modelBuilder.Entity("HotelReservationSystem.Models.NotificationPreference", b =>
                 {
+                    b.HasOne("HotelReservationSystem.Models.Guest", "Guest")
+                        .WithMany()
+                        .HasForeignKey("GuestId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("HotelReservationSystem.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Guest");
 
                     b.Navigation("User");
                 });
@@ -1095,6 +1216,17 @@ namespace HotelReservationSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("Hotel");
+                });
+
+            modelBuilder.Entity("HotelReservationSystem.Models.UserDashboardPreference", b =>
+                {
+                    b.HasOne("HotelReservationSystem.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("HotelReservationSystem.Models.UserHotelAccess", b =>

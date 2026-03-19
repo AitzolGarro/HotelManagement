@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+@{
+    var htmlLang = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+}
+<html lang="@htmlLang">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,14 +24,24 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <!-- Mobile-Responsive CSS (Task 10) -->
+    <link rel="stylesheet" href="~/css/mobile.css" asp-append-version="true" />
+    <!-- Accessibility CSS (Task 14) -->
+    <link rel="stylesheet" href="~/css/accessibility.css" asp-append-version="true" />
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="~/manifest.json" />
     <meta name="theme-color" content="#0d6efd" />
+    <!-- iOS PWA meta tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Hotel Res" />
+    <meta name="mobile-web-app-capable" content="yes" />
 </head>
 <body>
     <!-- Skip to content link for accessibility -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
+    <a href="#keyboard-shortcuts-help" class="skip-link" style="left: 200px;">Keyboard shortcuts</a>
     
     <header role="banner">
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary" aria-label="Main Navigation">
@@ -43,32 +56,32 @@
                 </button>
                 
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto" role="menubar">
-                        <li class="nav-item" role="menuitem">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
                             <a class="nav-link" href="/" data-section="dashboard">
                                 <i class="bi bi-speedometer2" aria-hidden="true"></i>
                                 Dashboard
                             </a>
                         </li>
-                        <li class="nav-item" role="menuitem">
+                        <li class="nav-item">
                             <a class="nav-link" href="/Home/calendar" data-section="calendar">
                                 <i class="bi bi-calendar3" aria-hidden="true"></i>
                                 Calendar
                             </a>
                         </li>
-                        <li class="nav-item" data-role="manager" role="menuitem">
+                        <li class="nav-item" data-role="manager">
                             <a class="nav-link" href="/Home/properties" data-section="properties">
                                 <i class="bi bi-buildings" aria-hidden="true"></i>
                                 Properties
                             </a>
                         </li>
-                        <li class="nav-item" role="menuitem">
+                        <li class="nav-item">
                             <a class="nav-link" href="/Home/reservations" data-section="reservations">
                                 <i class="bi bi-journal-bookmark" aria-hidden="true"></i>
                                 Reservations
                             </a>
                         </li>
-                        <li class="nav-item" data-role="manager" role="menuitem">
+                        <li class="nav-item" data-role="manager">
                             <a class="nav-link" href="/Home/reports" data-section="reports">
                                 <i class="bi bi-graph-up" aria-hidden="true"></i>
                                 Reports
@@ -77,6 +90,47 @@
                     </ul>
                     
                     <ul class="navbar-nav">
+                        <!-- Notification Bell -->
+                        <li class="nav-item dropdown" id="notificationBellContainer" style="display:none;">
+                            <button id="notification-bell"
+                                    class="btn btn-link nav-link position-relative px-2"
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-auto-close="outside"
+                                    aria-expanded="false"
+                                    aria-label="Notifications">
+                                <i class="bi bi-bell fs-5" aria-hidden="true"></i>
+                                <span id="notification-badge"
+                                      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                      aria-live="polite"
+                                      aria-label="0 unread notifications"
+                                      style="display:none; font-size:.65rem;">0</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end p-0 shadow notification-dropdown"
+                                 style="width:360px; max-height:480px;">
+                                <!-- Header -->
+                                <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom bg-light rounded-top">
+                                    <span class="fw-semibold">Notifications</span>
+                                    <div class="d-flex gap-2">
+                                        <button id="mark-all-read" class="btn btn-sm btn-outline-primary py-0">Mark all read</button>
+                                        <a href="/notifications" class="btn btn-sm btn-outline-secondary py-0">View all</a>
+                                    </div>
+                                </div>
+                                <!-- Filter tabs -->
+                                <div class="d-flex border-bottom px-2 pt-1 gap-1" id="notif-filter-tabs" role="tablist" aria-label="Notification filters">
+                                    <button class="btn btn-sm btn-link text-decoration-none notif-tab active" data-filter="all" role="tab" aria-selected="true" aria-controls="notifications-list" id="notif-tab-all">All</button>
+                                    <button class="btn btn-sm btn-link text-decoration-none notif-tab" data-filter="unread" role="tab" aria-selected="false" aria-controls="notifications-list" id="notif-tab-unread" tabindex="-1">Unread</button>
+                                    <button class="btn btn-sm btn-link text-decoration-none notif-tab" data-filter="reservations" role="tab" aria-selected="false" aria-controls="notifications-list" id="notif-tab-reservations" tabindex="-1">Reservations</button>
+                                </div>
+                                <!-- List -->
+                                <div id="notifications-list" role="tabpanel" aria-labelledby="notif-tab-all" aria-live="polite" style="max-height:340px; overflow-y:auto;">
+                                    <div class="text-center p-4 text-muted small">
+                                        <i class="bi bi-bell-slash fs-4 d-block mb-1"></i>No notifications
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
                         <li class="nav-item dropdown" id="userMenu" style="display: none;">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User Menu">
                                 <i class="bi bi-person-circle me-1" aria-hidden="true"></i>
@@ -128,9 +182,9 @@
         </nav>
     </header>
 
-    <main id="main-content" class="container-fluid mt-3" role="main">
+    <main id="main-content" class="container-fluid mt-3" role="main" aria-busy="false">
         <!-- Loading overlay -->
-        <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div id="loadingOverlay" class="loading-overlay" aria-label="Loading, please wait" style="display: none;">
             <div class="loading-spinner">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Loading...</span>
@@ -143,36 +197,50 @@
         <div id="errorAlert" class="alert alert-danger alert-dismissible fade" role="alert" style="display: none;">
             <i class="bi bi-exclamation-triangle-fill"></i>
             <span id="errorMessage"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close alert"></button>
         </div>
 
         <!-- Success alert -->
-        <div id="successAlert" class="alert alert-success alert-dismissible fade" role="alert" style="display: none;">
+        <div id="successAlert" class="alert alert-success alert-dismissible fade" role="alert" aria-live="polite" aria-atomic="true" style="display: none;">
             <i class="bi bi-check-circle-fill"></i>
             <span id="successMessage"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close alert"></button>
         </div>
 
         @RenderBody()
     </main>
 
-    <!-- Bottom Navigation for Mobile -->
-    <nav class="mobile-bottom-nav d-lg-none">
+    <!-- Bottom Navigation for Mobile (Task 10.2) -->
+    <nav class="mobile-bottom-nav d-lg-none" role="navigation" aria-label="Mobile navigation">
         <div class="d-flex justify-content-around w-100">
-            <a href="/" class="nav-item text-center p-2 text-decoration-none text-dark" data-section="dashboard">
-                <i class="bi bi-speedometer2 d-block fs-5"></i>
+            <a href="/" class="nav-item text-decoration-none" data-section="dashboard" data-nav-link
+               aria-label="Dashboard">
+                <i class="bi bi-speedometer2 d-block fs-5" aria-hidden="true"></i>
                 <small>Home</small>
             </a>
-            <a href="/Home/calendar" class="nav-item text-center p-2 text-decoration-none text-dark" data-section="calendar">
-                <i class="bi bi-calendar3 d-block fs-5"></i>
+            <a href="/Home/calendar" class="nav-item text-decoration-none" data-section="calendar" data-nav-link
+               aria-label="Calendar">
+                <i class="bi bi-calendar3 d-block fs-5" aria-hidden="true"></i>
                 <small>Calendar</small>
             </a>
-            <a href="/Home/reservations" class="nav-item text-center p-2 text-decoration-none text-dark" data-section="reservations">
-                <i class="bi bi-journal-bookmark d-block fs-5"></i>
+            <a href="/Home/reservations" class="nav-item text-decoration-none" data-section="reservations" data-nav-link
+               aria-label="Reservations">
+                <i class="bi bi-journal-bookmark d-block fs-5" aria-hidden="true"></i>
                 <small>Bookings</small>
+            </a>
+            <a href="/Home/reports" class="nav-item text-decoration-none" data-section="reports" data-nav-link
+               aria-label="Reports">
+                <i class="bi bi-graph-up d-block fs-5" aria-hidden="true"></i>
+                <small>Reports</small>
             </a>
         </div>
     </nav>
+
+    <!-- Floating Action Button – primary action per page (Task 10.3) -->
+    <button id="mobileFab" class="fab d-lg-none" aria-label="New Reservation"
+            style="display:none!important" type="button">
+        <i class="bi bi-plus-lg" aria-hidden="true"></i>
+    </button>
 
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -192,6 +260,10 @@
     <script src="~/js/modules/ui.js" asp-append-version="true"></script>
     <script src="~/js/modules/signalr.js" asp-append-version="true"></script>
     <script src="~/js/modules/notifications.js" asp-append-version="true"></script>
+    <!-- Mobile module (Task 10) -->
+    <script src="~/js/modules/mobile.js" asp-append-version="true"></script>
+    <!-- Keyboard navigation module (Task 14.3) -->
+    <script src="~/js/modules/keyboard.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     
     <script>
@@ -206,6 +278,42 @@
         }
     </script>
     
+    <!-- Keyboard shortcuts reference (accessible to screen readers and keyboard users) -->
+    <div id="keyboard-shortcuts-help" class="visually-hidden" tabindex="-1" aria-label="Keyboard shortcuts reference">
+        <h2>Keyboard Shortcuts</h2>
+        <ul>
+            <li>Alt+D — Go to Dashboard</li>
+            <li>Alt+C — Go to Calendar</li>
+            <li>Alt+R — Go to Reservations</li>
+            <li>Alt+N — Open Notifications</li>
+            <li>Escape — Close modal or dropdown</li>
+            <li>Tab / Shift+Tab — Navigate between elements</li>
+            <li>Enter / Space — Activate buttons and links</li>
+            <li>Arrow keys — Navigate within menus and tabs</li>
+        </ul>
+    </div>
+
+    <!-- ACCESSIBILITY TESTING: Uncomment below for local axe-core audit (remove before production)
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.8.2/axe.min.js"></script>
+    <script>
+        window.addEventListener('load', function() {
+            axe.run().then(results => {
+                if (results.violations.length) {
+                    console.group('%c♿ axe-core Accessibility Violations (' + results.violations.length + ')', 'color:red;font-weight:bold');
+                    results.violations.forEach(v => {
+                        console.group('%c[' + v.impact.toUpperCase() + '] ' + v.id + ': ' + v.description, 'color:orange');
+                        v.nodes.forEach(n => console.log(n.html));
+                        console.groupEnd();
+                    });
+                    console.groupEnd();
+                } else {
+                    console.log('%c♿ No axe-core violations found!', 'color:green;font-weight:bold');
+                }
+            });
+        });
+    </script>
+    -->
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -40,6 +40,7 @@ class UIManager {
                 loadingText.textContent = message;
             }
             this.loadingOverlay.style.display = 'flex';
+            document.getElementById('main-content')?.setAttribute('aria-busy', 'true');
         }
     }
 
@@ -47,6 +48,7 @@ class UIManager {
         this.loadingCount = Math.max(0, this.loadingCount - 1);
         if (this.loadingCount === 0 && this.loadingOverlay) {
             this.loadingOverlay.style.display = 'none';
+            document.getElementById('main-content')?.setAttribute('aria-busy', 'false');
         }
     }
 
@@ -218,6 +220,7 @@ class UIManager {
 
     showFieldError(input, message) {
         input.classList.add('is-invalid');
+        input.setAttribute('aria-invalid', 'true');
         
         let feedback = input.parentNode.querySelector('.invalid-feedback');
         if (!feedback) {
@@ -226,12 +229,31 @@ class UIManager {
             input.parentNode.appendChild(feedback);
         }
         feedback.textContent = message;
+
+        // Link error message to input via aria-describedby if not already set
+        if (feedback.id) {
+            const existing = input.getAttribute('aria-describedby') || '';
+            if (!existing.includes(feedback.id)) {
+                input.setAttribute('aria-describedby', (existing + ' ' + feedback.id).trim());
+            }
+        }
     }
 
     clearFieldError(input) {
         input.classList.remove('is-invalid');
+        input.removeAttribute('aria-invalid');
         const feedback = input.parentNode.querySelector('.invalid-feedback');
         if (feedback) {
+            // Remove feedback id from aria-describedby if present
+            if (feedback.id) {
+                const existing = input.getAttribute('aria-describedby') || '';
+                const updated = existing.replace(feedback.id, '').trim();
+                if (updated) {
+                    input.setAttribute('aria-describedby', updated);
+                } else {
+                    input.removeAttribute('aria-describedby');
+                }
+            }
             feedback.remove();
         }
     }

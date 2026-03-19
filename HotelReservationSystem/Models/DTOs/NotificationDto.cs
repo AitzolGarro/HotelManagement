@@ -107,3 +107,43 @@ public class NotificationStatsDto
     public Dictionary<NotificationType, int> CountByType { get; set; } = new();
     public Dictionary<NotificationPriority, int> CountByPriority { get; set; } = new();
 }
+
+public class NotificationPreferenceDto
+{
+    public int Id { get; set; }
+    public bool EmailEnabled { get; set; } = true;
+    public bool SmsEnabled { get; set; } = false;
+    public bool BrowserPushEnabled { get; set; } = true;
+    public bool BookingConfirmations { get; set; } = true;
+    public bool CheckInReminders { get; set; } = true;
+    public bool CheckOutReminders { get; set; } = true;
+    public bool ModificationConfirmations { get; set; } = true;
+    public bool PromotionalOffers { get; set; } = false;
+    public bool EmailChannel { get; set; } = true;
+    public bool SmsChannel { get; set; } = false;
+}
+
+public class UpdateNotificationPreferencesRequest
+{
+    public bool EmailEnabled { get; set; } = true;
+    public bool SmsEnabled { get; set; } = false;
+    public bool BrowserPushEnabled { get; set; } = true;
+    public bool BookingConfirmations { get; set; } = true;
+    public bool CheckInReminders { get; set; } = true;
+    public bool CheckOutReminders { get; set; } = true;
+    public bool ModificationConfirmations { get; set; } = true;
+    public bool PromotionalOffers { get; set; } = false;
+    public bool EmailChannel { get; set; } = true;
+    public bool SmsChannel { get; set; } = false;
+}
+
+public class SmsNotificationRequest
+{
+    [Required]
+    [Phone]
+    public string PhoneNumber { get; set; } = string.Empty;
+
+    [Required]
+    [StringLength(160)]
+    public string Message { get; set; } = string.Empty;
+}

@@ -27,6 +27,7 @@ public class HotelReservationContext : IdentityDbContext<User, IdentityRole<int>
     public DbSet<SystemNotification> SystemNotifications { get; set; }
     public DbSet<NotificationPreference> NotificationPreferences { get; set; }
     public DbSet<NotificationTemplate> NotificationTemplates { get; set; }
+    public DbSet<UserDashboardPreference> UserDashboardPreferences { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -307,6 +308,86 @@ public class HotelReservationContext : IdentityDbContext<User, IdentityRole<int>
                   .WithMany(i => i.Items)
                   .HasForeignKey(e => e.InvoiceId)
                   .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configure SystemNotification entity
+        modelBuilder.Entity<SystemNotification>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Message).IsRequired().HasMaxLength(2000);
+            entity.Property(e => e.RelatedEntityType).HasMaxLength(100);
+            entity.Property(e => e.UserId).HasMaxLength(100);
+            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+            entity.Property(e => e.Priority).HasDefaultValue(NotificationPriority.Normal);
+
+            entity.HasIndex(e => new { e.IsRead, e.IsDeleted, e.CreatedAt })
+                  .HasDatabaseName("IX_SystemNotifications_ReadDeletedCreated");
+            entity.HasIndex(e => new { e.UserId, e.IsDeleted })
+                  .HasDatabaseName("IX_SystemNotifications_UserId");
+            entity.HasIndex(e => new { e.HotelId, e.IsDeleted })
+                  .HasDatabaseName("IX_SystemNotifications_HotelId");
+        });
+
+        // Configure NotificationTemplate entity
+        modelBuilder.Entity<NotificationTemplate>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.EventType).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Channel).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.SubjectTemplate).HasMaxLength(500);
+            entity.Property(e => e.BodyTemplate).IsRequired();
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+
+            entity.HasIndex(e => new { e.EventType, e.Channel, e.IsActive })
+                  .HasDatabaseName("IX_NotificationTemplates_EventChannel");
+        });
+
+        // Configure UserDashboardPreference entity
+        modelBuilder.Entity<UserDashboardPreference>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.WidgetConfigurationsJson).IsRequired().HasDefaultValue("[]");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("datetime('now')");
+
+            entity.HasOne(e => e.User)
+                  .WithMany()
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => e.UserId)
+                  .IsUnique()
+                  .HasDatabaseName("IX_UserDashboardPreferences_UserId");
+        });
+
+        // Configure NotificationPreference entity (extended for guest portal)
+        modelBuilder.Entity<NotificationPreference>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Channels).HasMaxLength(200);
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("datetime('now')");
+
+            // UserId is optional – staff users have UserId, guests use GuestId
+            entity.HasOne(e => e.User)
+                  .WithMany()
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade)
+                  .IsRequired(false);
+
+            // GuestId is optional – only set for guest portal preferences
+            entity.HasOne(e => e.Guest)
+                  .WithMany()
+                  .HasForeignKey(e => e.GuestId)
+                  .OnDelete(DeleteBehavior.Cascade)
+                  .IsRequired(false);
+
+            entity.HasIndex(e => e.GuestId)
+                  .HasDatabaseName("IX_NotificationPreferences_GuestId");
+
+            entity.HasIndex(e => e.UserId)
+                  .HasDatabaseName("IX_NotificationPreferences_UserId");
         });
     }
 }

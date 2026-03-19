@@ -1,0 +1,224 @@
+@{
+    Layout = "~/Views/Shared/_GuestPortalLayout.cshtml";
+    ViewData["Title"] = "My Reservations";
+}
+
+<div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-4 gap-2">
+    <div>
+        <h1 class="fs-4 fw-bold mb-1"><i class="bi bi-journal-bookmark me-2 text-primary"></i>My Reservations</h1>
+        <p class="text-muted mb-0 small">Manage all your bookings in one place</p>
+    </div>
+    <!-- Filter tabs -->
+    <div class="btn-group btn-group-sm" role="group" aria-label="Filter reservations">
+        <input type="radio" class="btn-check" name="resFilter" id="filterAll" value="all" checked>
+        <label class="btn btn-outline-primary" for="filterAll">All</label>
+        <input type="radio" class="btn-check" name="resFilter" id="filterUpcoming" value="upcoming">
+        <label class="btn btn-outline-primary" for="filterUpcoming">Upcoming</label>
+        <input type="radio" class="btn-check" name="resFilter" id="filterPast" value="past">
+        <label class="btn btn-outline-primary" for="filterPast">Past</label>
+    </div>
+</div>
+
+<!-- Loading -->
+<div id="resLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading…</span></div>
+</div>
+
+<!-- Empty state -->
+<div id="resEmpty" class="d-none text-center py-5">
+    <i class="bi bi-journal-x fs-1 text-muted opacity-25 d-block mb-3"></i>
+    <h5 class="text-muted">No reservations found</h5>
+    <p class="text-muted small">Your reservations will appear here once you have bookings.</p>
+</div>
+
+<!-- Reservations list -->
+<div id="resList" class="d-none"></div>
+
+<!-- Cancel Modal -->
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-modal="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:16px">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="cancelModalLabel">
+                    <i class="bi bi-x-circle text-danger me-2"></i>Cancel Reservation
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted small mb-3">You are about to cancel booking <strong id="cancelRef"></strong>. This action cannot be undone.</p>
+                <label for="cancelReason" class="form-label fw-medium">Reason for cancellation</label>
+                <textarea class="form-control" id="cancelReason" rows="3" placeholder="Please tell us why you're cancelling…" required></textarea>
+                <div id="cancelError" class="alert alert-danger mt-3 d-none small"></div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Keep Reservation</button>
+                <button type="button" class="btn btn-danger" id="cancelConfirmBtn">
+                    <span id="cancelBtnText">Cancel Reservation</span>
+                    <span id="cancelBtnSpinner" class="d-none spinner-border spinner-border-sm ms-2" role="status"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+(function () {
+    const token = localStorage.getItem('guestToken');
+    if (!token) { window.location.href = '/GuestPortal/Login?returnUrl=/GuestPortal/Reservations'; return; }
+
+    let allReservations = [];
+    let cancelReservationId = null;
+    const cancelModal = new bootstrap.Modal(document.getElementById('cancelModal'));
+
+    function statusBadge(status) {
+        const map = {
+            0: ['Pending','status-pending'],
+            1: ['Confirmed','status-confirmed'],
+            2: ['Checked In','status-checkedin'],
+            3: ['Checked Out','status-checkedout'],
+            4: ['Cancelled','status-cancelled'],
+            5: ['No Show','status-cancelled']
+        };
+        const [label, cls] = map[status] || ['Unknown','status-pending'];
+        return `<span class="status-badge ${cls}">${label}</span>`;
+    }
+
+    function formatDate(d) {
+        return new Date(d).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+    }
+
+    function canModify(r) { return r.status === 0 || r.status === 1; }
+    function canCancel(r) { return r.status === 0 || r.status === 1; }
+
+    function renderCard(r) {
+        const nights = Math.round((new Date(r.checkOutDate) - new Date(r.checkInDate)) / 86400000);
+        return `
+        <div class="gp-card card mb-3">
+            <div class="card-body">
+                <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
+                    <!-- Left: info -->
+                    <div class="d-flex gap-3 align-items-start">
+                        <div class="bg-primary bg-opacity-10 rounded-3 p-2 text-center flex-shrink-0" style="min-width:56px">
+                            <div class="fs-4 fw-bold text-primary lh-1">${new Date(r.checkInDate).getDate()}</div>
+                            <div class="text-primary small fw-medium">${new Date(r.checkInDate).toLocaleString('en-US',{month:'short'})}</div>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                <span class="fw-bold">${r.hotelName}</span>
+                                ${statusBadge(r.status)}
+                            </div>
+                            <div class="text-muted small mb-1">
+                                <i class="bi bi-door-open me-1"></i>Room ${r.roomNumber} &bull; ${r.roomType}
+                            </div>
+                            <div class="text-muted small mb-1">
+                                <i class="bi bi-calendar3 me-1"></i>${formatDate(r.checkInDate)} → ${formatDate(r.checkOutDate)}
+                                <span class="ms-1 badge bg-light text-dark border">${nights} night${nights !== 1 ? 's' : ''}</span>
+                            </div>
+                            <div class="text-muted small">
+                                <i class="bi bi-people me-1"></i>${r.numberOfGuests} guest${r.numberOfGuests !== 1 ? 's' : ''}
+                                &bull; <i class="bi bi-hash me-1"></i>${r.bookingReference || 'N/A'}
+                            </div>
+                            ${r.specialRequests ? `<div class="text-muted small mt-1"><i class="bi bi-chat-left-text me-1"></i>${r.specialRequests}</div>` : ''}
+                        </div>
+                    </div>
+                    <!-- Right: amount + actions -->
+                    <div class="d-flex flex-row flex-md-column align-items-center align-items-md-end justify-content-between gap-2">
+                        <div class="fw-bold fs-5">$${r.totalAmount.toFixed(2)}</div>
+                        <div class="d-flex gap-2 flex-wrap justify-content-end">
+                            <a href="/GuestPortal/Reservation/${r.id}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye me-1"></i>Details
+                            </a>
+                            ${canModify(r) ? `<a href="/GuestPortal/Reservation/${r.id}" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-pencil me-1"></i>Modify
+                            </a>` : ''}
+                            ${canCancel(r) ? `<button class="btn btn-sm btn-outline-danger" onclick="openCancel(${r.id},'${r.bookingReference}')">
+                                <i class="bi bi-x-circle me-1"></i>Cancel
+                            </button>` : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    function applyFilter(filter) {
+        const now = new Date();
+        let filtered = allReservations;
+        if (filter === 'upcoming') filtered = allReservations.filter(r => new Date(r.checkInDate) > now && r.status !== 4);
+        if (filter === 'past')     filtered = allReservations.filter(r => new Date(r.checkOutDate) < now || r.status === 3 || r.status === 4);
+
+        const listEl = document.getElementById('resList');
+        const emptyEl = document.getElementById('resEmpty');
+        if (!filtered.length) {
+            listEl.classList.add('d-none');
+            emptyEl.classList.remove('d-none');
+        } else {
+            emptyEl.classList.add('d-none');
+            listEl.classList.remove('d-none');
+            listEl.innerHTML = filtered.map(renderCard).join('');
+        }
+    }
+
+    async function loadReservations() {
+        try {
+            const res = await fetch('/api/guest-portal/reservations', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (res.status === 401) { localStorage.clear(); window.location.href = '/GuestPortal/Login'; return; }
+            allReservations = await res.json();
+            allReservations.sort((a, b) => new Date(b.checkInDate) - new Date(a.checkInDate));
+            applyFilter('all');
+        } catch (err) {
+            console.error(err);
+        } finally {
+            document.getElementById('resLoading').classList.add('d-none');
+        }
+    }
+
+    // Filter radio buttons
+    document.querySelectorAll('input[name="resFilter"]').forEach(radio => {
+        radio.addEventListener('change', () => applyFilter(radio.value));
+    });
+
+    // Cancel modal
+    window.openCancel = function(id, ref) {
+        cancelReservationId = id;
+        document.getElementById('cancelRef').textContent = ref;
+        document.getElementById('cancelReason').value = '';
+        document.getElementById('cancelError').classList.add('d-none');
+        cancelModal.show();
+    };
+
+    document.getElementById('cancelConfirmBtn').addEventListener('click', async () => {
+        const reason = document.getElementById('cancelReason').value.trim();
+        if (!reason) { document.getElementById('cancelError').textContent = 'Please provide a reason.'; document.getElementById('cancelError').classList.remove('d-none'); return; }
+
+        const btnText = document.getElementById('cancelBtnText');
+        const spinner = document.getElementById('cancelBtnSpinner');
+        btnText.textContent = 'Cancelling…';
+        spinner.classList.remove('d-none');
+
+        try {
+            const res = await fetch(`/api/guest-portal/reservations/${cancelReservationId}/cancel`, {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reason })
+            });
+            const data = await res.json();
+            if (!res.ok) { document.getElementById('cancelError').textContent = data.message; document.getElementById('cancelError').classList.remove('d-none'); return; }
+            cancelModal.hide();
+            await loadReservations();
+        } catch (err) {
+            document.getElementById('cancelError').textContent = 'An error occurred. Please try again.';
+            document.getElementById('cancelError').classList.remove('d-none');
+        } finally {
+            btnText.textContent = 'Cancel Reservation';
+            spinner.classList.add('d-none');
+        }
+    });
+
+    loadReservations();
+})();
+</script>
+}

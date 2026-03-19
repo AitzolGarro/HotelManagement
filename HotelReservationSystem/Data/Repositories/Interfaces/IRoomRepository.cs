@@ -1,4 +1,5 @@
 using HotelReservationSystem.Models;
+using HotelReservationSystem.Models.DTOs;
 
 namespace HotelReservationSystem.Data.Repositories.Interfaces;
 
@@ -13,4 +14,5 @@ public interface IRoomRepository : IRepository<Room>
     Task<bool> IsRoomAvailableAsync(int roomId, DateTime checkIn, DateTime checkOut, int? excludeReservationId = null);
     Task<IEnumerable<Room>> GetRoomsByStatusAsync(RoomStatus status);
     Task<bool> ExistsInHotelAsync(int hotelId, string roomNumber);
+    Task<(IEnumerable<Room> Items, int TotalCount)> SearchAsync(RoomSearchCriteria criteria, int pageNumber, int pageSize);
 }

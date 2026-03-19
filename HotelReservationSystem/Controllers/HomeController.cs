@@ -34,6 +34,18 @@ namespace HotelReservationSystem.Controllers
             return View();
         }
 
+        public IActionResult Notifications()
+        {
+            ViewData["Title"] = "Notification Center";
+            return View();
+        }
+
+        public IActionResult NotificationSettings()
+        {
+            ViewData["Title"] = "Notification Settings";
+            return View();
+        }
+
         public IActionResult Login()
         {
             ViewData["Title"] = "Login";
@@ -43,6 +55,17 @@ namespace HotelReservationSystem.Controllers
         public IActionResult Error()
         {
             ViewData["Title"] = "Error";
+            return View();
+        }
+
+        /// <summary>
+        /// Offline fallback page served by the service worker (Task 10.5).
+        /// </summary>
+        [Route("offline")]
+        public IActionResult Offline()
+        {
+            ViewData["Title"] = "Offline";
+            Response.Headers["Cache-Control"] = "no-store";
             return View();
         }
     }

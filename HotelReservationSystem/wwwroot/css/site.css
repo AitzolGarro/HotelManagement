@@ -2363,3 +2363,100 @@ shboard KPI Widget Styles */
     background-color: rgba(108, 117, 125, 0.1);
     color: var(--secondary-color);
 }
+
+/* ── Dashboard Customization (Task 13) ─────────────────────────────────────── */
+
+/* GridStack overrides */
+.grid-stack {
+    background: transparent;
+}
+
+.grid-stack-item-content {
+    border-radius: .5rem;
+    overflow: hidden;
+}
+
+/* Widget card */
+.widget-card {
+    border: 1px solid rgba(0,0,0,.08);
+    box-shadow: 0 .125rem .5rem rgba(0,0,0,.06);
+    transition: box-shadow .2s ease;
+    height: 100%;
+}
+
+.widget-card:hover {
+    box-shadow: 0 .25rem 1rem rgba(0,0,0,.12);
+}
+
+.widget-card .card-header {
+    background: #f8f9fa;
+    border-bottom: 1px solid rgba(0,0,0,.06);
+    font-size: .85rem;
+    user-select: none;
+}
+
+.widget-drag-handle:active {
+    cursor: grabbing !important;
+}
+
+/* Widget body scrollable */
+.widget-body {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* GridStack resize handle visibility */
+.grid-stack-item > .ui-resizable-se {
+    bottom: 4px;
+    right: 4px;
+    width: 16px;
+    height: 16px;
+    opacity: .4;
+    transition: opacity .2s;
+}
+
+.grid-stack-item:hover > .ui-resizable-se {
+    opacity: 1;
+}
+
+/* KPI stat display */
+.display-6 {
+    font-size: 1.8rem;
+}
+
+/* Responsive: stack toolbar on small screens */
+@media (max-width: 575.98px) {
+    #dashboardContainer .row.mb-3 > [class*="col-"] {
+        width: 100%;
+    }
+
+    .grid-stack {
+        /* Single column on mobile */
+    }
+}
+
+/* Occupancy progress bars */
+.progress {
+    border-radius: 4px;
+}
+
+/* Quick-action buttons */
+.btn-xs {
+    padding: .1rem .3rem;
+    font-size: .75rem;
+}
+
+/* Add widget modal catalog cards */
+#widgetCatalog .card {
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+
+#widgetCatalog .card:hover:not(.opacity-75) {
+    transform: translateY(-2px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.1);
+}
+
+/* Notification items in widget */
+.border-start.border-3 {
+    border-left-width: 3px !important;
+}

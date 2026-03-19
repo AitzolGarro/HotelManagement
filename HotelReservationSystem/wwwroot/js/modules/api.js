@@ -180,6 +180,16 @@ class ApiClient {
         });
     }
 
+    // PATCH reservation dates (drag-and-drop calendar)
+    async updateReservationDates(id, checkInDate, checkOutDate, roomId = null) {
+        const body = { checkInDate, checkOutDate };
+        if (roomId !== null) body.roomId = roomId;
+        return this.request(`/reservations/${id}/dates`, {
+            method: 'PATCH',
+            body: JSON.stringify(body)
+        });
+    }
+
     async checkAvailability(roomId, checkIn, checkOut) {
         return this.get('/reservations/availability', {
             roomId,
