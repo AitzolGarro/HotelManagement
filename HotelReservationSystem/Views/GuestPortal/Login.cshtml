@@ -25,7 +25,7 @@
 
                         <div id="loginError" class="alert alert-danger d-none" role="alert">
                             <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                            <span id="loginErrorMsg">Invalid email or booking reference.</span>
+                            <span id="loginErrorMsg">@L["GP_Login_InvalidCredentials"]</span>
                         </div>
 
                         <form id="guestLoginForm" novalidate>
@@ -115,7 +115,7 @@
             const data = await res.json();
 
             if (!res.ok) {
-                errorMsg.textContent = data.message || 'Invalid email or booking reference.';
+                errorMsg.textContent = data.message || '@Html.Raw(L["GP_Login_InvalidCredentials"].Value)';
                 errorBox.classList.remove('d-none');
                 return;
             }
@@ -129,7 +129,7 @@
             window.location.href = returnUrl || '/GuestPortal/Dashboard';
 
         } catch (err) {
-            errorMsg.textContent = 'A network error occurred. Please try again.';
+            errorMsg.textContent = '@Html.Raw(L["GP_Login_NetworkError"].Value)';
             errorBox.classList.remove('d-none');
         } finally {
             btnText.classList.remove('d-none');

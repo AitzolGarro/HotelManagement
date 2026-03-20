@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "Notification Center";
+    ViewData["Title"] = L["Notif_Title"].Value;
     Layout = "_Layout";
 }
 
@@ -96,6 +96,11 @@
 
 @section Scripts {
 <script>
+const _notifI18n = {
+    markRead: '@Html.Raw(L["Notif_MarkRead"].Value)',
+    read: '@Html.Raw(L["Notif_Read"].Value)',
+    justNow: '@Html.Raw(L["Notif_JustNow"].Value)'
+};
 (function () {
     'use strict';
 
@@ -204,8 +209,8 @@
                 </div>
                 <p class="mb-1 small text-muted text-truncate-2">${escHtml(n.message)}</p>
                 <div class="d-flex gap-2 mt-1">
-                    ${!n.isRead ? `<button class="btn btn-link btn-sm p-0 text-primary mark-read-btn" data-id="${n.id}">Mark read</button>` : '<span class="small text-muted">Read</span>'}
-                    <button class="btn btn-link btn-sm p-0 text-danger delete-notif-btn" data-id="${n.id}">Delete</button>
+                    ${!n.isRead ? `<button class="btn btn-link btn-sm p-0 text-primary mark-read-btn" data-id="${n.id}">${_notifI18n.markRead}</button>` : `<span class="small text-muted">${_notifI18n.read}</span>`}
+                    <button class="btn btn-link btn-sm p-0 text-danger delete-notif-btn" data-id="${n.id}">@L["Common_Delete"]</button>
                 </div>
             </div>`;
 
@@ -220,7 +225,7 @@
             const api = new ApiClient();
             await api.request(`/notifications/${id}/read`, { method: 'PUT' });
             el.classList.remove('bg-primary-subtle');
-            el.querySelector('.mark-read-btn')?.replaceWith(Object.assign(document.createElement('span'), { className: 'small text-muted', textContent: 'Read' }));
+            el.querySelector('.mark-read-btn')?.replaceWith(Object.assign(document.createElement('span'), { className: 'small text-muted', textContent: _notifI18n.read }));
             await loadStats();
         } catch (e) { console.error('Mark read failed', e); }
     }
@@ -243,7 +248,7 @@
                 await api.request('/notifications/read-all', { method: 'PUT' });
                 document.querySelectorAll('.notification-row.bg-primary-subtle').forEach(el => {
                     el.classList.remove('bg-primary-subtle');
-                    el.querySelector('.mark-read-btn')?.replaceWith(Object.assign(document.createElement('span'), { className: 'small text-muted', textContent: 'Read' }));
+                    el.querySelector('.mark-read-btn')?.replaceWith(Object.assign(document.createElement('span'), { className: 'small text-muted', textContent: _notifI18n.read }));
                 });
                 await loadStats();
             } catch (e) { console.error('Mark all read failed', e); }
@@ -324,7 +329,7 @@
     function getTimeAgo(date) {
         const diff = Date.now() - date;
         const m = Math.floor(diff / 60000), h = Math.floor(diff / 3600000), d = Math.floor(diff / 86400000);
-        if (m < 1) return 'Just now';
+        if (m < 1) return _notifI18n.justNow;
         if (m < 60) return `${m}m ago`;
         if (h < 24) return `${h}h ago`;
         if (d < 7) return `${d}d ago`;

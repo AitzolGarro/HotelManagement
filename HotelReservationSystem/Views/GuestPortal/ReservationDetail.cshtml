@@ -144,6 +144,13 @@
 
 @section Scripts {
 <script>
+const _gpDetailI18n = {
+    noSpecialRequests: '@Html.Raw(L["GP_Detail_NoSpecialRequests"].Value)',
+    provideReason:     '@Html.Raw(L["GP_Res_ProvideReason"].Value)',
+    selectDates:       'Please select both dates.',
+    checkOutAfter:     'Check-out must be after check-in.',
+    error:             '@Html.Raw(L["Common_Error"].Value)'
+};
 (function () {
     const token = localStorage.getItem('guestToken');
     if (!token) { window.location.href = '/GuestPortal/Login'; return; }
@@ -189,7 +196,7 @@
             document.getElementById('detailGuests').textContent = reservation.numberOfGuests;
             document.getElementById('detailAmount').textContent = `$${reservation.totalAmount.toFixed(2)}`;
             document.getElementById('detailCreated').textContent = fmt(reservation.createdAt);
-            document.getElementById('detailSpecialRequests').textContent = reservation.specialRequests || 'No special requests on file.';
+            document.getElementById('detailSpecialRequests').textContent = reservation.specialRequests || _gpDetailI18n.noSpecialRequests;
             document.getElementById('specialRequestInput').value = reservation.specialRequests || '';
 
             // Pre-fill modify dates
@@ -229,7 +236,7 @@
                 body: JSON.stringify({ specialRequests: text })
             });
             if (res.ok) {
-                document.getElementById('detailSpecialRequests').textContent = text || 'No special requests on file.';
+                document.getElementById('detailSpecialRequests').textContent = text || _gpDetailI18n.noSpecialRequests;
                 document.getElementById('specialRequestForm').classList.add('d-none');
                 document.getElementById('editSpecialReqBtn').classList.remove('d-none');
             }
@@ -243,8 +250,8 @@
         const errEl = document.getElementById('modifyError');
         errEl.classList.add('d-none');
 
-        if (!checkIn || !checkOut) { errEl.textContent = 'Please select both dates.'; errEl.classList.remove('d-none'); return; }
-        if (new Date(checkOut) <= new Date(checkIn)) { errEl.textContent = 'Check-out must be after check-in.'; errEl.classList.remove('d-none'); return; }
+        if (!checkIn || !checkOut) { errEl.textContent = _gpDetailI18n.selectDates; errEl.classList.remove('d-none'); return; }
+        if (new Date(checkOut) <= new Date(checkIn)) { errEl.textContent = _gpDetailI18n.checkOutAfter; errEl.classList.remove('d-none'); return; }
 
         const btnText = document.getElementById('modifyBtnText');
         const spinner = document.getElementById('modifyBtnSpinner');
@@ -261,7 +268,7 @@
             // Reload to show updated data
             await loadDetail();
         } catch (err) {
-            errEl.textContent = 'An error occurred. Please try again.';
+            errEl.textContent = _gpDetailI18n.error;
             errEl.classList.remove('d-none');
         } finally {
             btnText.classList.remove('d-none'); spinner.classList.add('d-none');
@@ -273,7 +280,7 @@
         const reason = document.getElementById('cancelDetailReason').value.trim();
         const errEl = document.getElementById('cancelDetailError');
         errEl.classList.add('d-none');
-        if (!reason) { errEl.textContent = 'Please provide a reason.'; errEl.classList.remove('d-none'); return; }
+        if (!reason) { errEl.textContent = _gpDetailI18n.provideReason; errEl.classList.remove('d-none'); return; }
 
         const btnText = document.getElementById('cancelDetailBtnText');
         const spinner = document.getElementById('cancelDetailBtnSpinner');
@@ -289,7 +296,7 @@
             if (!res.ok) { errEl.textContent = data.message; errEl.classList.remove('d-none'); return; }
             window.location.href = '/GuestPortal/Reservations';
         } catch (err) {
-            errEl.textContent = 'An error occurred. Please try again.';
+            errEl.textContent = _gpDetailI18n.error;
             errEl.classList.remove('d-none');
         } finally {
             btnText.classList.remove('d-none'); spinner.classList.add('d-none');

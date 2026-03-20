@@ -222,6 +222,11 @@
 
 @section Scripts {
 <script>
+const _gpProfI18n = {
+    error:       '@Html.Raw(L["Common_Error"].Value)',
+    saveFailed:  '@Html.Raw(L["NotifSettings_SaveFailed"].Value)',
+    prefsSaved:  '@Html.Raw(L["GP_Prof_PrefsSaved"].Value)'
+};
 (function () {
     const token = localStorage.getItem('guestToken');
     if (!token) { window.location.href = '/GuestPortal/Login?returnUrl=/GuestPortal/Profile'; return; }
@@ -342,7 +347,7 @@
             document.getElementById('profileEditForm').classList.add('d-none');
             document.getElementById('editProfileBtn').classList.remove('d-none');
         } catch (err) {
-            errEl.textContent = 'An error occurred. Please try again.';
+            errEl.textContent = _gpProfI18n.error;
             errEl.classList.remove('d-none');
         } finally {
             btnText.classList.remove('d-none'); spinner.classList.add('d-none');
@@ -374,12 +379,12 @@
                 headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-            if (!res.ok) { errEl.textContent = 'Failed to save preferences.'; errEl.classList.remove('d-none'); return; }
-            succEl.textContent = 'Preferences saved successfully!';
+            if (!res.ok) { errEl.textContent = _gpProfI18n.saveFailed; errEl.classList.remove('d-none'); return; }
+            succEl.textContent = _gpProfI18n.prefsSaved;
             succEl.classList.remove('d-none');
             setTimeout(() => succEl.classList.add('d-none'), 3000);
         } catch (err) {
-            errEl.textContent = 'An error occurred. Please try again.';
+            errEl.textContent = _gpProfI18n.error;
             errEl.classList.remove('d-none');
         } finally {
             btnText.classList.remove('d-none'); spinner.classList.add('d-none');

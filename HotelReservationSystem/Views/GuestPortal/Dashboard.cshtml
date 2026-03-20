@@ -28,7 +28,7 @@
     <!-- Welcome header -->
     <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-4 gap-3">
         <div>
-            <h1 class="fs-4 fw-bold mb-1">Welcome back, <span id="dashGuestName">Guest</span>!</h1>
+            <h1 class="fs-4 fw-bold mb-1">@L["GP_Dash_WelcomeBack"], <span id="dashGuestName">Guest</span>!</h1>
             <p class="text-muted mb-0">@L["GP_Dash_Overview"]</p>
         </div>
         <div class="d-flex align-items-center gap-2">
@@ -107,6 +107,9 @@
 
 @section Scripts {
 <script>
+const _gpDashI18n = {
+    details: '@Html.Raw(L["Common_Details"].Value)'
+};
 (function () {
     const token = localStorage.getItem('guestToken');
     if (!token) { window.location.href = '/GuestPortal/Login?returnUrl=/GuestPortal/Dashboard'; return; }
@@ -147,7 +150,7 @@
             <div class="d-flex flex-row flex-sm-column align-items-center align-items-sm-end gap-2">
                 ${statusBadge(r.status)}
                 <div class="fw-semibold">$${r.totalAmount.toFixed(2)}</div>
-                <a href="/GuestPortal/Reservation/${r.id}" class="btn btn-sm btn-outline-primary">Details</a>
+                <a href="/GuestPortal/Reservation/${r.id}" class="btn btn-sm btn-outline-primary">${_gpDashI18n.details}</a>
             </div>
         </div>`;
     }

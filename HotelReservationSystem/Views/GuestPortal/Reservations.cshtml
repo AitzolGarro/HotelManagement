@@ -63,6 +63,14 @@
 
 @section Scripts {
 <script>
+const _gpResI18n = {
+    details:    '@Html.Raw(L["Common_Details"].Value)',
+    modify:     '@Html.Raw(L["Common_Modify"].Value)',
+    cancel:     '@Html.Raw(L["GP_Res_CancelConfirm"].Value)',
+    cancelling: '@Html.Raw(L["GP_Res_Cancelling"].Value)',
+    provideReason: '@Html.Raw(L["GP_Res_ProvideReason"].Value)',
+    error:      '@Html.Raw(L["Common_Error"].Value)'
+};
 (function () {
     const token = localStorage.getItem('guestToken');
     if (!token) { window.location.href = '/GuestPortal/Login?returnUrl=/GuestPortal/Reservations'; return; }
@@ -127,13 +135,13 @@
                         <div class="fw-bold fs-5">$${r.totalAmount.toFixed(2)}</div>
                         <div class="d-flex gap-2 flex-wrap justify-content-end">
                             <a href="/GuestPortal/Reservation/${r.id}" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-eye me-1"></i>Details
+                                <i class="bi bi-eye me-1"></i>${_gpResI18n.details}
                             </a>
                             ${canModify(r) ? `<a href="/GuestPortal/Reservation/${r.id}" class="btn btn-sm btn-outline-secondary">
-                                <i class="bi bi-pencil me-1"></i>Modify
+                                <i class="bi bi-pencil me-1"></i>${_gpResI18n.modify}
                             </a>` : ''}
                             ${canCancel(r) ? `<button class="btn btn-sm btn-outline-danger" onclick="openCancel(${r.id},'${r.bookingReference}')">
-                                <i class="bi bi-x-circle me-1"></i>Cancel
+                                <i class="bi bi-x-circle me-1"></i>${_gpResI18n.cancel}
                             </button>` : ''}
                         </div>
                     </div>
@@ -192,11 +200,11 @@
 
     document.getElementById('cancelConfirmBtn').addEventListener('click', async () => {
         const reason = document.getElementById('cancelReason').value.trim();
-        if (!reason) { document.getElementById('cancelError').textContent = 'Please provide a reason.'; document.getElementById('cancelError').classList.remove('d-none'); return; }
+        if (!reason) { document.getElementById('cancelError').textContent = _gpResI18n.provideReason; document.getElementById('cancelError').classList.remove('d-none'); return; }
 
         const btnText = document.getElementById('cancelBtnText');
         const spinner = document.getElementById('cancelBtnSpinner');
-        btnText.textContent = 'Cancelling…';
+        btnText.textContent = _gpResI18n.cancelling;
         spinner.classList.remove('d-none');
 
         try {
@@ -210,10 +218,10 @@
             cancelModal.hide();
             await loadReservations();
         } catch (err) {
-            document.getElementById('cancelError').textContent = 'An error occurred. Please try again.';
+            document.getElementById('cancelError').textContent = _gpResI18n.error;
             document.getElementById('cancelError').classList.remove('d-none');
         } finally {
-            btnText.textContent = 'Cancel Reservation';
+            btnText.textContent = _gpResI18n.cancel;
             spinner.classList.add('d-none');
         }
     });

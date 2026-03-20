@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "Notification Settings";
+    ViewData["Title"] = L["NotifSettings_Title"].Value;
     Layout = "_Layout";
 }
 
@@ -165,7 +165,7 @@
     document.getElementById('savePrefsBtn').addEventListener('click', async () => {
         const btn = document.getElementById('savePrefsBtn');
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Saving…';
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>@L["NotifSettings_Saving"]';
 
         try {
             const api = new ApiClient();
@@ -181,7 +181,7 @@
                 body: JSON.stringify(body)
             });
 
-            showStatus('Preferences saved successfully', 'success');
+            showStatus('@Html.Raw(L["NotifSettings_Saved"].Value)', 'success');
 
             // Request browser push permission if enabled
             if (body.browserPushEnabled && Notification.permission === 'default') {
@@ -189,10 +189,10 @@
             }
         } catch (e) {
             console.error('Save failed', e);
-            showStatus('Failed to save preferences', 'danger');
+            showStatus('@Html.Raw(L["NotifSettings_SaveFailed"].Value)', 'danger');
         } finally {
             btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-floppy me-1"></i>Save Preferences';
+            btn.innerHTML = '<i class="bi bi-floppy me-1"></i>@L["NotifSettings_SavePrefs"]';
         }
     });
 
