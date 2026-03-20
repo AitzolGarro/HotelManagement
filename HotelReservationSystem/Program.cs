@@ -83,8 +83,10 @@ try
             failureStatus: Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Degraded,
             tags: new[] { "external", "ready" });
 
-    // Add localization services
+    // Add localization services — use hardcoded factory to avoid .resx lookup issues on Linux/Docker
     builder.Services.AddLocalization(opts => opts.ResourcesPath = "Resources");
+    builder.Services.AddSingleton<Microsoft.Extensions.Localization.IStringLocalizerFactory,
+        HotelReservationSystem.Resources.HardcodedLocalizerFactory>();
 
     // Add services to the container
     builder.Services.AddControllers();
