@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Explicitly include resx files as EmbeddedResource for IStringLocalizer -->
+    <EmbeddedResource Include="Resources\SharedResource.resx" />
+    <EmbeddedResource Include="Resources\SharedResource.es.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.105.0" />
     <PackageReference Include="CsvHelper" Version="33.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
