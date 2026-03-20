@@ -352,11 +352,15 @@ try
     }
 
     // Configure request localization (en default, es supported)
+    // CookieRequestCultureProvider must be explicitly first so the language cookie is honoured
     var supportedCultures = new[] { "en", "es" };
-    app.UseRequestLocalization(new Microsoft.AspNetCore.Builder.RequestLocalizationOptions()
+    var localizationOptions = new Microsoft.AspNetCore.Builder.RequestLocalizationOptions()
         .SetDefaultCulture("en")
         .AddSupportedCultures(supportedCultures)
-        .AddSupportedUICultures(supportedCultures));
+        .AddSupportedUICultures(supportedCultures);
+    localizationOptions.RequestCultureProviders.Insert(0,
+        new Microsoft.AspNetCore.Localization.CookieRequestCultureProvider());
+    app.UseRequestLocalization(localizationOptions);
 
     app.UseHttpsRedirection();
     app.UseStaticFiles();

@@ -228,13 +228,13 @@
                                 <div class="text-center mt-3 d-flex justify-content-center gap-2">
                                     <form method="post" action="/SetLanguage" class="d-inline">
                                         <input type="hidden" name="culture" value="en" />
-                                        <input type="hidden" name="returnUrl" value="/Home/Login" />
+                                        <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
                                         <button type="submit" class="btn btn-link btn-sm text-muted p-0">🇬🇧 @L["Lang_English"]</button>
                                     </form>
                                     <span class="text-muted">|</span>
                                     <form method="post" action="/SetLanguage" class="d-inline">
                                         <input type="hidden" name="culture" value="es" />
-                                        <input type="hidden" name="returnUrl" value="/Home/Login" />
+                                        <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
                                         <button type="submit" class="btn btn-link btn-sm text-muted p-0">🇪🇸 @L["Lang_Spanish"]</button>
                                     </form>
                                 </div>
