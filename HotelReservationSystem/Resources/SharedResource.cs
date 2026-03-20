@@ -1,4 +1,4 @@
-namespace HotelReservationSystem.Resources;
+namespace HotelReservationSystem;
 
 /// <summary>
 /// Marker class for shared localization resources.
