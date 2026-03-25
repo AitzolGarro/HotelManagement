@@ -260,4 +260,9 @@
   <data name="GP_Detail_CancelReason"><value>Motivo de cancelación…</value></data>
   <data name="GP_Detail_NotFound"><value>Reserva no encontrada</value></data>
   <data name="GP_Detail_ViewAllReservations"><value>Ver todas las reservas</value></data>
+
+  <!-- Weather Widget -->
+  <data name="WeatherWidgetName"><value>Widget del clima</value></data>
+  <data name="WeatherWidgetDescription"><value>Información del clima actual para la ubicación del hotel</value></data>
+  <data name="WeatherWidgetNoData"><value>No hay datos climáticos disponibles</value></data>
 </root>

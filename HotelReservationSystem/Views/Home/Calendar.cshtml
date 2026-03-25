@@ -1,3 +1,4 @@
+
 @{
     ViewData["Title"] = L["Nav_Calendar"].Value;
 }
@@ -32,50 +33,50 @@
 <div class="calendar-filter-bar" role="search" aria-label="Calendar filters">
     <div class="row g-2 align-items-end">
         <div class="col-lg-2 col-md-4 col-sm-6">
-            <label for="hotelFilter" class="form-label">Hotel</label>
+            <label for="hotelFilter" class="form-label">@L["Calendar_Hotel"]</label>
             <select class="form-select form-select-sm" id="hotelFilter" aria-label="Filter by hotel">
-                <option value="">All Hotels</option>
+                <option value="">@L["Calendar_AllHotels"]</option>
             </select>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-6">
-            <label for="roomTypeFilter" class="form-label">Room Type</label>
+            <label for="roomTypeFilter" class="form-label">@L["Calendar_RoomType"]</label>
             <select class="form-select form-select-sm" id="roomTypeFilter" aria-label="Filter by room type">
-                <option value="">All Types</option>
-                <option value="single">Single</option>
-                <option value="double">Double</option>
-                <option value="twin">Twin</option>
-                <option value="triple">Triple</option>
-                <option value="quad">Quad</option>
-                <option value="suite">Suite</option>
-                <option value="family">Family</option>
-                <option value="deluxe">Deluxe</option>
-                <option value="standard">Standard</option>
+                <option value="">@L["Calendar_AllTypes"]</option>
+                <option value="single">@L["Calendar_RoomType_Single"]</option>
+                <option value="double">@L["Calendar_RoomType_Double"]</option>
+                <option value="twin">@L["Calendar_RoomType_Twin"]</option>
+                <option value="triple">@L["Calendar_RoomType_Triple"]</option>
+                <option value="quad">@L["Calendar_RoomType_Quad"]</option>
+                <option value="suite">@L["Calendar_RoomType_Suite"]</option>
+                <option value="family">@L["Calendar_RoomType_Family"]</option>
+                <option value="deluxe">@L["Calendar_RoomType_Deluxe"]</option>
+                <option value="standard">@L["Calendar_RoomType_Standard"]</option>
             </select>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-6">
-            <label for="statusFilter" class="form-label">Status</label>
+            <label for="statusFilter" class="form-label">@L["Calendar_Status"]</label>
             <select class="form-select form-select-sm" id="statusFilter" aria-label="Filter by status">
-                <option value="">All Statuses</option>
-                <option value="pending">Pending</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="checkedin">Checked In</option>
-                <option value="checkedout">Checked Out</option>
-                <option value="cancelled">Cancelled</option>
-                <option value="noshow">No Show</option>
+                <option value="">@L["Calendar_AllStatuses"]</option>
+                <option value="pending">@L["Calendar_Pending"]</option>
+                <option value="confirmed">@L["Calendar_Confirmed"]</option>
+                <option value="checkedin">@L["Calendar_CheckedIn"]</option>
+                <option value="checkedout">@L["Calendar_CheckedOut"]</option>
+                <option value="cancelled">@L["Calendar_Cancelled"]</option>
+                <option value="noshow">@L["Calendar_NoShow"]</option>
             </select>
         </div>
         <div class="col-lg-3 col-md-6 col-sm-6">
-            <label for="dateRangePicker" class="form-label">Date Range</label>
+            <label for="dateRangePicker" class="form-label">@L["Calendar_DateRange"]</label>
             <input type="text" class="form-control form-control-sm" id="dateRangePicker"
-                   placeholder="Select date range" readonly aria-label="Date range filter">
+                   placeholder="@L["Calendar_SelectDateRange"]" readonly aria-label="Date range filter">
         </div>
         <div class="col-lg-3 col-md-6 col-sm-12">
             <div class="d-flex gap-2 flex-wrap">
                 <button type="button" class="btn btn-primary btn-sm" id="applyFilters">
-                    <i class="bi bi-funnel me-1" aria-hidden="true"></i>Apply
+                    <i class="bi bi-funnel me-1" aria-hidden="true"></i>@L["Calendar_Apply"]
                 </button>
                 <button type="button" class="btn btn-outline-secondary btn-sm" id="clearFilters">
-                    <i class="bi bi-x-circle me-1" aria-hidden="true"></i>Clear
+                    <i class="bi bi-x-circle me-1" aria-hidden="true"></i>@L["Calendar_Clear"]
                 </button>
             </div>
         </div>
@@ -83,12 +84,12 @@
 
     <!-- Status Legend -->
     <ul class="cal-legend mt-2 list-unstyled" role="list" aria-label="Reservation status color legend">
-        <li class="cal-legend-item"><span class="cal-legend-dot" style="background:#198754" aria-hidden="true"></span>Confirmed</li>
-        <li class="cal-legend-item"><span class="cal-legend-dot" style="background:#ffc107" aria-hidden="true"></span>Pending</li>
-        <li class="cal-legend-item"><span class="cal-legend-dot" style="background:#0dcaf0" aria-hidden="true"></span>Checked In</li>
-        <li class="cal-legend-item"><span class="cal-legend-dot" style="background:#6c757d" aria-hidden="true"></span>Checked Out</li>
-        <li class="cal-legend-item"><span class="cal-legend-dot" style="background:#dc3545" aria-hidden="true"></span>Cancelled</li>
-        <li class="cal-legend-item"><span class="cal-legend-dot" style="background:#6f42c1" aria-hidden="true"></span>No Show</li>
+        <li class="cal-legend-item"><span class="cal-legend-dot" style="background:#198754" aria-hidden="true"></span>@L["Calendar_Confirmed"]</li>
+        <li class="cal-legend-item"><span class="cal-legend-dot" style="background:#ffc107" aria-hidden="true"></span>@L["Calendar_Pending"]</li>
+        <li class="cal-legend-item"><span class="cal-legend-dot" style="background:#0dcaf0" aria-hidden="true"></span>@L["Calendar_CheckedIn"]</li>
+        <li class="cal-legend-item"><span class="cal-legend-dot" style="background:#6c757d" aria-hidden="true"></span>@L["Calendar_CheckedOut"]</li>
+        <li class="cal-legend-item"><span class="cal-legend-dot" style="background:#dc3545" aria-hidden="true"></span>@L["Calendar_Cancelled"]</li>
+        <li class="cal-legend-item"><span class="cal-legend-dot" style="background:#6f42c1" aria-hidden="true"></span>@L["Calendar_NoShow"]</li>
     </ul>
 </div>
 
@@ -105,7 +106,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="reservationModalLabel">
-                    <i class="bi bi-journal-bookmark me-1" aria-hidden="true"></i>Reservation Details
+                    <i class="bi bi-journal-bookmark me-1" aria-hidden="true"></i>@L["Calendar_ReservationDetails"]
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -113,9 +114,9 @@
                 <div id="reservationDetails"></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@L["Calendar_Close"]</button>
                 <button type="button" class="btn btn-danger" id="cancelReservationBtn" style="display:none">
-                    <i class="bi bi-x-circle me-1" aria-hidden="true"></i>Cancel Reservation
+                    <i class="bi bi-x-circle me-1" aria-hidden="true"></i>@L["Calendar_CancelReservation"]
                 </button>
             </div>
         </div>
@@ -129,7 +130,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addReservationModalLabel">
-                    <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>New Reservation
+                    <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>@L["Calendar_NewReservation"]
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -137,61 +138,61 @@
                 <form id="reservationForm" novalidate>
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label for="guestFirstName" class="form-label">First Name <span class="text-danger" aria-hidden="true">*</span></label>
+                            <label for="guestFirstName" class="form-label">@L["Calendar_FirstName"] <span class="text-danger" aria-hidden="true">*</span></label>
                             <input type="text" class="form-control" id="guestFirstName" required autocomplete="given-name"
                                    aria-describedby="guestFirstName-error" aria-required="true">
                             <span id="guestFirstName-error" class="invalid-feedback" role="alert"></span>
                         </div>
                         <div class="col-md-6">
-                            <label for="guestLastName" class="form-label">Last Name <span class="text-danger" aria-hidden="true">*</span></label>
+                            <label for="guestLastName" class="form-label">@L["Calendar_LastName"] <span class="text-danger" aria-hidden="true">*</span></label>
                             <input type="text" class="form-control" id="guestLastName" required autocomplete="family-name"
                                    aria-describedby="guestLastName-error" aria-required="true">
                             <span id="guestLastName-error" class="invalid-feedback" role="alert"></span>
                         </div>
                         <div class="col-md-6">
-                            <label for="guestEmail" class="form-label">Email</label>
+                            <label for="guestEmail" class="form-label">@L["Calendar_Email"]</label>
                             <input type="email" class="form-control" id="guestEmail" autocomplete="email">
                         </div>
                         <div class="col-md-6">
-                            <label for="guestPhone" class="form-label">Phone</label>
+                            <label for="guestPhone" class="form-label">@L["Calendar_Phone"]</label>
                             <input type="tel" class="form-control" id="guestPhone" autocomplete="tel">
                         </div>
                         <div class="col-md-6">
-                            <label for="reservationHotel" class="form-label">Hotel <span class="text-danger" aria-hidden="true">*</span></label>
+                            <label for="reservationHotel" class="form-label">@L["Calendar_Hotel"] <span class="text-danger" aria-hidden="true">*</span></label>
                             <select class="form-select" id="reservationHotel" required
                                     aria-describedby="reservationHotel-error" aria-required="true">
-                                <option value="">Select Hotel</option>
+                                <option value="">@L["Calendar_SelectHotel"]</option>
                             </select>
                             <span id="reservationHotel-error" class="invalid-feedback" role="alert"></span>
                         </div>
                         <div class="col-md-6">
-                            <label for="reservationRoom" class="form-label">Room <span class="text-danger" aria-hidden="true">*</span></label>
+                            <label for="reservationRoom" class="form-label">@L["Calendar_Room"] <span class="text-danger" aria-hidden="true">*</span></label>
                             <select class="form-select" id="reservationRoom" required
                                     aria-describedby="reservationRoom-error" aria-required="true">
-                                <option value="">Select Room</option>
+                                <option value="">@L["Calendar_SelectRoom"]</option>
                             </select>
                             <span id="reservationRoom-error" class="invalid-feedback" role="alert"></span>
                         </div>
                         <div class="col-md-6">
-                            <label for="checkInDate" class="form-label">Check-in <span class="text-danger" aria-hidden="true">*</span></label>
+                            <label for="checkInDate" class="form-label">@L["Calendar_CheckIn"] <span class="text-danger" aria-hidden="true">*</span></label>
                             <input type="date" class="form-control" id="checkInDate" required
                                    aria-describedby="checkInDate-error" aria-required="true">
                             <span id="checkInDate-error" class="invalid-feedback" role="alert"></span>
                         </div>
                         <div class="col-md-6">
-                            <label for="checkOutDate" class="form-label">Check-out <span class="text-danger" aria-hidden="true">*</span></label>
+                            <label for="checkOutDate" class="form-label">@L["Calendar_CheckOut"] <span class="text-danger" aria-hidden="true">*</span></label>
                             <input type="date" class="form-control" id="checkOutDate" required
                                    aria-describedby="checkOutDate-error" aria-required="true">
                             <span id="checkOutDate-error" class="invalid-feedback" role="alert"></span>
                         </div>
                         <div class="col-md-6">
-                            <label for="numberOfGuests" class="form-label">Guests <span class="text-danger" aria-hidden="true">*</span></label>
+                            <label for="numberOfGuests" class="form-label">@L["Calendar_Guests"] <span class="text-danger" aria-hidden="true">*</span></label>
                             <input type="number" class="form-control" id="numberOfGuests" min="1" max="20" value="1" required
                                    aria-describedby="numberOfGuests-error" aria-required="true">
                             <span id="numberOfGuests-error" class="invalid-feedback" role="alert"></span>
                         </div>
                         <div class="col-md-6">
-                            <label for="totalAmount" class="form-label">Total Amount <span class="text-danger" aria-hidden="true">*</span></label>
+                            <label for="totalAmount" class="form-label">@L["Calendar_TotalAmount"] <span class="text-danger" aria-hidden="true">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text" aria-hidden="true">$</span>
                                 <input type="number" class="form-control" id="totalAmount" min="0.01" step="0.01" required
@@ -200,22 +201,22 @@
                             <span id="totalAmount-error" class="invalid-feedback" role="alert"></span>
                         </div>
                         <div class="col-12">
-                            <label for="specialRequests" class="form-label">Special Requests</label>
+                            <label for="specialRequests" class="form-label">@L["Calendar_SpecialRequests"]</label>
                             <textarea class="form-control" id="specialRequests" rows="2"
-                                      placeholder="Any special requests…"></textarea>
+                                      placeholder="@L["Calendar_SpecialRequestsPlaceholder"]"></textarea>
                         </div>
                         <div class="col-12">
-                            <label for="internalNotes" class="form-label">Internal Notes</label>
+                            <label for="internalNotes" class="form-label">@L["Calendar_InternalNotes"]</label>
                             <textarea class="form-control" id="internalNotes" rows="2"
-                                      placeholder="Staff notes (not visible to guest)…"></textarea>
+                                      placeholder="@L["Calendar_InternalNotesPlaceholder"]"></textarea>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@L["Calendar_Cancel"]</button>
                 <button type="button" class="btn btn-primary" id="saveReservationBtn">
-                    <i class="bi bi-check-circle me-1" aria-hidden="true"></i>Save Reservation
+                    <i class="bi bi-check-circle me-1" aria-hidden="true"></i>@L["Calendar_Save"]
                 </button>
             </div>
         </div>
@@ -230,21 +231,21 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="calDragConfirmLabel">
-                    <i class="bi bi-arrows-move me-1" aria-hidden="true"></i>Confirm Date Change
+                    <i class="bi bi-arrows-move me-1" aria-hidden="true"></i>@L["Calendar_ConfirmDateChange"]
                 </h5>
                 <button type="button" class="btn-close" id="calDragCancelBtn" aria-label="Cancel"></button>
             </div>
             <div class="modal-body">
-                <p class="text-muted mb-3">You are about to modify this reservation. Please review the changes:</p>
+                <p class="text-muted mb-3">@L["Calendar_ReviewChanges"]</p>
                 <div id="calDragSummary"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" id="calDragCancelBtn2"
                         onclick="document.getElementById('calDragCancelBtn').click()">
-                    <i class="bi bi-x me-1" aria-hidden="true"></i>Cancel
+                    <i class="bi bi-x me-1" aria-hidden="true"></i>@L["Calendar_Cancel"]
                 </button>
                 <button type="button" class="btn btn-primary" id="calDragConfirmBtn">
-                    <i class="bi bi-check-circle me-1" aria-hidden="true"></i>Confirm Change
+                    <i class="bi bi-check-circle me-1" aria-hidden="true"></i>@L["Calendar_ConfirmChange"]
                 </button>
             </div>
         </div>
@@ -339,4 +340,9 @@
             return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); };
         }
     </script>
+
+    @if (System.Threading.Thread.CurrentThread.CurrentUICulture.Name.StartsWith("es"))
+    {
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/es.js"></script>
+    }
 }

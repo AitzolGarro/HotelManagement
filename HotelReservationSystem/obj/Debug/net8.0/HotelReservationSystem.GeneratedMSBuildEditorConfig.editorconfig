@@ -1,7 +1,5 @@
 is_global = true
 build_property.TargetFramework = net8.0
-build_property.TargetFrameworkIdentifier = .NETCoreApp
-build_property.TargetFrameworkVersion = v8.0
 build_property.TargetPlatformMinVersion = 
 build_property.UsingMicrosoftNETSdkWeb = true
 build_property.ProjectTypeGuids = 
@@ -11,97 +9,101 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = HotelReservationSystem
 build_property.RootNamespace = HotelReservationSystem
-build_property.ProjectDir = C:\Users\aitzol\Documents\repos\hostalavila\HotelReservationSystem\
+build_property.ProjectDir = /var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\aitzol\Documents\repos\hostalavila\HotelReservationSystem
+build_property.MSBuildProjectDirectory = /var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 8.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/Users/aitzol/Documents/repos/hostalavila/HotelReservationSystem/Views/GuestPortal/Dashboard.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR3Vlc3RQb3J0YWxcRGFzaGJvYXJkLmNzaHRtbA==
+[/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/Views/GuestPortal/Dashboard.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvR3Vlc3RQb3J0YWwvRGFzaGJvYXJkLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/aitzol/Documents/repos/hostalavila/HotelReservationSystem/Views/GuestPortal/Login.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR3Vlc3RQb3J0YWxcTG9naW4uY3NodG1s
+[/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/Views/GuestPortal/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvR3Vlc3RQb3J0YWwvTG9naW4uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/aitzol/Documents/repos/hostalavila/HotelReservationSystem/Views/GuestPortal/Logout.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR3Vlc3RQb3J0YWxcTG9nb3V0LmNzaHRtbA==
+[/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/Views/GuestPortal/Logout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvR3Vlc3RQb3J0YWwvTG9nb3V0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/aitzol/Documents/repos/hostalavila/HotelReservationSystem/Views/GuestPortal/Profile.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR3Vlc3RQb3J0YWxcUHJvZmlsZS5jc2h0bWw=
+[/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/Views/GuestPortal/Profile.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvR3Vlc3RQb3J0YWwvUHJvZmlsZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/aitzol/Documents/repos/hostalavila/HotelReservationSystem/Views/GuestPortal/ReservationDetail.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR3Vlc3RQb3J0YWxcUmVzZXJ2YXRpb25EZXRhaWwuY3NodG1s
+[/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/Views/GuestPortal/ReservationDetail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvR3Vlc3RQb3J0YWwvUmVzZXJ2YXRpb25EZXRhaWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/aitzol/Documents/repos/hostalavila/HotelReservationSystem/Views/GuestPortal/Reservations.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR3Vlc3RQb3J0YWxcUmVzZXJ2YXRpb25zLmNzaHRtbA==
+[/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/Views/GuestPortal/Reservations.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvR3Vlc3RQb3J0YWwvUmVzZXJ2YXRpb25zLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/aitzol/Documents/repos/hostalavila/HotelReservationSystem/Views/Home/Calendar.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxDYWxlbmRhci5jc2h0bWw=
+[/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/Views/Home/Calendar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9DYWxlbmRhci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/aitzol/Documents/repos/hostalavila/HotelReservationSystem/Views/Home/Error.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxFcnJvci5jc2h0bWw=
+[/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/Views/Home/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9FcnJvci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/aitzol/Documents/repos/hostalavila/HotelReservationSystem/Views/Home/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+[/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9JbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/aitzol/Documents/repos/hostalavila/HotelReservationSystem/Views/Home/Login.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxMb2dpbi5jc2h0bWw=
+[/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/Views/Home/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9Mb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/aitzol/Documents/repos/hostalavila/HotelReservationSystem/Views/Home/Notifications.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxOb3RpZmljYXRpb25zLmNzaHRtbA==
+[/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/Views/Home/Notifications.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9Ob3RpZmljYXRpb25zLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/aitzol/Documents/repos/hostalavila/HotelReservationSystem/Views/Home/NotificationSettings.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxOb3RpZmljYXRpb25TZXR0aW5ncy5jc2h0bWw=
+[/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/Views/Home/NotificationSettings.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9Ob3RpZmljYXRpb25TZXR0aW5ncy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/aitzol/Documents/repos/hostalavila/HotelReservationSystem/Views/Home/Offline.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxPZmZsaW5lLmNzaHRtbA==
+[/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/Views/Home/Offline.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9PZmZsaW5lLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/aitzol/Documents/repos/hostalavila/HotelReservationSystem/Views/Home/Properties.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcm9wZXJ0aWVzLmNzaHRtbA==
+[/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/Views/Home/Properties.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9Qcm9wZXJ0aWVzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/aitzol/Documents/repos/hostalavila/HotelReservationSystem/Views/Home/Reports.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxSZXBvcnRzLmNzaHRtbA==
+[/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/Views/Home/Reports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9SZXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/aitzol/Documents/repos/hostalavila/HotelReservationSystem/Views/Home/Reservations.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxSZXNlcnZhdGlvbnMuY3NodG1s
+[/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/Views/Home/Reservations.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9SZXNlcnZhdGlvbnMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/aitzol/Documents/repos/hostalavila/HotelReservationSystem/Views/Shared/_GuestPortalLayout.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9HdWVzdFBvcnRhbExheW91dC5jc2h0bWw=
+[/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/Views/Settings/TwoFactor.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2V0dGluZ3MvVHdvRmFjdG9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/aitzol/Documents/repos/hostalavila/HotelReservationSystem/Views/Shared/_Layout.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+[/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/Views/Shared/_GuestPortalLayout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19HdWVzdFBvcnRhbExheW91dC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/aitzol/Documents/repos/hostalavila/HotelReservationSystem/Views/Shared/_SearchFilters.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9TZWFyY2hGaWx0ZXJzLmNzaHRtbA==
+[/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/aitzol/Documents/repos/hostalavila/HotelReservationSystem/Views/_ViewImports.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+[/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/Views/Shared/_SearchFilters.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19TZWFyY2hGaWx0ZXJzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/aitzol/Documents/repos/hostalavila/HotelReservationSystem/Views/_ViewStart.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+[/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 

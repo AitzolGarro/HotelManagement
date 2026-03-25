@@ -1,5 +1,7 @@
+using HotelReservationSystem.Data;
 using HotelReservationSystem.Data.Repositories.Interfaces;
 using HotelReservationSystem.Models;
+using HotelReservationSystem.Models.DTOs;
 using HotelReservationSystem.Services.Interfaces;
 using HotelReservationSystem.Services.BookingCom;
 
@@ -11,6 +13,7 @@ public class ChannelManagerService : IChannelManagerService
     private readonly HotelReservationSystem.Services.Interfaces.IBookingIntegrationService _bookingComService;
     private readonly IExpediaChannelService _expediaService;
     private readonly IEncryptionService _encryptionService;
+    private readonly HotelReservationContext _dbContext;
     private readonly ILogger<ChannelManagerService> _logger;
 
     public ChannelManagerService(
@@ -18,12 +21,14 @@ public class ChannelManagerService : IChannelManagerService
         HotelReservationSystem.Services.Interfaces.IBookingIntegrationService bookingComService,
         IExpediaChannelService expediaService,
         IEncryptionService encryptionService,
+        HotelReservationContext dbContext,
         ILogger<ChannelManagerService> logger)
     {
         _unitOfWork = unitOfWork;
         _bookingComService = bookingComService;
         _expediaService = expediaService;
         _encryptionService = encryptionService;
+        _dbContext = dbContext;
         _logger = logger;
     }
 
@@ -144,8 +149,9 @@ public class ChannelManagerService : IChannelManagerService
             }
             else if (hc.ChannelId == 2) // Expedia
             {
-                var reservations = await _expediaService.GetReservationsAsync(hc.HotelId, since);
-                await LogSyncAsync(hotelChannelId, "Reservations", "Success", $"Imported {reservations.Count()} reservations");
+                var reservations = (await _expediaService.GetReservationsAsync(hc.HotelId, since)).ToList();
+                var count = await PersistReservationsAsync(reservations, ReservationSource.Expedia);
+                await LogSyncAsync(hotelChannelId, "Reservations", "Success", $"Imported {count} reservations");
                 return true;
             }
 
@@ -156,6 +162,37 @@ public class ChannelManagerService : IChannelManagerService
             await LogSyncAsync(hotelChannelId, "Reservations", "Failed", ex.Message);
             return false;
         }
+    }
+
+    private async Task<int> PersistReservationsAsync(IEnumerable<ReservationDto> reservations, ReservationSource source)
+    {
+        int count = 0;
+        foreach (var dto in reservations)
+        {
+            var entity = new Reservation
+            {
+                HotelId = dto.HotelId,
+                RoomId = dto.RoomId,
+                GuestId = dto.GuestId,
+                BookingReference = dto.BookingReference,
+                Source = source,  // Use the passed source instead of dto.Source
+                CheckInDate = dto.CheckInDate,
+                CheckOutDate = dto.CheckOutDate,
+                NumberOfGuests = dto.NumberOfGuests,
+                TotalAmount = dto.TotalAmount,
+                Status = dto.Status,
+                SpecialRequests = dto.SpecialRequests,
+                InternalNotes = dto.InternalNotes,
+                CreatedAt = dto.CreatedAt == default ? DateTime.UtcNow : dto.CreatedAt,
+                UpdatedAt = dto.UpdatedAt == default ? DateTime.UtcNow : dto.UpdatedAt
+            };
+            
+            _dbContext.Reservations.Add(entity);
+            count++;
+        }
+
+        await _dbContext.SaveChangesAsync();
+        return count;
     }
 
     private async Task LogSyncAsync(int hotelChannelId, string type, string status, string details)

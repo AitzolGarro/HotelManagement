@@ -1,33 +1,33 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\aitzol\\Documents\\development\\hostelavila\\HotelReservationSystem.Tests\\HotelReservationSystem.Tests.csproj": {}
+    "/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem.Tests/HotelReservationSystem.Tests.csproj": {}
   },
   "projects": {
-    "C:\\Users\\aitzol\\Documents\\development\\hostelavila\\HotelReservationSystem.Tests\\HotelReservationSystem.Tests.csproj": {
+    "/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem.Tests/HotelReservationSystem.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\aitzol\\Documents\\development\\hostelavila\\HotelReservationSystem.Tests\\HotelReservationSystem.Tests.csproj",
+        "projectUniqueName": "/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem.Tests/HotelReservationSystem.Tests.csproj",
         "projectName": "HotelReservationSystem.Tests",
-        "projectPath": "C:\\Users\\aitzol\\Documents\\development\\hostelavila\\HotelReservationSystem.Tests\\HotelReservationSystem.Tests.csproj",
-        "packagesPath": "C:\\Users\\aitzol\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\aitzol\\Documents\\development\\hostelavila\\HotelReservationSystem.Tests\\obj\\",
+        "projectPath": "/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem.Tests/HotelReservationSystem.Tests.csproj",
+        "packagesPath": "/home/aitzol/.nuget/packages/",
+        "outputPath": "/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem.Tests/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\aitzol\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/home/aitzol/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net8.0"
+          "net9.0"
         ],
         "sources": {
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net8.0": {
-            "targetAlias": "net8.0",
+          "net9.0": {
+            "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Users\\aitzol\\Documents\\development\\hostelavila\\HotelReservationSystem\\HotelReservationSystem.csproj": {
-                "projectPath": "C:\\Users\\aitzol\\Documents\\development\\hostelavila\\HotelReservationSystem\\HotelReservationSystem.csproj"
+              "/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/HotelReservationSystem.csproj": {
+                "projectPath": "/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/HotelReservationSystem.csproj"
               }
             }
           }
@@ -42,11 +42,11 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.100"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
-        "net8.0": {
-          "targetAlias": "net8.0",
+        "net9.0": {
+          "targetAlias": "net9.0",
           "dependencies": {
             "FluentAssertions": {
               "target": "Package",
@@ -67,6 +67,26 @@
             "Moq": {
               "target": "Package",
               "version": "[4.20.69, )"
+            },
+            "NBomber": {
+              "target": "Package",
+              "version": "[5.0.0, )"
+            },
+            "RichardSzalay.MockHttp": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "coverlet.collector": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "coverlet.msbuild": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[6.0.0, )"
             },
             "xunit": {
               "target": "Package",
@@ -90,50 +110,36 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[8.0.20, 8.0.20]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[8.0.20, 8.0.20]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[8.0.20, 8.0.20]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100-rc.1.25451.107/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/var/home/aitzol/.dotnet/sdk/9.0.312/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\aitzol\\Documents\\development\\hostelavila\\HotelReservationSystem\\HotelReservationSystem.csproj": {
+    "/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/HotelReservationSystem.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\aitzol\\Documents\\development\\hostelavila\\HotelReservationSystem\\HotelReservationSystem.csproj",
+        "projectUniqueName": "/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/HotelReservationSystem.csproj",
         "projectName": "HotelReservationSystem",
-        "projectPath": "C:\\Users\\aitzol\\Documents\\development\\hostelavila\\HotelReservationSystem\\HotelReservationSystem.csproj",
-        "packagesPath": "C:\\Users\\aitzol\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\aitzol\\Documents\\development\\hostelavila\\HotelReservationSystem\\obj\\",
+        "projectPath": "/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/HotelReservationSystem.csproj",
+        "packagesPath": "/home/aitzol/.nuget/packages/",
+        "outputPath": "/var/home/aitzol/proyectos/homelab/HotelManagement/HotelReservationSystem/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\aitzol\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/home/aitzol/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net8.0"
+          "net9.0"
         ],
         "sources": {
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net8.0": {
-            "targetAlias": "net8.0",
+          "net9.0": {
+            "targetAlias": "net9.0",
             "projectReferences": {}
           }
         },
@@ -147,12 +153,36 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.100"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
-        "net8.0": {
-          "targetAlias": "net8.0",
+        "net9.0": {
+          "targetAlias": "net9.0",
           "dependencies": {
+            "ClosedXML": {
+              "target": "Package",
+              "version": "[0.105.0, )"
+            },
+            "CsvHelper": {
+              "target": "Package",
+              "version": "[33.1.0, )"
+            },
+            "FluentValidation": {
+              "target": "Package",
+              "version": "[11.8.0, )"
+            },
+            "FluentValidation.AspNetCore": {
+              "target": "Package",
+              "version": "[11.3.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[8.0.0, )"
@@ -165,13 +195,57 @@
               "target": "Package",
               "version": "[8.0.0, )"
             },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "Microsoft.EntityFrameworkCore.Tools": {
               "target": "Package",
               "version": "[8.0.0, )"
             },
+            "Microsoft.Extensions.Caching.Memory": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.Http.Polly": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Polly": {
+              "target": "Package",
+              "version": "[8.2.0, )"
+            },
+            "Polly.Extensions.Http": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
+            "QuestPDF": {
+              "target": "Package",
+              "version": "[2026.2.2, )"
+            },
             "Serilog.AspNetCore": {
               "target": "Package",
               "version": "[8.0.0, )"
+            },
+            "Serilog.Enrichers.Environment": {
+              "target": "Package",
+              "version": "[2.3.0, )"
+            },
+            "Serilog.Enrichers.Process": {
+              "target": "Package",
+              "version": "[2.0.2, )"
+            },
+            "Serilog.Enrichers.Thread": {
+              "target": "Package",
+              "version": "[3.1.0, )"
             },
             "Serilog.Sinks.Console": {
               "target": "Package",
@@ -185,9 +259,25 @@
               "target": "Package",
               "version": "[6.5.0, )"
             },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[2.11.8, )"
+            },
+            "Stripe.net": {
+              "target": "Package",
+              "version": "[50.4.0, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.4.0, )"
+            },
+            "System.Diagnostics.DiagnosticSource": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[7.0.3, )"
             }
           },
           "imports": [
@@ -201,24 +291,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[8.0.20, 8.0.20]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.win-x64",
-              "version": "[8.0.20, 8.0.20]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[8.0.20, 8.0.20]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[8.0.20, 8.0.20]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -227,7 +299,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100-rc.1.25451.107/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/var/home/aitzol/.dotnet/sdk/9.0.312/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

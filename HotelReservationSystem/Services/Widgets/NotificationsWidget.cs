@@ -1,5 +1,7 @@
 using HotelReservationSystem.Models.DTOs;
 using HotelReservationSystem.Services.Interfaces;
+using Microsoft.Extensions.Localization;
+using HotelReservationSystem.Resources;
 
 namespace HotelReservationSystem.Services.Widgets;
 
@@ -7,14 +9,15 @@ namespace HotelReservationSystem.Services.Widgets;
 public class NotificationsWidget : DashboardWidgetBase
 {
     private readonly INotificationService _notificationService;
+    private readonly IStringLocalizer _localizer;
 
-    public NotificationsWidget(INotificationService notificationService)
-        => _notificationService = notificationService;
+    public NotificationsWidget(INotificationService notificationService, IStringLocalizer<HardcodedStringLocalizer> localizer)
+        => (_notificationService, _localizer) = (notificationService, localizer);
 
     public override string     WidgetId    => "notifications";
     public override WidgetType Type        => WidgetType.Notifications;
-    public override string     Name        => "Notifications";
-    public override string     Description => "Recent system alerts and notifications";
+    public override string     Name        => _localizer["Widget_Notifications_Title"];
+    public override string     Description => _localizer["Widget_Notifications_Description"];
     public override string     Icon        => "bi-bell";
     public override int        DefaultW    => 4;
     public override int        DefaultH    => 4;

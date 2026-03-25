@@ -77,6 +77,9 @@ public class BookingComAuthenticationService : IBookingComAuthenticationService
         {
             _logger.LogInformation("Testing Booking.com authentication");
 
+            // Check cancellation before proceeding
+            cancellationToken.ThrowIfCancellationRequested();
+
             // Create a simple authentication test request
             var testRequest = new AuthenticationTestRequest
             {
@@ -101,6 +104,11 @@ public class BookingComAuthenticationService : IBookingComAuthenticationService
         {
             _logger.LogError(ex, "Authentication test failed with API exception: {Message}", ex.Message);
             return false;
+        }
+        catch (TaskCanceledException ex)
+        {
+            _logger.LogError(ex, "Authentication test was cancelled");
+            throw; // Re-throw to let test catch it
         }
         catch (Exception ex)
         {

@@ -6,6 +6,16 @@
  */
 'use strict';
 
+let _I18N = {};
+async function loadI18n() {
+    try {
+        const lang = window.__hotelLocale || 'en';
+        const res = await fetch('/api/i18n/strings?lang=' + lang);
+        const data = await res.json();
+        _I18N = data.strings || {};
+    } catch(e) { _I18N = {}; }
+}
+
 class DashboardManager {
     constructor() {
         this.api            = new ApiClient();
@@ -483,10 +493,10 @@ ${list.length > 6 ? `<a href="/notifications" class="btn btn-sm btn-link p-0 sma
 
         try {
             await this.api.post('/dashboard/layout', { widgets: this.currentLayout });
-            this._toast('Layout saved successfully', 'success');
+            this._toast(_I18N['Toast_LayoutSaved'] || 'Layout saved successfully', 'success');
         } catch (e) {
             console.error('Save layout error:', e);
-            this._toast('Failed to save layout', 'danger');
+            this._toast(_I18N['Toast_LayoutSaveFailed'] || 'Failed to save layout', 'danger');
         } finally {
             if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-save"></i> <span class="d-none d-sm-inline">Save Layout</span>'; }
         }
@@ -684,7 +694,7 @@ ${list.length > 6 ? `<a href="/notifications" class="btn btn-sm btn-link p-0 sma
     // ── Utility formatters ────────────────────────────────────────────────
 
     _fmt(amount) {
-        return new Intl.NumberFormat('en-US', {
+        return new Intl.NumberFormat(_I18N['Fmt_CurrencyLocale'] || 'en-US', {
             style: 'currency', currency: 'USD',
             minimumFractionDigits: 0, maximumFractionDigits: 0
         }).format(amount || 0);
@@ -692,13 +702,13 @@ ${list.length > 6 ? `<a href="/notifications" class="btn btn-sm btn-link p-0 sma
 
     _fmtDate(d) {
         if (!d) return '—';
-        return new Date(d).toLocaleDateString('en-US',
+        return new Date(d).toLocaleDateString(_I18N['Fmt_DateLocale'] || 'en-US',
             { month: 'short', day: 'numeric', year: 'numeric' });
     }
 
     _fmtDateTime(d) {
         if (!d) return '—';
-        return new Date(d).toLocaleString('en-US',
+        return new Date(d).toLocaleString(_I18N['Fmt_DateLocale'] || 'en-US',
             { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
     }
 
@@ -730,8 +740,9 @@ ${list.length > 6 ? `<a href="/notifications" class="btn btn-sm btn-link p-0 sma
 
 window.dashboardManager = null;
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     if (document.getElementById('dashboardContainer')) {
+        await loadI18n();
         window.dashboardManager = new DashboardManager();
         // Bind widget-level events after grid is ready (slight delay for DOM)
         setTimeout(() => window.dashboardManager._bindWidgetEvents(), 500);

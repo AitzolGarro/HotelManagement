@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using HotelReservationSystem.Data;
 using Microsoft.EntityFrameworkCore;
+using Xunit;
 
 namespace HotelReservationSystem.Tests.Integration;
 

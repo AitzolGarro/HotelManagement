@@ -6,6 +6,24 @@ class ReservationsManager {
         this.currentFilters = {};
         this.currentReservationId = null;
         this.isEditMode = false;
+        this.roomTypes = [
+            { id: 0, name: 'Single' },
+            { id: 1, name: 'Double' },
+            { id: 2, name: 'Suite' },
+            { id: 3, name: 'Family' }
+        ];
+        this.reservationSources = [
+            { id: 1, name: 'Manual' },
+            { id: 2, name: 'Booking.com' },
+            { id: 3, name: 'Direct' }
+        ];
+        this.reservationStatuses = [
+            { id: 1, name: 'Pending' },
+            { id: 2, name: 'Confirmed' },
+            { id: 3, name: 'Checked In' },
+            { id: 4, name: 'Checked Out' },
+            { id: 5, name: 'Cancelled' }
+        ];
     }
 
     async initialize() {
@@ -31,15 +49,19 @@ class ReservationsManager {
 
     setupEventListeners() {
         // Filter event listeners
-        document.getElementById('applyReservationFilters').addEventListener('click', () => this.applyFilters());
-        document.getElementById('clearReservationFilters').addEventListener('click', () => this.clearFilters());
-        document.getElementById('refreshReservations').addEventListener('click', () => this.loadReservations());
+        const applyBtn = document.getElementById('applyReservationFilters');
+        const clearBtn = document.getElementById('clearReservationFilters');
+        const refreshBtn = document.getElementById('refreshReservations');
+        const newBtn = document.getElementById('newReservationBtn');
+        const saveBtn = document.getElementById('saveReservationBtn');
+        const hotelSelect = document.getElementById('reservationHotel');
         
-        // Modal event listeners
-        document.getElementById('newReservationBtn').addEventListener('click', () => this.openNewReservationModal());
-        
-        // Hotel selection change listeners
-        document.getElementById('reservationHotel').addEventListener('change', () => this.onHotelSelectionChange());
+        if (applyBtn) applyBtn.addEventListener('click', () => this.applyFilters());
+        if (clearBtn) clearBtn.addEventListener('click', () => this.clearFilters());
+        if (refreshBtn) refreshBtn.addEventListener('click', () => this.loadReservations());
+        if (newBtn) newBtn.addEventListener('click', () => this.openNewReservationModal());
+        if (saveBtn) saveBtn.addEventListener('click', () => this.saveReservation());
+        if (hotelSelect) hotelSelect.addEventListener('change', () => this.onHotelSelectionChange());
     }
 
     setDefaultDateRange() {
@@ -261,6 +283,9 @@ class ReservationsManager {
             New Reservation
         `;
         
+        // Reset form
+        document.getElementById('reservationForm').reset();
+        
         // Set default dates
         const today = new Date();
         const tomorrow = new Date(today);
@@ -268,33 +293,230 @@ class ReservationsManager {
         
         document.getElementById('checkInDate').value = today.toISOString().split('T')[0];
         document.getElementById('checkOutDate').value = tomorrow.toISOString().split('T')[0];
+        
+        // Enable hotel selection
+        document.getElementById('reservationHotel').disabled = false;
+        
+        // Show the modal
+        const modal = new bootstrap.Modal(document.getElementById('reservationModal'));
+        modal.show();
     }
 
-    // Placeholder methods for future implementation
+    async saveReservation() {
+        try {
+            const form = document.getElementById('reservationForm');
+            
+            // Validate form
+            if (!UI.validateForm(form)) {
+                UI.showError('Please fill in all required fields');
+                return;
+            }
+            
+            // Collect form data
+            const formData = new FormData(form);
+            const reservationData = {
+                hotelId: formData.get('hotelId'),
+                roomId: formData.get('roomId'),
+                guestName: formData.get('guestName'),
+                guestEmail: formData.get('guestEmail'),
+                guestPhone: formData.get('guestPhone'),
+                checkInDate: formData.get('checkInDate'),
+                checkOutDate: formData.get('checkOutDate'),
+                numberOfGuests: parseInt(formData.get('numberOfGuests')),
+                totalAmount: parseFloat(formData.get('totalAmount')),
+                source: parseInt(formData.get('source')),
+                status: parseInt(formData.get('status')) || 2, // Default to confirmed
+                bookingReference: formData.get('bookingReference')
+            };
+            
+            // Add the reservation
+            const reservation = await API.addReservation(reservationData);
+            
+            // Refresh reservations list
+            this.loadReservations();
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('reservationModal'));
+            modal.hide();
+            
+            UI.showSuccess('Reservation created successfully');
+            
+        } catch (error) {
+            console.error('Error saving reservation:', error);
+            UI.showError('Failed to save reservation');
+        }
+    }
+
     async viewReservation(id) {
-        UI.showInfo('View reservation functionality will be implemented in a future update');
+        try {
+            // Show loading
+            UI.showLoading();
+            
+            // Get reservation details
+            const reservation = await API.getReservation(id);
+            
+            // Create view modal content
+            const modalContent = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Reservation Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Guest Information</h6>
+                                <p><strong>Name:</strong> ${reservation.guestName || 'N/A'}</p>
+                                <p><strong>Email:</strong> ${reservation.guestEmail || 'N/A'}</p>
+                                <p><strong>Phone:</strong> ${reservation.guestPhone || 'N/A'}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Reservation Details</h6>
+                                <p><strong>Reference:</strong> ${reservation.bookingReference || 'N/A'}</p>
+                                <p><strong>Hotel:</strong> ${reservation.hotelName || 'N/A'}</p>
+                                <p><strong>Room:</strong> ${reservation.roomNumber || 'N/A'}</p>
+                                <p><strong>Check-in:</strong> ${this.formatDate(reservation.checkInDate)}</p>
+                                <p><strong>Check-out:</strong> ${this.formatDate(reservation.checkOutDate)}</p>
+                                <p><strong>Guests:</strong> ${reservation.numberOfGuests}</p>
+                                <p><strong>Total:</strong> $${reservation.totalAmount.toFixed(2)}</p>
+                                <p><strong>Status:</strong> <span class="badge ${this.getStatusBadgeClass(reservation.status)}">${this.getStatusDisplayName(reservation.status)}</span></p>
+                                <p><strong>Source:</strong> <span class="badge ${this.getSourceBadgeClass(reservation.source)}">${this.getSourceDisplayName(reservation.source)}</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            `;
+            
+            // Show in a new modal
+            const modalDiv = document.createElement('div');
+            modalDiv.className = 'modal fade';
+            modalDiv.id = 'reservationViewModal';
+            modalDiv.setAttribute('tabindex', '-1');
+            modalDiv.innerHTML = modalContent;
+            document.body.appendChild(modalDiv);
+            
+            const modal = new bootstrap.Modal(modalDiv);
+            modal.show();
+            
+            // Clean up after closing
+            modalDiv.addEventListener('hidden.bs.modal', () => {
+                document.body.removeChild(modalDiv);
+            });
+            
+        } catch (error) {
+            console.error('Error viewing reservation:', error);
+            UI.showError('Failed to load reservation details');
+        } finally {
+            UI.hideLoading();
+        }
     }
 
     async editReservation(id) {
-        UI.showInfo('Edit reservation functionality will be implemented in a future update');
+        try {
+            // Show loading
+            UI.showLoading();
+            
+            // Get reservation details
+            const reservation = await API.getReservation(id);
+            this.currentReservationId = id;
+            this.isEditMode = true;
+            
+            // Fill form with reservation data
+            document.getElementById('reservationHotel').value = reservation.hotelId;
+            document.getElementById('reservationRoom').value = reservation.roomId;
+            document.getElementById('guestName').value = reservation.guestName;
+            document.getElementById('guestEmail').value = reservation.guestEmail;
+            document.getElementById('guestPhone').value = reservation.guestPhone;
+            document.getElementById('checkInDate').value = reservation.checkInDate.split('T')[0];
+            document.getElementById('checkOutDate').value = reservation.checkOutDate.split('T')[0];
+            document.getElementById('numberOfGuests').value = reservation.numberOfGuests;
+            document.getElementById('totalAmount').value = reservation.totalAmount;
+            document.getElementById('source').value = reservation.source;
+            document.getElementById('status').value = reservation.status;
+            document.getElementById('bookingReference').value = reservation.bookingReference;
+            
+            // Update modal title
+            document.getElementById('reservationModalLabel').innerHTML = `
+                <i class="bi bi-pencil"></i>
+                Edit Reservation
+            `;
+            
+            // Disable hotel selection for editing
+            document.getElementById('reservationHotel').disabled = true;
+            
+            // Show the modal
+            const modal = new bootstrap.Modal(document.getElementById('reservationModal'));
+            modal.show();
+            
+        } catch (error) {
+            console.error('Error editing reservation:', error);
+            UI.showError('Failed to load reservation for editing');
+        } finally {
+            UI.hideLoading();
+        }
     }
 
     async cancelReservation(id) {
-        const reservation = this.reservations.find(r => r.id === id);
-        if (!reservation) return;
+        try {
+            const reservation = this.reservations.find(r => r.id === id);
+            if (!reservation) return;
 
-        const confirmed = confirm(`Are you sure you want to cancel the reservation for ${reservation.guestName}?`);
-        if (!confirmed) return;
+            const confirmed = confirm(`Are you sure you want to cancel the reservation for ${reservation.guestName}? This action cannot be undone.`);
+            if (!confirmed) return;
 
-        UI.showInfo('Cancel reservation functionality will be implemented in a future update');
+            // Mark reservation as cancelled
+            await API.updateReservation(id, { status: 5 });
+            
+            // Refresh reservations list
+            this.loadReservations();
+            
+            UI.showSuccess('Reservation cancelled successfully');
+            
+        } catch (error) {
+            console.error('Error cancelling reservation:', error);
+            UI.showError('Failed to cancel reservation');
+        }
     }
 
     async checkInReservation(id) {
-        UI.showInfo('Check-in functionality will be implemented in a future update');
+        try {
+            const confirmed = confirm('Are you sure you want to check-in this guest?');
+            if (!confirmed) return;
+
+            // Mark reservation as checked in
+            await API.updateReservation(id, { status: 3 });
+            
+            // Refresh reservations list
+            this.loadReservations();
+            
+            UI.showSuccess('Guest checked in successfully');
+            
+        } catch (error) {
+            console.error('Error checking in guest:', error);
+            UI.showError('Failed to check in guest');
+        }
     }
 
     async checkOutReservation(id) {
-        UI.showInfo('Check-out functionality will be implemented in a future update');
+        try {
+            const confirmed = confirm('Are you sure you want to check out this guest?');
+            if (!confirmed) return;
+
+            // Mark reservation as checked out
+            await API.updateReservation(id, { status: 4 });
+            
+            // Refresh reservations list
+            this.loadReservations();
+            
+            UI.showSuccess('Guest checked out successfully');
+            
+        } catch (error) {
+            console.error('Error checking out guest:', error);
+            UI.showError('Failed to check out guest');
+        }
     }
 
     // Utility methods

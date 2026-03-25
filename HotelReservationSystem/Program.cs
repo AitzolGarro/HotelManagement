@@ -10,6 +10,8 @@ using HotelReservationSystem.Data.Repositories.Interfaces;
 using HotelReservationSystem.Services;
 using HotelReservationSystem.Services.Interfaces;
 using HotelReservationSystem.Services.BookingCom;
+using HotelReservationSystem.Services.Expedia;
+using HotelReservationSystem.Configuration;
 using HotelReservationSystem.Models;
 using HotelReservationSystem.Hubs;
 using HotelReservationSystem.Middleware;
@@ -288,11 +290,12 @@ try
     builder.Services.AddScoped<IPaymentService, PaymentService>();
     builder.Services.AddScoped<IGuestManagementService, GuestManagementService>();
     builder.Services.AddScoped<IGuestPortalService, GuestPortalService>();
+
     builder.Services.AddSingleton<IEncryptionService, EncryptionService>();
     builder.Services.AddScoped<HotelReservationSystem.Services.BookingCom.IBookingIntegrationService, HotelReservationSystem.Services.BookingCom.BookingIntegrationService>();
     // Registrar IBookingIntegrationService del namespace Interfaces para ChannelManagerService
     builder.Services.AddScoped<HotelReservationSystem.Services.Interfaces.IBookingIntegrationService, HotelReservationSystem.Services.BookingIntegrationService>();
-    builder.Services.AddScoped<IExpediaChannelService, ExpediaChannelService>();
+    // Expedia service registered after HttpClient wiring below
     builder.Services.AddScoped<IChannelManagerService, ChannelManagerService>();
     builder.Services.AddScoped<IPricingService, PricingService>();
     builder.Services.AddScoped<IExportService, ExportService>();
@@ -343,6 +346,49 @@ try
     })
     .AddPolicyHandler(GetRetryPolicy(bookingComConfig))
     .AddPolicyHandler(GetCircuitBreakerPolicy());
+
+    // ── Expedia EPS Rapid API integration ──────────────────────────────────────
+    builder.Services.Configure<ExpediaOptions>(builder.Configuration.GetSection("Expedia"));
+
+    // ExpediaAuthenticationService as singleton so the token cache is shared across requests
+    builder.Services.AddHttpClient<ExpediaAuthenticationService>(client =>
+    {
+        var baseUrl = builder.Configuration["Expedia:BaseUrl"] ?? "https://test.ean.com";
+        client.BaseAddress = new Uri(baseUrl);
+    });
+    builder.Services.AddSingleton<ExpediaAuthenticationService>();
+
+    // ExpediaHttpClient: typed client with Polly retry + circuit-breaker
+    builder.Services.AddHttpClient<ExpediaHttpClient>(client =>
+    {
+        var baseUrl = builder.Configuration["Expedia:BaseUrl"] ?? "https://test.ean.com";
+        client.BaseAddress = new Uri(baseUrl);
+    })
+    .AddPolicyHandler(HttpPolicyExtensions
+        .HandleTransientHttpError()
+        .WaitAndRetryAsync(3, attempt => TimeSpan.FromSeconds(Math.Pow(2, attempt)),
+            onRetry: (outcome, timespan, retryCount, ctx) =>
+                Log.Warning("Retry {RetryCount} for Expedia API call after {Delay}ms",
+                    retryCount, timespan.TotalMilliseconds)))
+    .AddPolicyHandler(HttpPolicyExtensions
+        .HandleTransientHttpError()
+        .CircuitBreakerAsync(5, TimeSpan.FromSeconds(30),
+            onBreak: (ex, dur) =>
+                Log.Error("Circuit breaker opened for Expedia API for {Duration}s", dur.TotalSeconds),
+            onReset: () =>
+                Log.Information("Circuit breaker reset for Expedia API")));
+
+    // Register the Expedia channel service (scoped — uses DbContext)
+    builder.Services.AddScoped<HotelReservationSystem.Services.Expedia.ExpediaChannelService>();
+    builder.Services.AddScoped<IExpediaChannelService>(
+        sp => sp.GetRequiredService<HotelReservationSystem.Services.Expedia.ExpediaChannelService>());
+
+    // Expedia health check (degraded, not fatal)
+    builder.Services.AddHealthChecks()
+        .AddCheck<HotelReservationSystem.HealthChecks.ExpediaHealthCheck>(
+            "Expedia",
+            failureStatus: Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Degraded,
+            tags: new[] { "external", "ready" });
 
     var app = builder.Build();
 

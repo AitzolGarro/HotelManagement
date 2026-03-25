@@ -3,6 +3,88 @@
  * Uses FullCalendar v6 with resourceTimeline plugin (loaded via CDN globals)
  * Subtasks: 9.1 FullCalendar integration, 9.2 Drag-drop, 9.3 Filters/views, 9.4 SignalR real-time
  */
+let _I18N = {};
+async function loadI18n() {
+    try { const lang=window.__hotelLocale||'en'; const res=await fetch('/api/i18n/strings?lang='+lang); const data=await res.json(); _I18N=data.strings||{}; } catch(e){_I18N={};}
+}
+
+// Call loadI18n when the page loads
+document.addEventListener('DOMContentLoaded', async function() {
+    await loadI18n();
+});
+
+// ─────────────────────────────────────────────────────────────
+// Helper methods for text and translations
+// ─────────────────────────────────────────────────────────────
+function _t(key, fallback = key) {
+    return _I18N[key] || fallback;
+}
+
+function _statusDisplayName(statusStr) {
+    const map = { 
+        Pending: _t('status_pending', 'Pending'), 
+        Confirmed: _t('status_confirmed', 'Confirmed'), 
+        Cancelled: _t('status_cancelled', 'Cancelled'), 
+        CheckedIn: _t('status_checked_in', 'Checked In'), 
+        CheckedOut: _t('status_checked_out', 'Checked Out'), 
+        NoShow: _t('status_no_show', 'No Show') 
+    };
+    return map[statusStr] || statusStr || _t('status_unknown', 'Unknown');
+}
+
+function _roomTypeLabel(type) {
+    const map = { 
+        1: _t('room_type_single', 'Single'), 
+        2: _t('room_type_double', 'Double'), 
+        3: _t('room_type_suite', 'Suite'), 
+        4: _t('room_type_family', 'Family'), 
+        5: _t('room_type_deluxe', 'Deluxe'), 
+        6: _t('room_type_twin', 'Twin'), 
+        7: _t('room_type_triple', 'Triple'), 
+        8: _t('room_type_quad', 'Quad'), 
+        9: _t('room_type_standard', 'Standard') 
+    };
+    if (typeof type === 'string') return type;
+    return map[type] || _t('room_type_unknown', 'Room');
+}
+
+function _roomTypeNameToNum(name) {
+    // Guard: if already a number, return it directly
+    if (typeof name === 'number') return name;
+    const map = { 
+        single: 1, double: 2, suite: 3, family: 4, deluxe: 5, twin: 6, triple: 7, quad: 8, standard: 9 
+    };
+    return map[String(name || '').toLowerCase()];
+}
+
+function _roomStatusLabel(status) {
+    const map = { 
+        1: _t('room_status_available', 'Available'), 
+        2: _t('room_status_maintenance', 'Maintenance'), 
+        3: _t('room_status_blocked', 'Blocked'), 
+        4: _t('room_status_out_of_order', 'Out of Order'), 
+        5: _t('room_status_occupied', 'Occupied'), 
+        6: _t('room_status_cleaning', 'Cleaning') 
+    };
+    return map[status] || _t('room_status_unknown', 'Unknown');
+}
+
+function _statusNameToNum(name) {
+    const map = { pending: 1, confirmed: 2, cancelled: 3, checkedin: 4, checkedout: 5, noshow: 6 };
+    return map[(name || '').toLowerCase()];
+}
+
+function _statusDisplayName(statusStr) {
+    const map = { 
+        Pending: _t('status_pending', 'Pending'), 
+        Confirmed: _t('status_confirmed', 'Confirmed'), 
+        Cancelled: _t('status_cancelled', 'Cancelled'), 
+        CheckedIn: _t('status_checked_in', 'Checked In'), 
+        CheckedOut: _t('status_checked_out', 'Checked Out'), 
+        NoShow: _t('status_no_show', 'No Show') 
+    };
+    return map[statusStr] || statusStr || _t('status_unknown', 'Unknown');
+}
 class CalendarManager {
     constructor() {
         this.calendar = null;
@@ -38,12 +120,27 @@ class CalendarManager {
             this._bindFilterEvents();
             this._bindQuickNav();
             this._bindModalButtons();
+            // Add mobile-specific setup for FAB
+            this._setupMobileFAB();
             await this._initSignalR();
             await this._loadReservations();
             console.log('[Calendar] Initialized successfully');
         } catch (err) {
             console.error('[Calendar] Init error:', err);
             UI.showError('Failed to initialize calendar');
+        }
+    }
+
+    _setupMobileFAB() {
+        // Ensure the FAB button works correctly on mobile devices
+        const button = document.getElementById('addReservationBtn');
+        if (button) {
+            button.addEventListener('click', (e) => {
+                // Prevent default to ensure clean event handling
+                e.preventDefault();
+                // Create modal for new reservation
+                this._showAddReservationModal();
+            });
         }
     }
 
@@ -158,6 +255,7 @@ class CalendarManager {
             // ── Views ──────────────────────────────────────────
             initialView,
             initialDate: this._restoredDate || new Date(),
+            locale: window.__hotelLocale || 'en',
             headerToolbar: {
                 left:   'prev,next today',
                 center: 'title',
@@ -309,7 +407,7 @@ class CalendarManager {
         const { reservation, statusStr, nights } = info.event.extendedProps;
         const guestName = reservation.guestName || 'Guest';
         const isBookingCom = reservation.source === 2 || reservation.source === 'BookingCom';
-        const sourceIcon = isBookingCom ? '<i class="bi bi-globe cal-event-source-icon" title="Booking.com"></i>' : '';
+        const sourceIcon = isBookingCom ? '<i class="bi bi-globe cal-event-source-icon" title="' + _t('booking_com', 'Booking.com') + '"></i>' : '';
         const nightsLabel = nights > 0 ? `${nights}n` : '';
 
         return {
@@ -356,7 +454,7 @@ class CalendarManager {
             <div class="mb-3">
                 <div class="d-flex align-items-center justify-content-between mb-2">
                     <span class="badge status-${statusClass} fs-6">${statusDisplay}</span>
-                    ${isBookingCom ? '<span class="badge bg-secondary"><i class="bi bi-globe me-1"></i>Booking.com</span>' : ''}
+                    ${isBookingCom ? '<span class="badge bg-secondary"><i class="bi bi-globe me-1"></i>' + _t('booking_com', 'Booking.com') + '</span>' : ''}
                 </div>
                 <div class="list-group list-group-flush">
                     <div class="list-group-item px-0 py-2 d-flex gap-2">
@@ -394,7 +492,7 @@ class CalendarManager {
             ${(statusClass !== 'cancelled' && statusClass !== 'checkedout') ? `
             <div class="d-grid gap-2">
                 <button class="btn btn-danger btn-sm" id="bsCancelBtn">
-                    <i class="bi bi-x-circle me-1"></i>Cancel Reservation
+                    <i class="bi bi-x-circle me-1"></i>${_t('cancel_reservation', 'Cancel Reservation')}
                 </button>
             </div>` : ''}
         `;
@@ -462,10 +560,24 @@ class CalendarManager {
     _onEventDragStart(info) {
         // Add dragging class for visual feedback
         info.el.classList.add('fc-event-dragging');
+        
+        // Highlight today's date when dragging starts
+        const today = new Date();
+        const todayEl = document.querySelector(`[data-date="${this._formatDate(today)}"]`);
+        if (todayEl) {
+            todayEl.classList.add('cal-today-highlight');
+        }
     }
 
     _onEventDragStop(info) {
         info.el.classList.remove('fc-event-dragging');
+        
+        // Remove today's date highlight when dragging stops
+        const today = new Date();
+        const todayEl = document.querySelector(`[data-date="${this._formatDate(today)}"]`);
+        if (todayEl) {
+            todayEl.classList.remove('cal-today-highlight');
+        }
     }
 
     async _onEventDrop(info) {
@@ -810,12 +922,12 @@ class CalendarManager {
             </div>
             <div class="cal-tooltip-body">
                 <div class="cal-tooltip-row"><i class="bi bi-building"></i><span>${this._escHtml(reservation.hotelName || '')}</span></div>
-                <div class="cal-tooltip-row"><i class="bi bi-door-open"></i><span>Room ${this._escHtml(reservation.roomNumber || '')} · ${this._roomTypeLabel(reservation.roomType)}</span></div>
+                <div class="cal-tooltip-row"><i class="bi bi-door-open"></i><span>${_t('room', 'Room')} ${this._escHtml(reservation.roomNumber || '')} · ${this._roomTypeLabel(reservation.roomType)}</span></div>
                 <div class="cal-tooltip-row"><i class="bi bi-calendar-check"></i><span>${fmt(reservation.checkInDate)} → ${fmt(reservation.checkOutDate)}</span></div>
-                <div class="cal-tooltip-row"><i class="bi bi-moon"></i><span>${nights} night${nights !== 1 ? 's' : ''}</span></div>
-                <div class="cal-tooltip-row"><i class="bi bi-people"></i><span>${reservation.numberOfGuests || 1} guest${(reservation.numberOfGuests || 1) !== 1 ? 's' : ''}</span></div>
-                <div class="cal-tooltip-row"><i class="bi bi-currency-dollar"></i><span>$${(reservation.totalAmount || 0).toFixed(2)}</span></div>
-                ${isBookingCom ? '<div class="cal-tooltip-row"><i class="bi bi-globe"></i><span>Booking.com</span></div>' : ''}
+                <div class="cal-tooltip-row"><i class="bi bi-moon"></i><span>${nights} ${_t('nights', 'nights')}</span></div>
+                <div class="cal-tooltip-row"><i class="bi bi-people"></i><span>${reservation.numberOfGuests || 1} ${_t('guests', 'guests')}</span></div>
+                <div class="cal-tooltip-row"><i class="bi bi-currency-dollar"></i><span>${(reservation.totalAmount || 0).toFixed(2)}</span></div>
+                ${isBookingCom ? '<div class="cal-tooltip-row"><i class="bi bi-globe"></i><span>' + _t('booking_com', 'Booking.com') + '</span></div>' : ''}
                 ${reservation.specialRequests ? `<div class="cal-tooltip-row"><i class="bi bi-chat-text"></i><span>${this._escHtml(reservation.specialRequests.substring(0, 60))}${reservation.specialRequests.length > 60 ? '…' : ''}</span></div>` : ''}
             </div>`;
 
@@ -879,7 +991,7 @@ class CalendarManager {
                 <div class="col-md-6">
                     <h6 class="text-primary border-bottom pb-1"><i class="bi bi-info-circle me-1"></i>Details</h6>
                     <p class="mb-1"><strong>Status:</strong> <span class="badge status-${statusClass}">${statusDisplay}</span></p>
-                    <p class="mb-1"><strong>Source:</strong> ${isBookingCom ? '<i class="bi bi-globe me-1"></i>Booking.com' : 'Manual'}</p>
+                    <p class="mb-1"><strong>Source:</strong> ${isBookingCom ? '<i class="bi bi-globe me-1"></i>' + _t('booking_com', 'Booking.com') : 'Manual'}</p>
                     <p class="mb-1"><strong>Total:</strong> $${(reservation.totalAmount || 0).toFixed(2)}</p>
                     ${reservation.bookingReference ? `<p class="mb-0"><strong>Ref:</strong> <code>${this._escHtml(reservation.bookingReference)}</code></p>` : ''}
                 </div>
@@ -1070,14 +1182,31 @@ class CalendarManager {
     }
 
     _statusDisplayName(statusStr) {
-        const map = { Pending: 'Pending', Confirmed: 'Confirmed', Cancelled: 'Cancelled', CheckedIn: 'Checked In', CheckedOut: 'Checked Out', NoShow: 'No Show' };
-        return map[statusStr] || statusStr || 'Unknown';
+        const map = { 
+            Pending: _t('status_pending', 'Pending'),
+            Confirmed: _t('status_confirmed', 'Confirmed'),
+            Cancelled: _t('status_cancelled', 'Cancelled'),
+            CheckedIn: _t('status_checked_in', 'Checked In'),
+            CheckedOut: _t('status_checked_out', 'Checked Out'),
+            NoShow: _t('status_no_show', 'No Show')
+        };
+        return map[statusStr] || statusStr || _t('status_unknown', 'Unknown');
     }
 
     _roomTypeLabel(type) {
-        const map = { 1: 'Single', 2: 'Double', 3: 'Suite', 4: 'Family', 5: 'Deluxe', 6: 'Twin', 7: 'Triple', 8: 'Quad', 9: 'Standard' };
+        const map = { 
+            1: _t('room_type_single', 'Single'),
+            2: _t('room_type_double', 'Double'),
+            3: _t('room_type_suite', 'Suite'),
+            4: _t('room_type_family', 'Family'),
+            5: _t('room_type_deluxe', 'Deluxe'),
+            6: _t('room_type_twin', 'Twin'),
+            7: _t('room_type_triple', 'Triple'),
+            8: _t('room_type_quad', 'Quad'),
+            9: _t('room_type_standard', 'Standard')
+        };
         if (typeof type === 'string') return type;
-        return map[type] || 'Room';
+        return map[type] || _t('room_type_room', 'Room');
     }
 
     _roomTypeNameToNum(name) {

@@ -7,8 +7,6 @@ using HotelReservationSystem.Models;
 using HotelReservationSystem.Models.DTOs;
 using HotelReservationSystem.Services.Interfaces;
 using HotelReservationSystem.Exceptions;
-using HotelReservationSystem.Tests.TestConfiguration;
-
 namespace HotelReservationSystem.Tests.Services;
 
 public class ReservationServiceTests

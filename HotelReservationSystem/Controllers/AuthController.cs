@@ -5,24 +5,27 @@ using HotelReservationSystem.Models;
 using HotelReservationSystem.Models.DTOs;
 using HotelReservationSystem.Services.Interfaces;
 using HotelReservationSystem.Authorization;
+using HotelReservationSystem.Infrastructure;
 
 namespace HotelReservationSystem.Controllers;
-
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
     private readonly ITwoFactorService _twoFactorService;
+    private readonly IJwtService _jwtService;
     private readonly ILogger<AuthController> _logger;
 
     public AuthController(
         IAuthService authService,
         ITwoFactorService twoFactorService,
+        IJwtService jwtService,
         ILogger<AuthController> logger)
     {
         _authService = authService;
         _twoFactorService = twoFactorService;
+        _jwtService = jwtService;
         _logger = logger;
     }
 
@@ -393,6 +396,35 @@ public class AuthController : ControllerBase
         {
             _logger.LogError(ex, "Error verificando código 2FA");
             return StatusCode(500, new { message = "Error al verificar el código 2FA" });
+        }
+    }
+
+    /// <summary>
+    /// Genera un token parcial para validar 2FA - endpoint del desafío 2FA
+    /// </summary>
+    [HttpPost("2fa/challenge")]
+    [Authorize]
+    public IActionResult Generate2FAPartialToken()
+    {
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized();
+            }
+
+            var partialToken = _jwtService.IssuePartialAuthToken(userId.ToString());
+            return Ok(new { 
+                message = "2FA challenge token generated successfully",
+                token = partialToken,
+                type = "2fa-challenge"
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error generating 2FA partial token");
+            return StatusCode(500, new { message = "An error occurred while generating 2FA challenge token" });
         }
     }
 

@@ -1,0 +1,218 @@
+@{
+    ViewData["Title"] = "Two-Factor Authentication Setup";
+}
+
+<div class="container py-4" style="max-width: 640px;">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-shield-lock me-2"></i>
+                Two-Factor Authentication (2FA)
+            </h5>
+        </div>
+        <div class="card-body">
+
+            <!-- Step 1: Scan QR code -->
+            <div id="step-setup">
+                <p class="text-muted">Scan the QR code below with your authenticator app (Google Authenticator, Authy, etc.), then enter the verification code to enable 2FA.</p>
+
+                <div class="text-center my-4">
+                    <div id="qrcode" class="d-inline-block p-2 border rounded"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Manual Entry Key</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control font-monospace" id="manualEntryKey" readonly>
+                        <button class="btn btn-outline-secondary" type="button" id="copyKeyBtn" title="Copy to clipboard">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                    <div class="form-text">Enter this key manually in your authenticator app if you cannot scan the QR code.</div>
+                </div>
+
+                <hr>
+
+                <div class="mb-3">
+                    <label for="verificationCode" class="form-label fw-semibold">Verification Code</label>
+                    <input type="text" class="form-control" id="verificationCode" maxlength="6"
+                           placeholder="Enter 6-digit code" inputmode="numeric" autocomplete="one-time-code">
+                    <div class="invalid-feedback" id="codeError"></div>
+                    <div class="form-text">Enter the 6-digit code shown in your authenticator app to confirm setup.</div>
+                </div>
+
+                <div class="d-grid">
+                    <button type="button" class="btn btn-success btn-lg" id="enableBtn">
+                        <i class="bi bi-shield-check me-2"></i>Enable Two-Factor Authentication
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Recovery codes (shown after enabling) -->
+            <div id="step-recovery" style="display:none;">
+                <div class="alert alert-warning d-flex gap-2" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill flex-shrink-0 mt-1"></i>
+                    <div>
+                        <strong>Save these recovery codes!</strong><br>
+                        These codes are shown only once. Store them in a safe place. Each code can be used once to access your account if you lose your authenticator device.
+                    </div>
+                </div>
+
+                <div class="border rounded p-3 mb-3 bg-light font-monospace" id="recoveryCodesList" style="column-count:2; column-gap: 2rem;"></div>
+
+                <div class="d-flex gap-2 mb-4">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="copyCodesBtn">
+                        <i class="bi bi-clipboard me-1"></i>Copy All
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="downloadCodesBtn">
+                        <i class="bi bi-download me-1"></i>Download
+                    </button>
+                </div>
+
+                <div class="d-grid">
+                    <a href="/" class="btn btn-primary">
+                        <i class="bi bi-check-circle me-2"></i>Done — Go to Dashboard
+                    </a>
+                </div>
+            </div>
+
+            <!-- Loading state -->
+            <div id="step-loading" style="display:none;" class="text-center py-4">
+                <div class="spinner-border text-primary" role="status"></div>
+                <div class="mt-2 text-muted">Loading setup information...</div>
+            </div>
+
+            <!-- Error state -->
+            <div id="step-error" style="display:none;" class="text-center py-4">
+                <i class="bi bi-exclamation-triangle text-danger" style="font-size: 2rem;"></i>
+                <div class="mt-2 text-danger" id="setupErrorMessage">Failed to load 2FA setup information.</div>
+                <button type="button" class="btn btn-outline-primary mt-3" id="retryBtn">Retry</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- qrcode.js CDN (client-side only, no server-side image generation) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
+        integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSi2jPWPHW3yl7HCGMRVd/2JCKSzV7nSS59Q=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+(function () {
+    'use strict';
+
+    let _qrCodeInstance = null;
+    let _recoveryCodes = [];
+
+    function showStep(stepId) {
+        ['step-setup', 'step-recovery', 'step-loading', 'step-error'].forEach(id => {
+            document.getElementById(id).style.display = (id === stepId) ? 'block' : 'none';
+        });
+    }
+
+    async function loadSetupInfo() {
+        showStep('step-loading');
+        try {
+            const data = await API.setup2FA();
+
+            // Render QR code
+            const qrDiv = document.getElementById('qrcode');
+            qrDiv.innerHTML = '';
+            _qrCodeInstance = new QRCode(qrDiv, {
+                text: data.authenticatorUri,
+                width: 200,
+                height: 200,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+
+            // Show manual key
+            document.getElementById('manualEntryKey').value = data.manualEntryKey;
+
+            showStep('step-setup');
+        } catch (err) {
+            document.getElementById('setupErrorMessage').textContent = err.message || 'Failed to load 2FA setup.';
+            showStep('step-error');
+        }
+    }
+
+    async function enableTwoFactor() {
+        const codeInput = document.getElementById('verificationCode');
+        const code = codeInput.value.trim();
+
+        if (!code || code.length !== 6) {
+            codeInput.classList.add('is-invalid');
+            document.getElementById('codeError').textContent = 'Please enter a 6-digit code.';
+            return;
+        }
+        codeInput.classList.remove('is-invalid');
+
+        try {
+            UI.showLoading('Enabling 2FA...');
+            const response = await API.enable2FA(code);
+
+            if (response && response.recoveryCodes) {
+                _recoveryCodes = response.recoveryCodes;
+                renderRecoveryCodes(_recoveryCodes);
+                showStep('step-recovery');
+            } else {
+                throw new Error('Unexpected response from server');
+            }
+        } catch (err) {
+            codeInput.classList.add('is-invalid');
+            document.getElementById('codeError').textContent = err.message || 'Invalid code. Please try again.';
+            codeInput.value = '';
+        } finally {
+            UI.hideLoading();
+        }
+    }
+
+    function renderRecoveryCodes(codes) {
+        const container = document.getElementById('recoveryCodesList');
+        container.innerHTML = codes.map(c => `<div class="mb-1">${escapeHtml(c)}</div>`).join('');
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Load setup info on page load
+        loadSetupInfo();
+
+        document.getElementById('retryBtn').addEventListener('click', loadSetupInfo);
+
+        document.getElementById('enableBtn').addEventListener('click', enableTwoFactor);
+
+        document.getElementById('verificationCode').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') enableTwoFactor();
+        });
+
+        document.getElementById('copyKeyBtn').addEventListener('click', function () {
+            const key = document.getElementById('manualEntryKey').value;
+            navigator.clipboard.writeText(key).then(() => {
+                UI.showToast('Key copied to clipboard', 'success');
+            });
+        });
+
+        document.getElementById('copyCodesBtn').addEventListener('click', function () {
+            navigator.clipboard.writeText(_recoveryCodes.join('\n')).then(() => {
+                UI.showToast('Recovery codes copied to clipboard', 'success');
+            });
+        });
+
+        document.getElementById('downloadCodesBtn').addEventListener('click', function () {
+            const content = 'Hotel Reservation System — 2FA Recovery Codes\n\n' + _recoveryCodes.join('\n');
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'hotel-2fa-recovery-codes.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+    });
+}());
+</script>

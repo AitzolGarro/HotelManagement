@@ -1,5 +1,7 @@
 using HotelReservationSystem.Models.DTOs;
 using HotelReservationSystem.Services.Interfaces;
+using Microsoft.Extensions.Localization;
+using HotelReservationSystem.Resources;
 
 namespace HotelReservationSystem.Services.Widgets;
 
@@ -7,14 +9,15 @@ namespace HotelReservationSystem.Services.Widgets;
 public class RecentReservationsWidget : DashboardWidgetBase
 {
     private readonly IDashboardService _dashboardService;
+    private readonly IStringLocalizer _localizer;
 
-    public RecentReservationsWidget(IDashboardService dashboardService)
+    public RecentReservationsWidget(IDashboardService dashboardService, IStringLocalizer<HardcodedStringLocalizer> localizer)
         => _dashboardService = dashboardService;
 
     public override string     WidgetId    => "recent-reservations";
     public override WidgetType Type        => WidgetType.RecentReservations;
-    public override string     Name        => "Recent Reservations";
-    public override string     Description => "Latest reservations across all properties";
+    public override string     Name        => _localizer["Widget_RecentReservations_Title"];
+    public override string     Description => _localizer["Widget_RecentReservations_Description"];
     public override string     Icon        => "bi-clock-history";
     public override int        DefaultW    => 12;
     public override int        DefaultH    => 4;

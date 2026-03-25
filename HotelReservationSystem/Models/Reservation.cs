@@ -37,7 +37,8 @@ public enum ReservationSource
     Phone = 6,
     WalkIn = 7,
     Email = 8,
-    Website = 9
+    Website = 9,
+    Expedia = 10
 }
 
 public enum ReservationStatus

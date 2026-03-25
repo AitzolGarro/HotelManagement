@@ -1,5 +1,7 @@
 using HotelReservationSystem.Models.DTOs;
 using HotelReservationSystem.Services.Interfaces;
+using Microsoft.Extensions.Localization;
+using HotelReservationSystem.Resources;
 
 namespace HotelReservationSystem.Services.Widgets;
 
@@ -7,14 +9,15 @@ namespace HotelReservationSystem.Services.Widgets;
 public class UpcomingCheckInsWidget : DashboardWidgetBase
 {
     private readonly IDashboardService _dashboardService;
+    private readonly IStringLocalizer _localizer;
 
-    public UpcomingCheckInsWidget(IDashboardService dashboardService)
-        => _dashboardService = dashboardService;
+    public UpcomingCheckInsWidget(IDashboardService dashboardService, IStringLocalizer<HardcodedStringLocalizer> localizer)
+        => (_dashboardService, _localizer) = (dashboardService, localizer);
 
     public override string     WidgetId    => "upcoming-checkins";
     public override WidgetType Type        => WidgetType.UpcomingCheckIns;
-    public override string     Name        => "Upcoming Check-ins";
-    public override string     Description => "Guests checking in today";
+    public override string     Name        => _localizer["Widget_UpcomingCheckIns_Title"];
+    public override string     Description => _localizer["Widget_UpcomingCheckIns_Description"];
     public override string     Icon        => "bi-box-arrow-in-right";
     public override int        DefaultW    => 4;
     public override int        DefaultH    => 3;

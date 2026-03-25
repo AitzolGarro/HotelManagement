@@ -1,5 +1,7 @@
 using HotelReservationSystem.Models.DTOs;
 using HotelReservationSystem.Services.Interfaces;
+using Microsoft.Extensions.Localization;
+using HotelReservationSystem.Resources;
 
 namespace HotelReservationSystem.Services.Widgets;
 
@@ -7,14 +9,15 @@ namespace HotelReservationSystem.Services.Widgets;
 public class RevenueWidget : DashboardWidgetBase
 {
     private readonly IDashboardService _dashboardService;
+    private readonly IStringLocalizer _localizer;
 
-    public RevenueWidget(IDashboardService dashboardService)
-        => _dashboardService = dashboardService;
+    public RevenueWidget(IDashboardService dashboardService, IStringLocalizer<HardcodedStringLocalizer> localizer)
+        => (_dashboardService, _localizer) = (dashboardService, localizer);
 
     public override string     WidgetId    => "revenue";
     public override WidgetType Type        => WidgetType.Revenue;
-    public override string     Name        => "Revenue";
-    public override string     Description => "Today, week and month revenue with trend chart";
+    public override string     Name        => _localizer["Widget_Revenue_Title"];
+    public override string     Description => _localizer["Widget_Revenue_Description"];
     public override string     Icon        => "bi-currency-dollar";
     public override int        DefaultW    => 3;
     public override int        DefaultH    => 2;

@@ -287,7 +287,11 @@ function initializeProperties() {
 
 function initializeReservations() {
     console.log('Reservations page initialized');
-    // Reservations-specific initialization will be implemented in task 10
+    // Initialize reservations module
+    if (typeof ReservationsManager !== 'undefined') {
+        window.reservationsManager = new ReservationsManager();
+        window.reservationsManager.initialize();
+    }
 }
 
 function initializeReports() {

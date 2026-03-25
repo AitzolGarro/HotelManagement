@@ -260,4 +260,9 @@
   <data name="GP_Detail_CancelReason"><value>Reason for cancellation…</value></data>
   <data name="GP_Detail_NotFound"><value>Reservation not found</value></data>
   <data name="GP_Detail_ViewAllReservations"><value>View All Reservations</value></data>
+
+  <!-- Weather Widget -->
+  <data name="WeatherWidgetName"><value>Weather Widget</value></data>
+  <data name="WeatherWidgetDescription"><value>Current weather information for the hotel location</value></data>
+  <data name="WeatherWidgetNoData"><value>No weather data available</value></data>
 </root>
