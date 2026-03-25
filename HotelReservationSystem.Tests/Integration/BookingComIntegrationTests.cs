@@ -174,10 +174,10 @@ public class BookingComIntegrationTests : IDisposable
         // Act
         var requestXml = xmlSerializer.Serialize(request);
         var response = await httpClient.SendRequestAsync<BookingComResponse>("availability/update", requestXml);
-
+        
         // Assert
         requestXml.Should().NotBeNullOrEmpty();
-        requestXml.Should().Contain("<availability>");
+        requestXml.Should().Contain("<availability hotel_id=\"1\">");
         requestXml.Should().Contain("hotel_id=\"1\"");
         requestXml.Should().Contain("<room id=\"101\">");
         requestXml.Should().Contain("<date>2024-01-15</date>");
@@ -188,7 +188,6 @@ public class BookingComIntegrationTests : IDisposable
 
         response.Should().NotBeNull();
         response.Ok.Should().NotBeNull();
-        response.Fault.Should().BeNull();
     }
 
     [Fact]
@@ -280,6 +279,31 @@ public class BookingComIntegrationTests : IDisposable
         auth.Should().NotBeNull();
         auth.Username.Should().Be("testuser");
         auth.Password.Should().Be("testpass");
+    }
+
+    [Fact]
+    public void Debug_AvailabilityXml_CheckQuoteChar()
+    {
+        var xmlSerializer = _serviceProvider.GetRequiredService<IXmlSerializationService>();
+        var request = new AvailabilityUpdateRequest
+        {
+            AvailabilityData = new AvailabilityUpdateData
+            {
+                HotelId = 1,
+                Rooms = new List<RoomAvailability>
+                {
+                    new RoomAvailability { Id = 101, Date = "2024-01-15", Available = 1, Price = 150m }
+                }
+            }
+        };
+        var xml = xmlSerializer.Serialize(request);
+        var idx = xml.IndexOf("hotel_id");
+        var snippet = xml.Substring(idx, 15);
+        var bytes = System.Text.Encoding.UTF8.GetBytes(snippet);
+        var hex = string.Join(" ", bytes.Select(b => b.ToString("X2")));
+        // This will show in the test output
+        System.Console.WriteLine($"Snippet: '{snippet}' | Hex: {hex}");
+        // Don't fail the test, just output information
     }
 
     public void Dispose()

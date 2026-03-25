@@ -44,13 +44,9 @@ public class PushBulkAvailabilityTests
 
         _sut = new BookingIntegrationService(
             _httpMock.Object,
-            _xmlMock.Object,
             _authMock.Object,
-            _uowMock.Object,
-            Mock.Of<IReservationService>(),
-            Mock.Of<IPropertyService>(),
-            _config,
-            Mock.Of<ILogger<BookingIntegrationService>>());
+            Mock.Of<ILogger<BookingIntegrationService>>(),
+            _uowMock.Object);
     }
 
     [Fact]

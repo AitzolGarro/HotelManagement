@@ -67,7 +67,7 @@ public class ReservationSyncBackgroundService : BackgroundService
         try
         {
             var bookingIntegrationService = scope.ServiceProvider.GetRequiredService<IBookingIntegrationService>();
-            await bookingIntegrationService.SyncReservationsAsync();
+            await bookingIntegrationService.FetchReservationsAsync(0, cancellationToken);
             _logger.LogInformation("Booking.com reservation sync completed");
         }
         catch (Exception ex)
@@ -97,7 +97,12 @@ public class ReservationSyncBackgroundService : BackgroundService
             return;
         }
 
-        var channelManagerService = services.GetRequiredService<IChannelManagerService>();
+        var channelManagerService = services.GetService<IChannelManagerService>();
+        if (channelManagerService == null)
+        {
+            _logger.LogWarning("IChannelManagerService not registered — skipping Expedia channel sync");
+            return;
+        }
 
         // Get all hotels' Expedia channels (ChannelId == 2 for Expedia in the current data model)
         var allExpediaChannels = await GetExpediaChannelsAsync(services);

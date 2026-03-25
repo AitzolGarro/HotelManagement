@@ -212,14 +212,28 @@ namespace HotelReservationSystem.Middleware
                 }
             };
 
-            context.Response.StatusCode = response.StatusCode;
-
-            var jsonResponse = JsonSerializer.Serialize(response, new JsonSerializerOptions
+            // Ensure we won't get an exception if we already wrote to the response
+            try
             {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            });
+                context.Response.StatusCode = response.StatusCode;
 
-            await context.Response.WriteAsync(jsonResponse);
+                var jsonResponse = JsonSerializer.Serialize(response, new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                });
+
+                await context.Response.WriteAsync(jsonResponse);
+            }
+            catch (ObjectDisposedException)
+            {
+                // Response was already disposed, log and ignore
+                _logger.LogWarning("Cannot write exception response, response was already disposed");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to write exception response");
+                // If we fail to write the response, we can't do anything more
+            }
         }
 
         private static string GetValidationErrors(ValidationException validationException)

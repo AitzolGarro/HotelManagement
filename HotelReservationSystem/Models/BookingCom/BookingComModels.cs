@@ -19,14 +19,30 @@ public class BookingComRequest
 [XmlRoot("response")]
 public class BookingComResponse
 {
-    [XmlAttribute("version")]
-    public string Version { get; set; } = string.Empty;
+    [XmlAttribute("status")]
+    public string Status { get; set; } = "success";
     
-    [XmlElement("fault")]
-    public BookingComFault? Fault { get; set; }
+    [XmlElement("message")]
+    public string Message { get; set; } = string.Empty;
+    
+    [XmlElement("code")]
+    public string Code { get; set; } = string.Empty;
     
     [XmlElement("ok")]
     public string? Ok { get; set; }
+
+    // Fault as an object with Code and Message properties to satisfy code that uses baseResponse.Fault.Code
+    [XmlElement("fault")]
+    public FaultObject? Fault { get; set; }
+}
+
+public class FaultObject
+{
+    [XmlElement("code")]
+    public string Code { get; set; } = string.Empty;
+    
+    [XmlElement("message")]
+    public string Message { get; set; } = string.Empty;
 }
 
 public class BookingComAuthentication
@@ -36,91 +52,6 @@ public class BookingComAuthentication
     
     [XmlElement("password")]
     public string Password { get; set; } = string.Empty;
-}
-
-public class BookingComFault
-{
-    [XmlAttribute("code")]
-    public string Code { get; set; } = string.Empty;
-    
-    [XmlText]
-    public string Message { get; set; } = string.Empty;
-}
-
-// Reservation-specific models
-[XmlRoot("request")]
-public class ReservationSyncRequest : BookingComRequest
-{
-    [XmlElement("reservations")]
-    public ReservationSyncData ReservationData { get; set; } = new();
-}
-
-public class ReservationSyncData
-{
-    [XmlAttribute("hotel_id")]
-    public int HotelId { get; set; }
-    
-    [XmlAttribute("from_date")]
-    public string FromDate { get; set; } = string.Empty;
-    
-    [XmlAttribute("to_date")]
-    public string ToDate { get; set; } = string.Empty;
-}
-
-[XmlRoot("response")]
-public class ReservationSyncResponse : BookingComResponse
-{
-    [XmlArray("reservations")]
-    [XmlArrayItem("reservation")]
-    public List<BookingComReservation> Reservations { get; set; } = new();
-}
-
-public class BookingComReservation
-{
-    [XmlAttribute("id")]
-    public string Id { get; set; } = string.Empty;
-    
-    [XmlAttribute("status")]
-    public string Status { get; set; } = string.Empty;
-    
-    [XmlElement("hotel_id")]
-    public int HotelId { get; set; }
-    
-    [XmlElement("room_id")]
-    public int RoomId { get; set; }
-    
-    [XmlElement("checkin")]
-    public string CheckIn { get; set; } = string.Empty;
-    
-    [XmlElement("checkout")]
-    public string CheckOut { get; set; } = string.Empty;
-    
-    [XmlElement("guest_name")]
-    public string GuestName { get; set; } = string.Empty;
-    
-    [XmlElement("guest_email")]
-    public string GuestEmail { get; set; } = string.Empty;
-    
-    [XmlElement("guest_phone")]
-    public string GuestPhone { get; set; } = string.Empty;
-    
-    [XmlElement("number_of_guests")]
-    public int NumberOfGuests { get; set; }
-    
-    [XmlElement("total_amount")]
-    public decimal TotalAmount { get; set; }
-    
-    [XmlElement("currency")]
-    public string Currency { get; set; } = string.Empty;
-    
-    [XmlElement("special_requests")]
-    public string SpecialRequests { get; set; } = string.Empty;
-    
-    [XmlElement("created_at")]
-    public string CreatedAt { get; set; } = string.Empty;
-    
-    [XmlElement("updated_at")]
-    public string UpdatedAt { get; set; } = string.Empty;
 }
 
 // Availability update models
@@ -155,31 +86,108 @@ public class RoomAvailability
     public decimal Price { get; set; }
 }
 
-// Webhook notification models
-[XmlRoot("notification")]
-public class BookingComWebhookNotification
+[XmlRoot("request")]
+public class AvailabilityUpdateResponse : BookingComResponse
 {
-    [XmlAttribute("type")]
-    public string Type { get; set; } = string.Empty;
-    
-    [XmlAttribute("timestamp")]
-    public string Timestamp { get; set; } = string.Empty;
-    
-    [XmlElement("reservation")]
-    public BookingComReservation? Reservation { get; set; }
-    
-    [XmlElement("cancellation")]
-    public BookingComCancellation? Cancellation { get; set; }
+    [XmlElement("updated")]
+    public bool Updated { get; set; }
 }
 
-public class BookingComCancellation
+// Room search models  
+[XmlRoot("request")]
+public class RoomSearchRequest : BookingComRequest
 {
-    [XmlAttribute("reservation_id")]
-    public string ReservationId { get; set; } = string.Empty;
+    [XmlElement("destination_id")]
+    public string DestinationId { get; set; } = string.Empty;
     
-    [XmlElement("reason")]
-    public string Reason { get; set; } = string.Empty;
+    [XmlElement("checkin")]
+    public string Checkin { get; set; } = string.Empty;
     
-    [XmlElement("cancelled_at")]
-    public string CancelledAt { get; set; } = string.Empty;
+    [XmlElement("checkout")]
+    public string Checkout { get; set; } = string.Empty;
+    
+    [XmlElement("rooms")]
+    public int Rooms { get; set; } = 1;
+    
+    [XmlElement("adults")]
+    public int Adults { get; set; } = 1;
+}
+
+[XmlRoot("response")]
+public class RoomSearchResponse : BookingComResponse
+{
+    [XmlElement("hotel")]
+    public HotelData? Hotel { get; set; }
+    
+    [XmlElement("room")]
+    public RoomData? Room { get; set; }
+}
+
+public class HotelData
+{
+    [XmlElement("id")]
+    public string Id { get; set; } = string.Empty;
+    
+    [XmlElement("name")]
+    public string Name { get; set; } = string.Empty;
+    
+    [XmlElement("address")]
+    public string Address { get; set; } = string.Empty;
+}
+
+public class RoomData
+{
+    [XmlElement("id")]
+    public string Id { get; set; } = string.Empty;
+    
+    [XmlElement("name")]
+    public string Name { get; set; } = string.Empty;
+    
+    [XmlElement("price")]
+    public decimal Price { get; set; }
+}
+
+// Authentication test request
+[XmlRoot("request")]
+public class AuthenticationTestRequest : BookingComRequest
+{
+    [XmlElement("test")]
+    public string Test { get; set; } = "auth";
+}
+
+[XmlRoot("response")]
+public class AuthenticationTestResponse : BookingComResponse
+{
+    [XmlElement("authenticated")]
+    public bool Authenticated { get; set; }
+}
+
+// Booking request models
+[XmlRoot("request")]
+public class BookingRequest : BookingComRequest
+{
+    [XmlElement("hotel_id")]
+    public string HotelId { get; set; } = string.Empty;
+    
+    [XmlElement("checkin")]
+    public string Checkin { get; set; } = string.Empty;
+    
+    [XmlElement("checkout")]
+    public string Checkout { get; set; } = string.Empty;
+    
+    [XmlElement("guests")]
+    public int Guests { get; set; } = 1;
+    
+    [XmlElement("room_type")]
+    public string RoomType { get; set; } = string.Empty;
+}
+
+[XmlRoot("response")]
+public class BookingResponse : BookingComResponse
+{
+    [XmlElement("booking_id")]
+    public string BookingId { get; set; } = string.Empty;
+    
+    [XmlElement("status")]
+    public string Status { get; set; } = "confirmed";
 }

@@ -10,7 +10,7 @@ namespace HotelReservationSystem.Services;
 public class ChannelManagerService : IChannelManagerService
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly HotelReservationSystem.Services.Interfaces.IBookingIntegrationService _bookingComService;
+    private readonly HotelReservationSystem.Services.Interfaces.IBookingIntegrationService _bookingIntegrationService;
     private readonly IExpediaChannelService _expediaService;
     private readonly IEncryptionService _encryptionService;
     private readonly HotelReservationContext _dbContext;
@@ -18,14 +18,14 @@ public class ChannelManagerService : IChannelManagerService
 
     public ChannelManagerService(
         IUnitOfWork unitOfWork,
-        HotelReservationSystem.Services.Interfaces.IBookingIntegrationService bookingComService,
+        HotelReservationSystem.Services.Interfaces.IBookingIntegrationService bookingIntegrationService,
         IExpediaChannelService expediaService,
         IEncryptionService encryptionService,
         HotelReservationContext dbContext,
         ILogger<ChannelManagerService> logger)
     {
         _unitOfWork = unitOfWork;
-        _bookingComService = bookingComService;
+        _bookingIntegrationService = bookingIntegrationService;
         _expediaService = expediaService;
         _encryptionService = encryptionService;
         _dbContext = dbContext;
@@ -86,7 +86,8 @@ public class ChannelManagerService : IChannelManagerService
             // Assuming ChannelId 1 is Booking.com in this demo
             if (hc.ChannelId == 1)
             {
-                // This would map your inventory and call BookingComService
+                var dateRange = new DateRange(DateOnly.FromDateTime(DateTime.Today), DateOnly.FromDateTime(DateTime.Today.AddDays(30)));
+                await _bookingIntegrationService.PushBulkAvailabilityAsync(hc.HotelId, dateRange);
                 await LogSyncAsync(hotelChannelId, "Inventory", "Success", "Inventory synced successfully");
                 return true;
             }
@@ -115,6 +116,7 @@ public class ChannelManagerService : IChannelManagerService
         {
             if (hc.ChannelId == 1)
             {
+                await _bookingIntegrationService.SyncRatesToChannelAsync(hc.HotelId, hc.Id);
                 await LogSyncAsync(hotelChannelId, "Rates", "Success", "Rates synced successfully");
                 return true;
             }
@@ -143,7 +145,8 @@ public class ChannelManagerService : IChannelManagerService
         {
             if (hc.ChannelId == 1) // Booking.com
             {
-                await _bookingComService.SyncReservationsAsync();
+                var reservations = await _bookingIntegrationService.FetchReservationsAsync(hc.HotelId, default(CancellationToken));
+            _ = reservations; // Ignore return value
                 await LogSyncAsync(hotelChannelId, "Reservations", "Success", $"Triggered Booking.com sync");
                 return true;
             }

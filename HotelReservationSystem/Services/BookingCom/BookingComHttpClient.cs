@@ -159,6 +159,8 @@ public class BookingComConfiguration
     public int TimeoutSeconds { get; set; } = 30;
     public int MaxRetryAttempts { get; set; } = 3;
     public int RetryDelaySeconds { get; set; } = 2;
+    public string WebhookSecret { get; set; } = string.Empty;
+    public int BulkPushDelayMs { get; set; } = 200;
 }
 
 public class BookingComApiException : Exception

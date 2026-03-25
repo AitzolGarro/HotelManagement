@@ -292,11 +292,13 @@ try
     builder.Services.AddScoped<IGuestPortalService, GuestPortalService>();
 
     builder.Services.AddSingleton<IEncryptionService, EncryptionService>();
-    builder.Services.AddScoped<HotelReservationSystem.Services.BookingCom.IBookingIntegrationService, HotelReservationSystem.Services.BookingCom.BookingIntegrationService>();
-    // Registrar IBookingIntegrationService del namespace Interfaces para ChannelManagerService
-    builder.Services.AddScoped<HotelReservationSystem.Services.Interfaces.IBookingIntegrationService, HotelReservationSystem.Services.BookingIntegrationService>();
+
     // Expedia service registered after HttpClient wiring below
-    builder.Services.AddScoped<IChannelManagerService, ChannelManagerService>();
+    // Configure Expedia integration services
+    builder.Services.AddScoped<ExpediaAuthenticationService, ExpediaAuthenticationService>();
+    builder.Services.AddScoped<ExpediaHttpClient, ExpediaHttpClient>();
+    
+    builder.Services.AddScoped<IExpediaChannelService, ExpediaChannelService>();
     builder.Services.AddScoped<IPricingService, PricingService>();
     builder.Services.AddScoped<IExportService, ExportService>();
     builder.Services.AddScoped<INotificationService, NotificationService>();
@@ -337,6 +339,8 @@ try
 
     builder.Services.AddScoped<IXmlSerializationService, XmlSerializationService>();
     builder.Services.AddScoped<IBookingComAuthenticationService, BookingComAuthenticationService>();
+    // Register BookingIntegrationService as the implementation of IBookingIntegrationService
+    builder.Services.AddScoped<IBookingIntegrationService, BookingIntegrationService>();
 
     // Configure HTTP client with Polly retry policies
     builder.Services.AddHttpClient<IBookingComHttpClient, BookingComHttpClient>(client =>

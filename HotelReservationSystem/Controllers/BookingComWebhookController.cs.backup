@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using HotelReservationSystem.Services.BookingCom;
-using HotelReservationSystem.Services.Interfaces;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
@@ -44,6 +43,35 @@ public class BookingComWebhookController : ControllerBase
         var expBytes = System.Text.Encoding.UTF8.GetBytes(expectedHex);
         if (sigBytes.Length != expBytes.Length) return false;
         return System.Security.Cryptography.CryptographicOperations.FixedTimeEquals(sigBytes, expBytes);
+    }
+        catch
+        {
+            // If anything fails, reject the signature
+            return false;
+        }
+    }
+
+    private static bool IsHexString(string input)
+    {
+        foreach (var c in input)
+        {
+            if ((c < '0' || c > '9') && (c < 'a' || c > 'f') && (c < 'A' || c > 'F'))
+                return false;
+        }
+        return true;
+    }
+
+    private static bool TimeSafeEquals(string str1, string str2)
+    {
+        if (str1 == null || str2 == null || str1.Length != str2.Length)
+            return false;
+
+        var result = 0;
+        for (int i = 0; i < str1.Length; i++)
+        {
+            result |= str1[i] ^ str2[i];
+        }
+        return result == 0;
     }
 
 /// <summary>
@@ -98,7 +126,7 @@ public async Task<IActionResult> HandleWebhook(CancellationToken cancellationTok
         _logger.LogDebug("Webhook payload: {Payload}", xmlPayload);
 
         // Process the webhook
-        _logger.LogInformation("Webhook received for Booking.com");
+        await _bookingIntegrationService.HandleWebhookAsync(xmlPayload, cancellationToken);
 
         _logger.LogInformation("Successfully processed Booking.com webhook notification");
         return Ok(new { message = "Webhook processed successfully" });
@@ -147,5 +175,26 @@ public async Task<IActionResult> HandleWebhook(CancellationToken cancellationTok
 
         // Return the challenge as required by Booking.com webhook validation
         return Ok(new { challenge });
+    }
+    
+    /// <summary>
+    /// Verifies HMAC-SHA256 signature of a webhook payload.
+    /// </summary>
+    /// <param name="payload">Raw request body</param>
+    /// <param name="signature">Signature from request header</param>
+    /// <param name="secret">Webhook secret</param>
+    /// <returns>True if signature is valid</returns>
+    private static bool VerifySignature(string payload, string signature, string secret)
+    {
+        if (string.IsNullOrEmpty(secret)) return true; // unconfigured — log warning only
+        var key = System.Text.Encoding.UTF8.GetBytes(secret);
+        var data = System.Text.Encoding.UTF8.GetBytes(payload);
+        using var hmac = new System.Security.Cryptography.HMACSHA256(key);
+        var expected = hmac.ComputeHash(data);
+        var expectedHex = Convert.ToHexString(expected).ToLowerInvariant();
+        var sigBytes = System.Text.Encoding.UTF8.GetBytes(signature);
+        var expBytes = System.Text.Encoding.UTF8.GetBytes(expectedHex);
+        if (sigBytes.Length != expBytes.Length) return false;
+        return System.Security.Cryptography.CryptographicOperations.FixedTimeEquals(sigBytes, expBytes);
     }
 }

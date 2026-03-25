@@ -53,13 +53,15 @@ public class AuditLoggingMiddleware
         }
 
         var stopwatch = Stopwatch.StartNew();
-        var requestBody = await CaptureRequestBodyAsync(context);
         var timestamp = DateTime.UtcNow;
 
         // Continuar con el pipeline de solicitudes
         await _next(context);
 
         stopwatch.Stop();
+
+        // Para operaciones de escritura, capturar el cuerpo de la solicitud
+        var requestBody = await CaptureRequestBodyAsync(context);
 
         // Guardar el registro de auditoría de forma asíncrona sin bloquear el pipeline
         _ = SaveAuditLogAsync(context, method, requestBody, timestamp, stopwatch.ElapsedMilliseconds);
@@ -96,7 +98,8 @@ public class AuditLoggingMiddleware
             // Leer hasta el límite máximo de bytes
             var buffer = new char[MaxRequestBodySizeBytes];
             var charsRead = await reader.ReadAsync(buffer, 0, buffer.Length);
-            context.Request.Body.Position = 0;
+            if (context.Request.Body.CanSeek)
+                context.Request.Body.Position = 0;
 
             return charsRead > 0 ? new string(buffer, 0, charsRead) : null;
         }
