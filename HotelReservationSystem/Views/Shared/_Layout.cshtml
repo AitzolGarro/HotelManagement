@@ -8,7 +8,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Hotel Reservation System</title>
+    <title>@ViewData["Title"] - @L["Brand_HotelReservationSystem"]</title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -43,18 +43,18 @@
 </head>
 <body>
     <!-- Skip to content link for accessibility -->
-    <a href="#main-content" class="skip-link">Skip to main content</a>
-    <a href="#keyboard-shortcuts-help" class="skip-link" style="left: 200px;">Keyboard shortcuts</a>
+    <a href="#main-content" class="skip-link">@L["Layout_SkipToContent"]</a>
+    <a href="#keyboard-shortcuts-help" class="skip-link" style="left: 200px;">@L["Layout_KeyboardShortcuts"]</a>
     
     <header role="banner">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary" aria-label="Main Navigation">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary" aria-label="@L["Layout_MainNavigation"]">
             <div class="container-fluid">
-                <a class="navbar-brand" href="/" aria-label="Home">
+                <a class="navbar-brand" href="/" aria-label="@L["Layout_Home"]">
                     <i class="bi bi-building" aria-hidden="true"></i>
-                    Hotel Reservation System
+                    @L["Brand_HotelReservationSystem"]
                 </a>
                 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="@L["Layout_ToggleNavigation"]">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 
@@ -101,12 +101,12 @@
                                     data-bs-toggle="dropdown"
                                     data-bs-auto-close="outside"
                                     aria-expanded="false"
-                                    aria-label="Notifications">
+                                    aria-label="@L["Layout_NotificationsAria"]">
                                 <i class="bi bi-bell fs-5" aria-hidden="true"></i>
                                 <span id="notification-badge"
                                       class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                                       aria-live="polite"
-                                      aria-label="0 unread notifications"
+                                      aria-label="@L["Layout_UnreadNotificationsAria", 0]"
                                       style="display:none; font-size:.65rem;">0</span>
                             </button>
                             <div class="dropdown-menu dropdown-menu-end p-0 shadow notification-dropdown"
@@ -135,12 +135,12 @@
                         </li>
 
                         <li class="nav-item dropdown" id="userMenu" style="display: none;">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User Menu">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="@L["Layout_UserMenu"]">
                                 <i class="bi bi-person-circle me-1" aria-hidden="true"></i>
                                 <span id="userName"></span>
                                 <small class="text-muted ms-1" id="userRole" data-user-role></small>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-label="User actions">
+                            <ul class="dropdown-menu dropdown-menu-end" aria-label="@L["Layout_UserActions"]">
                                 <li class="dropdown-header">
                                     <div class="d-flex align-items-center">
                                         <i class="bi bi-person-circle fs-4 me-2" aria-hidden="true"></i>
@@ -215,12 +215,12 @@
 
     <main id="main-content" class="container-fluid mt-3" role="main" aria-busy="false">
         <!-- Loading overlay -->
-        <div id="loadingOverlay" class="loading-overlay" aria-label="Loading, please wait" style="display: none;">
+        <div id="loadingOverlay" class="loading-overlay" aria-label="@L["Layout_LoadingPleaseWait"]" style="display: none;">
             <div class="loading-spinner">
                 <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
+                    <span class="visually-hidden">@L["Common_Loading"]</span>
                 </div>
-                <div class="mt-2">Loading...</div>
+                <div class="mt-2">@L["Common_Loading"]</div>
             </div>
         </div>
 
@@ -228,14 +228,14 @@
         <div id="errorAlert" class="alert alert-danger alert-dismissible fade" role="alert" style="display: none;">
             <i class="bi bi-exclamation-triangle-fill"></i>
             <span id="errorMessage"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close alert"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="@L["Layout_CloseAlert"]"></button>
         </div>
 
         <!-- Success alert -->
         <div id="successAlert" class="alert alert-success alert-dismissible fade" role="alert" aria-live="polite" aria-atomic="true" style="display: none;">
             <i class="bi bi-check-circle-fill"></i>
             <span id="successMessage"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close alert"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="@L["Layout_CloseAlert"]"></button>
         </div>
 
         @RenderBody()
@@ -268,7 +268,7 @@
     </nav>
 
     <!-- Floating Action Button – primary action per page (Task 10.3) -->
-    <button id="mobileFab" class="fab d-lg-none" aria-label="New Reservation"
+    <button id="mobileFab" class="fab d-lg-none" aria-label="@L["Layout_MobileNewReservation"]"
             style="display:none!important" type="button">
         <i class="bi bi-plus-lg" aria-hidden="true"></i>
     </button>
@@ -310,17 +310,17 @@
     </script>
     
     <!-- Keyboard shortcuts reference (accessible to screen readers and keyboard users) -->
-    <div id="keyboard-shortcuts-help" class="visually-hidden" tabindex="-1" aria-label="Keyboard shortcuts reference">
-        <h2>Keyboard Shortcuts</h2>
+    <div id="keyboard-shortcuts-help" class="visually-hidden" tabindex="-1" aria-label="@L["Layout_KeyboardShortcutsReference"]">
+        <h2>@L["Layout_KeyboardShortcuts"]</h2>
         <ul>
-            <li>Alt+D — Go to Dashboard</li>
-            <li>Alt+C — Go to Calendar</li>
-            <li>Alt+R — Go to Reservations</li>
-            <li>Alt+N — Open Notifications</li>
-            <li>Escape — Close modal or dropdown</li>
-            <li>Tab / Shift+Tab — Navigate between elements</li>
-            <li>Enter / Space — Activate buttons and links</li>
-            <li>Arrow keys — Navigate within menus and tabs</li>
+            <li>@L["Layout_Shortcut_Dashboard"]</li>
+            <li>@L["Layout_Shortcut_Calendar"]</li>
+            <li>@L["Layout_Shortcut_Reservations"]</li>
+            <li>@L["Layout_Shortcut_Notifications"]</li>
+            <li>@L["Layout_Shortcut_Escape"]</li>
+            <li>@L["Layout_Shortcut_Tab"]</li>
+            <li>@L["Layout_Shortcut_Enter"]</li>
+            <li>@L["Layout_Shortcut_Arrows"]</li>
         </ul>
     </div>
 

@@ -7,16 +7,16 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3 mb-0">
                 <i class="bi bi-journal-bookmark"></i>
-                Reservations Management
+                @L["Reservations_Title"]
             </h1>
             <div class="d-flex gap-2">
                 <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#dateBlockingModal">
                     <i class="bi bi-calendar-x"></i>
-                    Block Dates
+                    @L["Reservations_BlockDates"]
                 </button>
                 <button type="button" class="btn btn-primary" id="newReservationBtn" data-bs-toggle="modal" data-bs-target="#reservationModal">
                     <i class="bi bi-plus-circle"></i>
-                    New Reservation
+                    @L["Reservations_NewReservation"]
                 </button>
             </div>
         </div>
@@ -30,16 +30,16 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">
             <i class="bi bi-list-ul"></i>
-            Reservations List
+            @L["Reservations_List"]
             <span class="badge bg-secondary ms-2 fs-6" id="resultCountBadge" style="display:none;"></span>
         </h5>
         <div class="d-flex gap-2">
             <div class="dropdown">
                 <button type="button" class="btn btn-outline-success btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="exportDropdownBtn">
-                    <i class="bi bi-download me-1"></i>Export
+                    <i class="bi bi-download me-1"></i>@L["Common_Export"]
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="exportDropdownBtn">
-                    <li><h6 class="dropdown-header">Export Results</h6></li>
+                    <li><h6 class="dropdown-header">@L["Reservations_ExportResults"]</h6></li>
                     <li>
                         <a class="dropdown-item" href="#" id="exportCsvBtn">
                             <i class="bi bi-filetype-csv me-2 text-success"></i>CSV
@@ -59,7 +59,7 @@
             </div>
             <button type="button" class="btn btn-outline-secondary btn-sm" id="refreshReservations">
                 <i class="bi bi-arrow-clockwise"></i>
-                Refresh
+                @L["Reservations_Refresh"]
             </button>
         </div>
     </div>
@@ -68,24 +68,24 @@
             <table class="table table-hover" id="reservationsTable">
                 <thead>
                     <tr>
-                        <th>Booking Ref</th>
-                        <th>Guest</th>
-                        <th>Hotel</th>
-                        <th>Room</th>
-                        <th>Check-in</th>
-                        <th>Check-out</th>
-                        <th>Guests</th>
-                        <th>Amount</th>
-                        <th>Source</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <th>@L["Reservations_BookingReference"]</th>
+                        <th>@L["Search_GuestName"]</th>
+                        <th>@L["Calendar_Hotel"]</th>
+                        <th>@L["room"]</th>
+                        <th>@L["Search_CheckInFrom"]</th>
+                        <th>@L["Search_CheckOutTo"]</th>
+                        <th>@L["guests"]</th>
+                        <th>@L["Search_SortAmount"]</th>
+                        <th>@L["Common_Source"]</th>
+                        <th>@L["Calendar_Status"]</th>
+                        <th>@L["Common_Actions"]</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td colspan="11" class="text-center text-muted py-4">
                             <i class="bi bi-journal-bookmark fs-1"></i>
-                            <p class="mt-2">Loading reservations...</p>
+                            <p class="mt-2">@L["Reservations_Loading"]</p>
                         </td>
                     </tr>
                 </tbody>
@@ -101,7 +101,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="reservationModalLabel">
                     <i class="bi bi-plus-circle"></i>
-                    New Reservation
+                    @L["Reservations_NewReservation"]
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -110,17 +110,17 @@
                     <div class="row">
                         <!-- Hotel Selection -->
                         <div class="col-md-6 mb-3">
-                            <label for="reservationHotel" class="form-label">Hotel <span class="text-danger">*</span></label>
-                            <select class="form-select" id="reservationHotel" name="hotelId" required>
-                                <option value="">Select Hotel</option>
+                                <label for="reservationHotel" class="form-label">@L["Calendar_Hotel"] <span class="text-danger">*</span></label>
+                                <select class="form-select" id="reservationHotel" name="hotelId" required>
+                                <option value="">@L["Reservations_SelectHotel"]</option>
                             </select>
                         </div>
                         
                         <!-- Room Selection -->
                         <div class="col-md-6 mb-3">
-                            <label for="reservationRoom" class="form-label">Room <span class="text-danger">*</span></label>
+                            <label for="reservationRoom" class="form-label">@L["room"] <span class="text-danger">*</span></label>
                             <select class="form-select" id="reservationRoom" name="roomId" required disabled>
-                                <option value="">Select Room</option>
+                                <option value="">@L["Reservations_SelectRoom"]</option>
                             </select>
                         </div>
                     </div>
@@ -128,13 +128,13 @@
                     <div class="row">
                         <!-- Check-in Date -->
                         <div class="col-md-6 mb-3">
-                            <label for="checkInDate" class="form-label">Check-in Date <span class="text-danger">*</span></label>
+                            <label for="checkInDate" class="form-label">@L["Search_CheckInFrom"] <span class="text-danger">*</span></label>
                             <input type="date" class="form-control" id="checkInDate" name="checkInDate" required>
                         </div>
                         
                         <!-- Check-out Date -->
                         <div class="col-md-6 mb-3">
-                            <label for="checkOutDate" class="form-label">Check-out Date <span class="text-danger">*</span></label>
+                            <label for="checkOutDate" class="form-label">@L["Search_CheckOutTo"] <span class="text-danger">*</span></label>
                             <input type="date" class="form-control" id="checkOutDate" name="checkOutDate" required>
                         </div>
                     </div>
@@ -152,37 +152,37 @@
                         <div class="card-header">
                             <h6 class="mb-0">
                                 <i class="bi bi-person"></i>
-                                Guest Information
+                                @L["Reservations_GuestInformation"]
                             </h6>
                         </div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="guestFirstName" class="form-label">First Name <span class="text-danger">*</span></label>
+                                    <label for="guestFirstName" class="form-label">@L["Calendar_FirstName"] <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="guestFirstName" name="guestFirstName" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="guestLastName" class="form-label">Last Name <span class="text-danger">*</span></label>
+                                    <label for="guestLastName" class="form-label">@L["Calendar_LastName"] <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="guestLastName" name="guestLastName" required>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="guestEmail" class="form-label">Email</label>
+                                    <label for="guestEmail" class="form-label">@L["Calendar_Email"]</label>
                                     <input type="email" class="form-control" id="guestEmail" name="guestEmail">
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="guestPhone" class="form-label">Phone</label>
+                                    <label for="guestPhone" class="form-label">@L["Calendar_Phone"]</label>
                                     <input type="tel" class="form-control" id="guestPhone" name="guestPhone">
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-8 mb-3">
-                                    <label for="guestAddress" class="form-label">Address</label>
+                                    <label for="guestAddress" class="form-label">@L["GP_Prof_Address"]</label>
                                     <input type="text" class="form-control" id="guestAddress" name="guestAddress">
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label for="guestDocumentNumber" class="form-label">Document Number</label>
+                                    <label for="guestDocumentNumber" class="form-label">@L["Common_DocumentNumber"]</label>
                                     <input type="text" class="form-control" id="guestDocumentNumber" name="guestDocumentNumber">
                                 </div>
                             </div>
@@ -192,55 +192,55 @@
                     <!-- Reservation Details -->
                     <div class="row">
                         <div class="col-md-4 mb-3">
-                            <label for="numberOfGuests" class="form-label">Number of Guests <span class="text-danger">*</span></label>
+                            <label for="numberOfGuests" class="form-label">@L["Reservations_NumberOfGuests"] <span class="text-danger">*</span></label>
                             <input type="number" class="form-control" id="numberOfGuests" name="numberOfGuests" min="1" max="20" value="1" required>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label for="totalAmount" class="form-label">Total Amount <span class="text-danger">*</span></label>
+                            <label for="totalAmount" class="form-label">@L["Reservations_TotalAmount"] <span class="text-danger">*</span></label>
                             <input type="number" class="form-control" id="totalAmount" name="totalAmount" min="0.01" step="0.01" required>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label for="reservationStatus" class="form-label">Status</label>
+                            <label for="reservationStatus" class="form-label">@L["Calendar_Status"]</label>
                             <select class="form-select" id="reservationStatus" name="status">
-                                <option value="0">Pending</option>
-                                <option value="1">Confirmed</option>
-                                <option value="2">Checked In</option>
-                                <option value="3">Checked Out</option>
-                                <option value="4">Cancelled</option>
+                                <option value="0">@L["Calendar_Pending"]</option>
+                                <option value="1">@L["Calendar_Confirmed"]</option>
+                                <option value="2">@L["Calendar_CheckedIn"]</option>
+                                <option value="3">@L["Calendar_CheckedOut"]</option>
+                                <option value="4">@L["Calendar_Cancelled"]</option>
                             </select>
                         </div>
                     </div>
                     
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="bookingReference" class="form-label">Booking Reference</label>
+                            <label for="bookingReference" class="form-label">@L["Reservations_BookingReference"]</label>
                             <input type="text" class="form-control" id="bookingReference" name="bookingReference">
                         </div>
                     </div>
                     
                     <!-- Special Requests -->
                     <div class="mb-3">
-                        <label for="specialRequests" class="form-label">Special Requests</label>
+                        <label for="specialRequests" class="form-label">@L["Reservations_SpecialRequests"]</label>
                         <textarea class="form-control" id="specialRequests" name="specialRequests" rows="3" maxlength="1000"></textarea>
-                        <div class="form-text">Maximum 1000 characters</div>
+                        <div class="form-text">@L["Reservations_Max1000Chars"]</div>
                     </div>
                     
                     <!-- Internal Notes -->
                     <div class="mb-3">
-                        <label for="internalNotes" class="form-label">Internal Notes</label>
+                        <label for="internalNotes" class="form-label">@L["Reservations_InternalNotes"]</label>
                         <textarea class="form-control" id="internalNotes" name="internalNotes" rows="3" maxlength="1000"></textarea>
-                        <div class="form-text">Maximum 1000 characters (staff only)</div>
+                        <div class="form-text">@L["Reservations_Max1000CharsStaff"]</div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@L["Common_Cancel"]</button>
                     <button type="button" class="btn btn-primary" id="checkAvailabilityBtn">
                         <i class="bi bi-search"></i>
-                        Check Availability
+                        @L["Reservations_CheckAvailability"]
                     </button>
                     <button type="submit" class="btn btn-success" id="saveReservationBtn" style="display: none;">
                         <i class="bi bi-check-circle"></i>
-                        Save Reservation
+                        @L["Reservations_SaveReservation"]
                     </button>
                 </div>
             </form>
@@ -255,47 +255,47 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="dateBlockingModalLabel">
                     <i class="bi bi-calendar-x"></i>
-                    Block Dates for Maintenance
+                    @L["Reservations_BlockDatesMaintenance"]
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="dateBlockingForm">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="blockingHotel" class="form-label">Hotel <span class="text-danger">*</span></label>
+                        <label for="blockingHotel" class="form-label">@L["Calendar_Hotel"] <span class="text-danger">*</span></label>
                         <select class="form-select" id="blockingHotel" name="hotelId" required>
-                            <option value="">Select Hotel</option>
+                            <option value="">@L["Reservations_SelectHotel"]</option>
                         </select>
                     </div>
                     
                     <div class="mb-3">
-                        <label for="blockingRoom" class="form-label">Room <span class="text-danger">*</span></label>
+                        <label for="blockingRoom" class="form-label">@L["room"] <span class="text-danger">*</span></label>
                         <select class="form-select" id="blockingRoom" name="roomId" required disabled>
-                            <option value="">Select Room</option>
+                            <option value="">@L["Reservations_SelectRoom"]</option>
                         </select>
                     </div>
                     
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="blockFromDate" class="form-label">From Date <span class="text-danger">*</span></label>
+                            <label for="blockFromDate" class="form-label">@L["Reservations_FromDate"] <span class="text-danger">*</span></label>
                             <input type="date" class="form-control" id="blockFromDate" name="fromDate" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="blockToDate" class="form-label">To Date <span class="text-danger">*</span></label>
+                            <label for="blockToDate" class="form-label">@L["Reservations_ToDate"] <span class="text-danger">*</span></label>
                             <input type="date" class="form-control" id="blockToDate" name="toDate" required>
                         </div>
                     </div>
                     
                     <div class="mb-3">
-                        <label for="blockingReason" class="form-label">Reason <span class="text-danger">*</span></label>
-                        <textarea class="form-control" id="blockingReason" name="reason" rows="3" required placeholder="e.g., Room maintenance, renovation, etc."></textarea>
+                        <label for="blockingReason" class="form-label">@L["Reservations_Reason"] <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="blockingReason" name="reason" rows="3" required placeholder="@L["Reservations_BlockingReasonPlaceholder"]"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@L["Common_Cancel"]</button>
                     <button type="submit" class="btn btn-warning">
                         <i class="bi bi-calendar-x"></i>
-                        Block Dates
+                        @L["Reservations_BlockDates"]
                     </button>
                 </div>
             </form>
@@ -310,7 +310,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="reservationDetailsModalLabel">
                     <i class="bi bi-eye"></i>
-                    Reservation Details
+                    @L["Reservations_Details"]
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -318,10 +318,10 @@
                 <!-- Content will be populated dynamically -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@L["Calendar_Close"]</button>
                 <button type="button" class="btn btn-primary" id="editReservationFromDetails">
                     <i class="bi bi-pencil"></i>
-                    Edit Reservation
+                    @L["Reservations_EditReservation"]
                 </button>
             </div>
         </div>
@@ -335,6 +335,36 @@
     <script src="~/js/modules/advancedSearch.js" asp-append-version="true"></script>
     
     <script>
+        const _resI18n = {
+            newReservation: '@Html.Raw(L["Reservations_NewReservation"].Value)',
+            selectRoom: '@Html.Raw(L["Reservations_SelectRoom"].Value)',
+            loadRoomsFailed: '@Html.Raw(L["Reservations_LoadRoomsFailed"].Value)',
+            loadDetailsFailed: '@Html.Raw(L["Reservations_LoadDetailsFailed"].Value)',
+            reservationInformation: '@Html.Raw(L["Reservations_Information"].Value)',
+            guestInformation: '@Html.Raw(L["Reservations_GuestInformation"].Value)',
+            propertyInformation: '@Html.Raw(L["Reservations_PropertyInformation"].Value)',
+            bookingReference: '@Html.Raw(L["Reservations_BookingReference"].Value)',
+            status: '@Html.Raw(L["Calendar_Status"].Value)',
+            source: '@Html.Raw(L["Common_Source"].Value)',
+            checkIn: '@Html.Raw(L["Search_CheckInFrom"].Value)',
+            checkOut: '@Html.Raw(L["Search_CheckOutTo"].Value)',
+            guests: '@Html.Raw(L["guests"].Value)',
+            totalAmount: '@Html.Raw(L["Reservations_TotalAmount"].Value)',
+            name: '@Html.Raw(L["Common_Name"].Value)',
+            email: '@Html.Raw(L["Calendar_Email"].Value)',
+            phone: '@Html.Raw(L["Calendar_Phone"].Value)',
+            hotel: '@Html.Raw(L["Calendar_Hotel"].Value)',
+            room: '@Html.Raw(L["room"].Value)',
+            specialRequests: '@Html.Raw(L["Reservations_SpecialRequests"].Value)',
+            internalNotes: '@Html.Raw(L["Reservations_InternalNotes"].Value)',
+            created: '@Html.Raw(L["Common_Created"].Value)',
+            lastUpdated: '@Html.Raw(L["Common_LastUpdated"].Value)',
+            notAvailable: '@Html.Raw(L["Common_NotAvailable"].Value)',
+            roomGuestsFormat: '@Html.Raw(L["Reservations_RoomGuestsFormat"].Value)',
+            roomFormat: '@Html.Raw(L["Reservations_RoomFormat"].Value)',
+            selectRoomAndDates: '@Html.Raw(L["Reservations_SelectRoomAndDates"].Value)'
+        };
+
         // Initialize the new reservations manager
         let reservationsManager;
         
@@ -400,7 +430,7 @@
                 await loadReservationsData();
             } catch (error) {
                 console.error('Error loading initial data:', error);
-                UI.showError('Failed to load initial data');
+                UI.showError(_resI18n.loadRoomsFailed);
             }
         }
 
@@ -596,9 +626,9 @@
             currentReservationId = null;
             
             // Update modal title
-            document.getElementById('reservationModalLabel').innerHTML = `
+                document.getElementById('reservationModalLabel').innerHTML = `
                 <i class="bi bi-plus-circle"></i>
-                New Reservation
+                ${_resI18n.newReservation}
             `;
             
             // Reset form
@@ -618,7 +648,7 @@
             const roomSelect = document.getElementById('reservationRoom');
             
             // Reset room selection
-            roomSelect.innerHTML = '<option value="">Select Room</option>';
+            roomSelect.innerHTML = `<option value="">${_resI18n.selectRoom}</option>`;
             roomSelect.disabled = !hotelId;
             
             if (hotelId) {
@@ -628,7 +658,7 @@
                     rooms.forEach(room => {
                         const option = document.createElement('option');
                         option.value = room.id;
-                        option.textContent = `${room.roomNumber} - ${getRoomTypeDisplayName(room.type)} (${room.capacity} guests)`;
+                        option.textContent = _resI18n.roomGuestsFormat.replace('{0}', room.roomNumber).replace('{1}', getRoomTypeDisplayName(room.type)).replace('{2}', room.capacity);
                         option.dataset.baseRate = room.baseRate;
                         roomSelect.appendChild(option);
                     });
@@ -636,7 +666,7 @@
                     availableRooms = rooms;
                 } catch (error) {
                     console.error('Error loading rooms:', error);
-                    UI.showError('Failed to load rooms for selected hotel');
+                    UI.showError(_resI18n.loadRoomsFailed);
                 }
             }
             
@@ -649,7 +679,7 @@
             const roomSelect = document.getElementById('blockingRoom');
             
             // Reset room selection
-            roomSelect.innerHTML = '<option value="">Select Room</option>';
+            roomSelect.innerHTML = `<option value="">${_resI18n.selectRoom}</option>`;
             roomSelect.disabled = !hotelId;
             
             if (hotelId) {
@@ -659,12 +689,12 @@
                     rooms.forEach(room => {
                         const option = document.createElement('option');
                         option.value = room.id;
-                        option.textContent = `${room.roomNumber} - ${getRoomTypeDisplayName(room.type)}`;
+                        option.textContent = _resI18n.roomFormat.replace('{0}', room.roomNumber).replace('{1}', getRoomTypeDisplayName(room.type));
                         roomSelect.appendChild(option);
                     });
                 } catch (error) {
                     console.error('Error loading rooms:', error);
-                    UI.showError('Failed to load rooms for selected hotel');
+                    UI.showError(_resI18n.loadRoomsFailed);
                 }
             }
         }
@@ -713,7 +743,7 @@
             const checkOutDate = document.getElementById('checkOutDate').value;
             
             if (!roomId || !checkInDate || !checkOutDate) {
-                UI.showError('Please select room and dates before checking availability');
+                UI.showError(_resI18n.selectRoomAndDates);
                 return;
             }
             
@@ -878,7 +908,7 @@
                 showReservationDetails(reservation);
             } catch (error) {
                 console.error('Error loading reservation details:', error);
-                UI.showError('Failed to load reservation details');
+                UI.showError(_resI18n.loadDetailsFailed);
             }
         }
 
@@ -888,51 +918,51 @@
             content.innerHTML = `
                 <div class="row">
                     <div class="col-md-6">
-                        <h6>Reservation Information</h6>
+                        <h6>${_resI18n.reservationInformation}</h6>
                         <table class="table table-sm">
-                            <tr><td><strong>Booking Reference:</strong></td><td>${reservation.bookingReference || 'N/A'}</td></tr>
-                            <tr><td><strong>Status:</strong></td><td><span class="badge ${getStatusBadgeClass(reservation.status)}">${getStatusDisplayName(reservation.status)}</span></td></tr>
-                            <tr><td><strong>Source:</strong></td><td><span class="badge ${getSourceBadgeClass(reservation.source)}">${getSourceDisplayName(reservation.source)}</span></td></tr>
-                            <tr><td><strong>Check-in:</strong></td><td>${UI.formatDate(reservation.checkInDate)}</td></tr>
-                            <tr><td><strong>Check-out:</strong></td><td>${UI.formatDate(reservation.checkOutDate)}</td></tr>
-                            <tr><td><strong>Guests:</strong></td><td>${reservation.numberOfGuests}</td></tr>
-                            <tr><td><strong>Total Amount:</strong></td><td>${UI.formatCurrency(reservation.totalAmount)}</td></tr>
+                            <tr><td><strong>${_resI18n.bookingReference}:</strong></td><td>${reservation.bookingReference || _resI18n.notAvailable}</td></tr>
+                            <tr><td><strong>${_resI18n.status}:</strong></td><td><span class="badge ${getStatusBadgeClass(reservation.status)}">${getStatusDisplayName(reservation.status)}</span></td></tr>
+                            <tr><td><strong>${_resI18n.source}:</strong></td><td><span class="badge ${getSourceBadgeClass(reservation.source)}">${getSourceDisplayName(reservation.source)}</span></td></tr>
+                            <tr><td><strong>${_resI18n.checkIn}:</strong></td><td>${UI.formatDate(reservation.checkInDate)}</td></tr>
+                            <tr><td><strong>${_resI18n.checkOut}:</strong></td><td>${UI.formatDate(reservation.checkOutDate)}</td></tr>
+                            <tr><td><strong>${_resI18n.guests}:</strong></td><td>${reservation.numberOfGuests}</td></tr>
+                            <tr><td><strong>${_resI18n.totalAmount}:</strong></td><td>${UI.formatCurrency(reservation.totalAmount)}</td></tr>
                         </table>
                     </div>
                     <div class="col-md-6">
-                        <h6>Guest Information</h6>
+                        <h6>${_resI18n.guestInformation}</h6>
                         <table class="table table-sm">
-                            <tr><td><strong>Name:</strong></td><td>${reservation.guestName}</td></tr>
-                            <tr><td><strong>Email:</strong></td><td>${reservation.guestEmail || 'N/A'}</td></tr>
-                            <tr><td><strong>Phone:</strong></td><td>${reservation.guestPhone || 'N/A'}</td></tr>
+                            <tr><td><strong>${_resI18n.name}:</strong></td><td>${reservation.guestName}</td></tr>
+                            <tr><td><strong>${_resI18n.email}:</strong></td><td>${reservation.guestEmail || _resI18n.notAvailable}</td></tr>
+                            <tr><td><strong>${_resI18n.phone}:</strong></td><td>${reservation.guestPhone || _resI18n.notAvailable}</td></tr>
                         </table>
                         
-                        <h6>Property Information</h6>
+                        <h6>${_resI18n.propertyInformation}</h6>
                         <table class="table table-sm">
-                            <tr><td><strong>Hotel:</strong></td><td>${reservation.hotelName}</td></tr>
-                            <tr><td><strong>Room:</strong></td><td>${reservation.roomNumber}</td></tr>
+                            <tr><td><strong>${_resI18n.hotel}:</strong></td><td>${reservation.hotelName}</td></tr>
+                            <tr><td><strong>${_resI18n.room}:</strong></td><td>${reservation.roomNumber}</td></tr>
                         </table>
                     </div>
                 </div>
                 
                 ${reservation.specialRequests ? `
                     <div class="mt-3">
-                        <h6>Special Requests</h6>
+                        <h6>${_resI18n.specialRequests}</h6>
                         <p class="text-muted">${reservation.specialRequests}</p>
                     </div>
                 ` : ''}
                 
                 ${reservation.internalNotes ? `
                     <div class="mt-3">
-                        <h6>Internal Notes</h6>
+                        <h6>${_resI18n.internalNotes}</h6>
                         <p class="text-muted">${reservation.internalNotes}</p>
                     </div>
                 ` : ''}
                 
                 <div class="mt-3">
                     <small class="text-muted">
-                        Created: ${UI.formatDate(reservation.createdAt)} | 
-                        Last Updated: ${UI.formatDate(reservation.updatedAt)}
+                        ${_resI18n.created}: ${UI.formatDate(reservation.createdAt)} | 
+                        ${_resI18n.lastUpdated}: ${UI.formatDate(reservation.updatedAt)}
                     </small>
                 </div>
             `;

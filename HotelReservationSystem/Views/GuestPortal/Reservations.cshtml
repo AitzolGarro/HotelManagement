@@ -9,7 +9,7 @@
         <p class="text-muted mb-0 small">@L["GP_Res_Subtitle"]</p>
     </div>
     <!-- Filter tabs -->
-    <div class="btn-group btn-group-sm" role="group" aria-label="Filter reservations">
+    <div class="btn-group btn-group-sm" role="group" aria-label="@L["GP_Res_FilterReservations"]">
         <input type="radio" class="btn-check" name="resFilter" id="filterAll" value="all" checked>
         <label class="btn btn-outline-primary" for="filterAll">@L["GP_Res_All"]</label>
         <input type="radio" class="btn-check" name="resFilter" id="filterUpcoming" value="upcoming">
@@ -21,7 +21,7 @@
 
 <!-- Loading -->
 <div id="resLoading" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading…</span></div>
+    <div class="spinner-border text-primary" role="status"><span class="visually-hidden">@L["GP_Res_Loading"]</span></div>
 </div>
 
 <!-- Empty state -->
@@ -69,7 +69,22 @@ const _gpResI18n = {
     cancel:     '@Html.Raw(L["GP_Res_CancelConfirm"].Value)',
     cancelling: '@Html.Raw(L["GP_Res_Cancelling"].Value)',
     provideReason: '@Html.Raw(L["GP_Res_ProvideReason"].Value)',
-    error:      '@Html.Raw(L["Common_Error"].Value)'
+    error:      '@Html.Raw(L["Common_Error"].Value)',
+    pending: '@Html.Raw(L["GP_Res_Status_Pending"].Value)',
+    confirmed: '@Html.Raw(L["GP_Res_Status_Confirmed"].Value)',
+    checkedIn: '@Html.Raw(L["GP_Res_Status_CheckedIn"].Value)',
+    checkedOut: '@Html.Raw(L["GP_Res_Status_CheckedOut"].Value)',
+    cancelled: '@Html.Raw(L["GP_Res_Status_Cancelled"].Value)',
+    noShow: '@Html.Raw(L["GP_Res_Status_NoShow"].Value)',
+    unknown: '@Html.Raw(L["GP_Res_Status_Unknown"].Value)',
+    room: '@Html.Raw(L["GP_Res_Room"].Value)',
+    night: '@Html.Raw(L["GP_Res_Night"].Value)',
+    nights: '@Html.Raw(L["GP_Res_Nights"].Value)',
+    guest: '@Html.Raw(L["GP_Res_Guest"].Value)',
+    guests: '@Html.Raw(L["GP_Res_Guests"].Value)',
+    notAvailable: '@Html.Raw(L["GP_Res_ReferenceFallback"].Value)',
+    currencyLocale: '@Html.Raw(L["GP_Res_CurrencyLocale"].Value)',
+    monthLocale: '@Html.Raw(L["GP_Res_MonthLocale"].Value)'
 };
 (function () {
     const token = localStorage.getItem('guestToken');
@@ -81,19 +96,19 @@ const _gpResI18n = {
 
     function statusBadge(status) {
         const map = {
-            0: ['Pending','status-pending'],
-            1: ['Confirmed','status-confirmed'],
-            2: ['Checked In','status-checkedin'],
-            3: ['Checked Out','status-checkedout'],
-            4: ['Cancelled','status-cancelled'],
-            5: ['No Show','status-cancelled']
+            0: [_gpResI18n.pending,'status-pending'],
+            1: [_gpResI18n.confirmed,'status-confirmed'],
+            2: [_gpResI18n.checkedIn,'status-checkedin'],
+            3: [_gpResI18n.checkedOut,'status-checkedout'],
+            4: [_gpResI18n.cancelled,'status-cancelled'],
+            5: [_gpResI18n.noShow,'status-cancelled']
         };
-        const [label, cls] = map[status] || ['Unknown','status-pending'];
+        const [label, cls] = map[status] || [_gpResI18n.unknown,'status-pending'];
         return `<span class="status-badge ${cls}">${label}</span>`;
     }
 
     function formatDate(d) {
-        return new Date(d).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+        return new Date(d).toLocaleDateString(_gpResI18n.monthLocale || window.__hotelLocale || 'en-US', { month:'short', day:'numeric', year:'numeric' });
     }
 
     function canModify(r) { return r.status === 0 || r.status === 1; }
@@ -117,22 +132,22 @@ const _gpResI18n = {
                                 ${statusBadge(r.status)}
                             </div>
                             <div class="text-muted small mb-1">
-                                <i class="bi bi-door-open me-1"></i>Room ${r.roomNumber} &bull; ${r.roomType}
+                                <i class="bi bi-door-open me-1"></i>${_gpResI18n.room} ${r.roomNumber} &bull; ${r.roomType}
                             </div>
                             <div class="text-muted small mb-1">
                                 <i class="bi bi-calendar3 me-1"></i>${formatDate(r.checkInDate)} → ${formatDate(r.checkOutDate)}
-                                <span class="ms-1 badge bg-light text-dark border">${nights} night${nights !== 1 ? 's' : ''}</span>
+                                <span class="ms-1 badge bg-light text-dark border">${nights} ${nights !== 1 ? _gpResI18n.nights : _gpResI18n.night}</span>
                             </div>
                             <div class="text-muted small">
-                                <i class="bi bi-people me-1"></i>${r.numberOfGuests} guest${r.numberOfGuests !== 1 ? 's' : ''}
-                                &bull; <i class="bi bi-hash me-1"></i>${r.bookingReference || 'N/A'}
+                                <i class="bi bi-people me-1"></i>${r.numberOfGuests} ${r.numberOfGuests !== 1 ? _gpResI18n.guests : _gpResI18n.guest}
+                                &bull; <i class="bi bi-hash me-1"></i>${r.bookingReference || _gpResI18n.notAvailable}
                             </div>
                             ${r.specialRequests ? `<div class="text-muted small mt-1"><i class="bi bi-chat-left-text me-1"></i>${r.specialRequests}</div>` : ''}
                         </div>
                     </div>
                     <!-- Right: amount + actions -->
                     <div class="d-flex flex-row flex-md-column align-items-center align-items-md-end justify-content-between gap-2">
-                        <div class="fw-bold fs-5">$${r.totalAmount.toFixed(2)}</div>
+                        <div class="fw-bold fs-5">${new Intl.NumberFormat(_gpResI18n.currencyLocale || window.__hotelLocale || 'en-US', { style: 'currency', currency: 'EUR' }).format(r.totalAmount)}</div>
                         <div class="d-flex gap-2 flex-wrap justify-content-end">
                             <a href="/GuestPortal/Reservation/${r.id}" class="btn btn-sm btn-outline-primary">
                                 <i class="bi bi-eye me-1"></i>${_gpResI18n.details}

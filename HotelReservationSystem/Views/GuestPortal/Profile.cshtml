@@ -12,7 +12,7 @@
 
 <!-- Loading -->
 <div id="profileLoading" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading…</span></div>
+    <div class="spinner-border text-primary" role="status"><span class="visually-hidden">@L["GP_Prof_Loading"]</span></div>
 </div>
 
 <div id="profileContent" class="d-none">
@@ -92,16 +92,16 @@
                             <div class="col-12 col-md-6">
                                 <label class="form-label small fw-medium" for="editLanguage">@L["GP_Prof_PreferredLanguage"]</label>
                                 <select class="form-select" id="editLanguage">
-                                    <option value="">Select language</option>
-                                    <option value="en">English</option>
-                                    <option value="es">Spanish</option>
-                                    <option value="fr">French</option>
-                                    <option value="de">German</option>
-                                    <option value="it">Italian</option>
-                                    <option value="pt">Portuguese</option>
-                                    <option value="zh">Chinese</option>
-                                    <option value="ja">Japanese</option>
-                                    <option value="ar">Arabic</option>
+                                    <option value="">@L["GP_Prof_SelectLanguage"]</option>
+                                    <option value="en">@L["Lang_English"]</option>
+                                    <option value="es">@L["Lang_Spanish"]</option>
+                                    <option value="fr">@L["Lang_French"]</option>
+                                    <option value="de">@L["Lang_German"]</option>
+                                    <option value="it">@L["Lang_Italian"]</option>
+                                    <option value="pt">@L["Lang_Portuguese"]</option>
+                                    <option value="zh">@L["Lang_Chinese"]</option>
+                                    <option value="ja">@L["Lang_Japanese"]</option>
+                                    <option value="ar">@L["Lang_Arabic"]</option>
                                 </select>
                             </div>
                             <div class="col-12">
@@ -198,7 +198,7 @@
                     <div class="mb-2">
                         <i class="bi bi-award fs-1"></i>
                     </div>
-                    <div class="fw-bold fs-5 mb-1" id="loyaltyTierDisplay">Standard Member</div>
+                    <div class="fw-bold fs-5 mb-1" id="loyaltyTierDisplay">@L["GP_Prof_StandardMember"]</div>
                     <div class="opacity-75 small mb-3">@L["GP_Prof_LoyaltyProgram"]</div>
                     <div class="bg-white bg-opacity-25 rounded-3 p-3 mb-3">
                         <div class="fs-2 fw-bold" id="loyaltyPointsDisplay">0</div>
@@ -212,7 +212,7 @@
             <div class="gp-card card" id="vipCard" style="display:none!important">
                 <div class="card-body text-center py-3">
                     <i class="bi bi-star-fill text-warning fs-3 mb-2 d-block"></i>
-                    <div class="fw-bold">VIP Member</div>
+                    <div class="fw-bold">@L["GP_Prof_VIPMember"]</div>
                     <div class="text-muted small" id="vipStatusDisplay"></div>
                 </div>
             </div>
@@ -225,7 +225,14 @@
 const _gpProfI18n = {
     error:       '@Html.Raw(L["Common_Error"].Value)',
     saveFailed:  '@Html.Raw(L["NotifSettings_SaveFailed"].Value)',
-    prefsSaved:  '@Html.Raw(L["GP_Prof_PrefsSaved"].Value)'
+    prefsSaved:  '@Html.Raw(L["GP_Prof_PrefsSaved"].Value)',
+    standardMember: '@Html.Raw(L["GP_Prof_StandardMember"].Value)',
+    vipMember: '@Html.Raw(L["GP_Prof_VIPMember"].Value)',
+    nextTierStandard: '@Html.Raw(L["GP_Prof_NextTier_Standard"].Value)',
+    nextTierSilver: '@Html.Raw(L["GP_Prof_NextTier_Silver"].Value)',
+    nextTierGold: '@Html.Raw(L["GP_Prof_NextTier_Gold"].Value)',
+    nextTierTop: '@Html.Raw(L["GP_Prof_NextTier_Top"].Value)',
+    vipDefault: '@Html.Raw(L["GP_Prof_VIPMember"].Value)'
 };
 (function () {
     const token = localStorage.getItem('guestToken');
@@ -244,15 +251,16 @@ const _gpProfI18n = {
 
         // Loyalty
         const tier = (p.loyaltyTier || 'Standard').toLowerCase();
-        document.getElementById('loyaltyTierDisplay').textContent = `${p.loyaltyTier || 'Standard'} Member`;
+        const tierLabel = p.loyaltyTier ? `${p.loyaltyTier} ${_gpProfI18n.standardMember.replace('Standard ', '')}` : _gpProfI18n.standardMember;
+        document.getElementById('loyaltyTierDisplay').textContent = tierLabel;
         document.getElementById('loyaltyPointsDisplay').textContent = p.loyaltyPoints || 0;
 
-        const nextTierMap = { standard: 'Earn 50 pts for Silver', silver: 'Earn 100 pts for Gold', gold: 'Earn 200 pts for Platinum', platinum: 'You\'ve reached the top tier!' };
+        const nextTierMap = { standard: _gpProfI18n.nextTierStandard, silver: _gpProfI18n.nextTierSilver, gold: _gpProfI18n.nextTierGold, platinum: _gpProfI18n.nextTierTop };
         document.getElementById('loyaltyNextTier').textContent = nextTierMap[tier] || '';
 
         if (p.isVip) {
             document.getElementById('vipCard').style.removeProperty('display');
-            document.getElementById('vipStatusDisplay').textContent = p.vipStatus || 'VIP';
+            document.getElementById('vipStatusDisplay').textContent = p.vipStatus || _gpProfI18n.vipDefault;
         }
     }
 

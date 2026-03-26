@@ -10,43 +10,43 @@
     <div class="card-body pb-2">
         <div class="row g-2 align-items-end">
             <div class="col-12 col-sm-6 col-md-3 col-lg-2">
-                <label for="dateFromFilter" class="form-label small fw-semibold mb-1">Check-in From</label>
-                <input type="date" class="form-control form-control-sm" id="dateFromFilter" aria-label="Check-in from date">
+                <label for="dateFromFilter" class="form-label small fw-semibold mb-1">@L["Search_CheckInFrom"]</label>
+                <input type="date" class="form-control form-control-sm" id="dateFromFilter" aria-label="@L["Search_CheckInFrom"]">
             </div>
             <div class="col-12 col-sm-6 col-md-3 col-lg-2">
-                <label for="dateToFilter" class="form-label small fw-semibold mb-1">Check-out To</label>
-                <input type="date" class="form-control form-control-sm" id="dateToFilter" aria-label="Check-out to date">
+                <label for="dateToFilter" class="form-label small fw-semibold mb-1">@L["Search_CheckOutTo"]</label>
+                <input type="date" class="form-control form-control-sm" id="dateToFilter" aria-label="@L["Search_CheckOutTo"]">
             </div>
             <div class="col-12 col-sm-6 col-md-3 col-lg-2">
-                <label for="hotelFilterRes" class="form-label small fw-semibold mb-1">Hotel</label>
-                <select class="form-select form-select-sm" id="hotelFilterRes" aria-label="Filter by hotel">
-                    <option value="">All Hotels</option>
+                <label for="hotelFilterRes" class="form-label small fw-semibold mb-1">@L["Calendar_Hotel"]</label>
+                <select class="form-select form-select-sm" id="hotelFilterRes" aria-label="@L["Calendar_Hotel"]">
+                    <option value="">@L["Calendar_AllHotels"]</option>
                 </select>
             </div>
             <div class="col-12 col-sm-6 col-md-3 col-lg-2">
-                <label for="guestNameFilter" class="form-label small fw-semibold mb-1">Guest Name</label>
+                <label for="guestNameFilter" class="form-label small fw-semibold mb-1">@L["Search_GuestName"]</label>
                 <input type="text" class="form-control form-control-sm" id="guestNameFilter"
-                       placeholder="Search guest..." aria-label="Filter by guest name">
+                       placeholder="@L["Search_GuestPlaceholder"]" aria-label="@L["Search_GuestName"]">
             </div>
             <div class="col-12 col-sm-6 col-md-3 col-lg-2">
-                <label for="bookingRefFilter" class="form-label small fw-semibold mb-1">Booking Ref</label>
+                <label for="bookingRefFilter" class="form-label small fw-semibold mb-1">@L["Search_BookingRef"]</label>
                 <input type="text" class="form-control form-control-sm" id="bookingRefFilter"
-                       placeholder="e.g. MAN2026..." aria-label="Filter by booking reference">
+                       placeholder="@L["Search_BookingRefPlaceholder"]" aria-label="@L["Search_BookingRef"]">
             </div>
             <div class="col-12 col-sm-6 col-md-3 col-lg-2">
                 <div class="d-flex gap-1 flex-wrap">
                     <button type="button" class="btn btn-primary btn-sm flex-grow-1" id="applyReservationFilters"
-                            aria-label="Apply filters">
-                        <i class="bi bi-funnel-fill me-1"></i>Search
+                            aria-label="@L["Search_ApplyFilters"]">
+                        <i class="bi bi-funnel-fill me-1"></i>@L["Search_ApplyFilters"]
                     </button>
                     <button type="button" class="btn btn-outline-secondary btn-sm" id="clearReservationFilters"
-                            title="Clear all filters" aria-label="Clear filters">
+                            title="@L["Search_ClearFilters"]" aria-label="@L["Search_ClearFilters"]">
                         <i class="bi bi-x-lg"></i>
                     </button>
                     <button type="button" class="btn btn-outline-primary btn-sm" id="toggleAdvancedFilters"
                             data-bs-toggle="collapse" data-bs-target="#advancedFiltersPanel"
                             aria-expanded="false" aria-controls="advancedFiltersPanel"
-                            title="Advanced filters">
+                            title="@L["Search_AdvancedFilters"]">
                         <i class="bi bi-sliders"></i>
                     </button>
                 </div>
@@ -60,49 +60,49 @@
             <div class="row g-2 align-items-end">
                 <!-- Status multi-select -->
                 <div class="col-12 col-sm-6 col-md-4 col-lg-2">
-                    <label class="form-label small fw-semibold mb-1">Status</label>
+                    <label class="form-label small fw-semibold mb-1">@L["Calendar_Status"]</label>
                     <div class="dropdown" id="statusDropdown">
                         <button class="btn btn-outline-secondary btn-sm w-100 text-start d-flex justify-content-between align-items-center"
                                 type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                                id="statusDropdownBtn" aria-label="Select statuses">
-                            <span id="statusDropdownLabel">All Statuses</span>
+                                id="statusDropdownBtn" aria-label="@L["Search_AllStatuses"]">
+                            <span id="statusDropdownLabel">@L["Search_AllStatuses"]</span>
                             <i class="bi bi-chevron-down ms-1"></i>
                         </button>
                         <ul class="dropdown-menu p-2" style="min-width:180px;" aria-labelledby="statusDropdownBtn">
                             <li>
                                 <div class="form-check">
                                     <input class="form-check-input status-check" type="checkbox" value="1" id="statusPending">
-                                    <label class="form-check-label small" for="statusPending">Pending</label>
+                                    <label class="form-check-label small" for="statusPending">@L["Calendar_Pending"]</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="form-check">
                                     <input class="form-check-input status-check" type="checkbox" value="2" id="statusConfirmed">
-                                    <label class="form-check-label small" for="statusConfirmed">Confirmed</label>
+                                    <label class="form-check-label small" for="statusConfirmed">@L["Calendar_Confirmed"]</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="form-check">
                                     <input class="form-check-input status-check" type="checkbox" value="4" id="statusCheckedIn">
-                                    <label class="form-check-label small" for="statusCheckedIn">Checked In</label>
+                                    <label class="form-check-label small" for="statusCheckedIn">@L["Calendar_CheckedIn"]</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="form-check">
                                     <input class="form-check-input status-check" type="checkbox" value="5" id="statusCheckedOut">
-                                    <label class="form-check-label small" for="statusCheckedOut">Checked Out</label>
+                                    <label class="form-check-label small" for="statusCheckedOut">@L["Calendar_CheckedOut"]</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="form-check">
                                     <input class="form-check-input status-check" type="checkbox" value="3" id="statusCancelled">
-                                    <label class="form-check-label small" for="statusCancelled">Cancelled</label>
+                                    <label class="form-check-label small" for="statusCancelled">@L["Calendar_Cancelled"]</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="form-check">
                                     <input class="form-check-input status-check" type="checkbox" value="6" id="statusNoShow">
-                                    <label class="form-check-label small" for="statusNoShow">No Show</label>
+                                    <label class="form-check-label small" for="statusNoShow">@L["status_no_show"]</label>
                                 </div>
                             </li>
                         </ul>
@@ -111,49 +111,49 @@
 
                 <!-- Source multi-select -->
                 <div class="col-12 col-sm-6 col-md-4 col-lg-2">
-                    <label class="form-label small fw-semibold mb-1">Source</label>
+                    <label class="form-label small fw-semibold mb-1">@L["Common_Source"]</label>
                     <div class="dropdown" id="sourceDropdown">
                         <button class="btn btn-outline-secondary btn-sm w-100 text-start d-flex justify-content-between align-items-center"
                                 type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                                id="sourceDropdownBtn" aria-label="Select sources">
-                            <span id="sourceDropdownLabel">All Sources</span>
+                                id="sourceDropdownBtn" aria-label="@L["Search_AllSources"]">
+                            <span id="sourceDropdownLabel">@L["Search_AllSources"]</span>
                             <i class="bi bi-chevron-down ms-1"></i>
                         </button>
                         <ul class="dropdown-menu p-2" style="min-width:180px;" aria-labelledby="sourceDropdownBtn">
                             <li>
                                 <div class="form-check">
                                     <input class="form-check-input source-check" type="checkbox" value="1" id="sourceManual">
-                                    <label class="form-check-label small" for="sourceManual">Manual</label>
+                                    <label class="form-check-label small" for="sourceManual">@L["Common_Manual"]</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="form-check">
                                     <input class="form-check-input source-check" type="checkbox" value="2" id="sourceBookingCom">
-                                    <label class="form-check-label small" for="sourceBookingCom">Booking.com</label>
+                                    <label class="form-check-label small" for="sourceBookingCom">@L["booking_com"]</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="form-check">
                                     <input class="form-check-input source-check" type="checkbox" value="3" id="sourceDirect">
-                                    <label class="form-check-label small" for="sourceDirect">Direct</label>
+                                    <label class="form-check-label small" for="sourceDirect">@L["Common_Direct"]</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="form-check">
                                     <input class="form-check-input source-check" type="checkbox" value="6" id="sourcePhone">
-                                    <label class="form-check-label small" for="sourcePhone">Phone</label>
+                                    <label class="form-check-label small" for="sourcePhone">@L["Common_Phone"]</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="form-check">
                                     <input class="form-check-input source-check" type="checkbox" value="7" id="sourceWalkIn">
-                                    <label class="form-check-label small" for="sourceWalkIn">Walk-in</label>
+                                    <label class="form-check-label small" for="sourceWalkIn">@L["Common_WalkIn"]</label>
                                 </div>
                             </li>
                             <li>
                                 <div class="form-check">
                                     <input class="form-check-input source-check" type="checkbox" value="9" id="sourceWebsite">
-                                    <label class="form-check-label small" for="sourceWebsite">Website</label>
+                                    <label class="form-check-label small" for="sourceWebsite">@L["Common_Website"]</label>
                                 </div>
                             </li>
                         </ul>
@@ -162,47 +162,47 @@
 
                 <!-- Room type -->
                 <div class="col-12 col-sm-6 col-md-4 col-lg-2">
-                    <label for="roomTypeFilter" class="form-label small fw-semibold mb-1">Room Type</label>
-                    <select class="form-select form-select-sm" id="roomTypeFilter" aria-label="Filter by room type">
-                        <option value="">Any Type</option>
-                        <option value="1">Single</option>
-                        <option value="2">Double</option>
-                        <option value="3">Suite</option>
-                        <option value="4">Family</option>
-                        <option value="5">Deluxe</option>
-                        <option value="6">Twin</option>
-                        <option value="7">Triple</option>
-                        <option value="8">Quad</option>
-                        <option value="9">Standard</option>
+                    <label for="roomTypeFilter" class="form-label small fw-semibold mb-1">@L["Calendar_RoomType"]</label>
+                    <select class="form-select form-select-sm" id="roomTypeFilter" aria-label="@L["Calendar_RoomType"]">
+                        <option value="">@L["Search_AnyType"]</option>
+                        <option value="1">@L["room_type_single"]</option>
+                        <option value="2">@L["room_type_double"]</option>
+                        <option value="3">@L["room_type_suite"]</option>
+                        <option value="4">@L["room_type_family"]</option>
+                        <option value="5">@L["room_type_deluxe"]</option>
+                        <option value="6">@L["room_type_twin"]</option>
+                        <option value="7">@L["room_type_triple"]</option>
+                        <option value="8">@L["room_type_quad"]</option>
+                        <option value="9">@L["room_type_standard"]</option>
                     </select>
                 </div>
 
                 <!-- Amount range -->
                 <div class="col-12 col-sm-6 col-md-4 col-lg-2">
-                    <label class="form-label small fw-semibold mb-1">Min Amount (€)</label>
+                    <label class="form-label small fw-semibold mb-1">@L["Search_MinAmount"]</label>
                     <input type="number" class="form-control form-control-sm" id="minAmountFilter"
-                           min="0" step="0.01" placeholder="0.00" aria-label="Minimum amount">
+                           min="0" step="0.01" placeholder="0.00" aria-label="@L["Search_MinAmount"]">
                 </div>
                 <div class="col-12 col-sm-6 col-md-4 col-lg-2">
-                    <label class="form-label small fw-semibold mb-1">Max Amount (€)</label>
+                    <label class="form-label small fw-semibold mb-1">@L["Search_MaxAmount"]</label>
                     <input type="number" class="form-control form-control-sm" id="maxAmountFilter"
-                           min="0" step="0.01" placeholder="No limit" aria-label="Maximum amount">
+                           min="0" step="0.01" placeholder="@L["Search_NoLimit"]" aria-label="@L["Search_MaxAmount"]">
                 </div>
 
                 <!-- Sort -->
                 <div class="col-12 col-sm-6 col-md-4 col-lg-2">
-                    <label for="sortByFilter" class="form-label small fw-semibold mb-1">Sort By</label>
+                    <label for="sortByFilter" class="form-label small fw-semibold mb-1">@L["Search_SortBy"]</label>
                     <div class="input-group input-group-sm">
-                        <select class="form-select form-select-sm" id="sortByFilter" aria-label="Sort by field">
-                            <option value="created">Created</option>
-                            <option value="checkin">Check-in</option>
-                            <option value="checkout">Check-out</option>
-                            <option value="amount">Amount</option>
-                            <option value="status">Status</option>
-                            <option value="guest">Guest</option>
+                        <select class="form-select form-select-sm" id="sortByFilter" aria-label="@L["Search_SortBy"]">
+                            <option value="created">@L["Search_SortCreated"]</option>
+                            <option value="checkin">@L["Search_SortCheckIn"]</option>
+                            <option value="checkout">@L["Search_SortCheckOut"]</option>
+                            <option value="amount">@L["Search_SortAmount"]</option>
+                            <option value="status">@L["Search_SortStatus"]</option>
+                            <option value="guest">@L["Search_SortGuest"]</option>
                         </select>
                         <button class="btn btn-outline-secondary" type="button" id="sortDirBtn"
-                                data-dir="desc" title="Toggle sort direction" aria-label="Toggle sort direction">
+                                data-dir="desc" title="@L["Search_ToggleSortDirection"]" aria-label="@L["Search_ToggleSortDirection"]">
                             <i class="bi bi-sort-down" id="sortDirIcon"></i>
                         </button>
                     </div>
@@ -213,13 +213,13 @@
             <div class="row mt-2">
                 <div class="col-12">
                     <div class="d-flex align-items-center gap-2 flex-wrap">
-                        <small class="text-muted fw-semibold">Saved searches:</small>
+                        <small class="text-muted fw-semibold">@L["Search_SavedSearches"]</small>
                         <div id="savedSearchesList" class="d-flex gap-1 flex-wrap">
-                            <small class="text-muted fst-italic" id="noSavedSearches">None saved</small>
+                            <small class="text-muted fst-italic" id="noSavedSearches">@L["Search_NoneSaved"]</small>
                         </div>
                         <button type="button" class="btn btn-outline-success btn-sm ms-auto" id="saveCurrentSearch"
-                                title="Save current search" aria-label="Save current search">
-                            <i class="bi bi-bookmark-plus me-1"></i>Save Search
+                                title="@L["Search_SaveCurrentSearch"]" aria-label="@L["Search_SaveCurrentSearch"]">
+                            <i class="bi bi-bookmark-plus me-1"></i>@L["Search_SaveCurrentSearch"]
                         </button>
                     </div>
                 </div>
@@ -227,3 +227,4 @@
         </div>
     </div>
 </div>
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> L

@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "Offline";
+    ViewData["Title"] = L["Offline_Title"].Value;
     Layout = "_Layout";
 }
 
@@ -12,20 +12,19 @@
                 <i class="bi bi-wifi-off" style="font-size: 5rem; color: #6c757d;"></i>
             </div>
 
-            <h1 class="h2 fw-bold mb-2">You're offline</h1>
+            <h1 class="h2 fw-bold mb-2">@L["Offline_Heading"]</h1>
             <p class="text-muted mb-4">
-                It looks like you've lost your internet connection.
-                Some features may be unavailable until you're back online.
+                @L["Offline_Message"]
             </p>
 
             <!-- Retry button -->
             <button id="retryBtn" class="btn btn-primary btn-lg mb-3"
-                    onclick="window.location.reload()" aria-label="Try reconnecting">
-                <i class="bi bi-arrow-clockwise me-2" aria-hidden="true"></i>Try again
+                    onclick="window.location.reload()" aria-label="@L["Offline_TryReconnect"]">
+                <i class="bi bi-arrow-clockwise me-2" aria-hidden="true"></i>@L["Offline_TryAgain"]
             </button>
 
             <p class="text-muted small mb-4">
-                Or <a href="/" class="text-decoration-none">go to the home page</a>
+                Or <a href="/" class="text-decoration-none">@L["Offline_GoHome"]</a>
             </p>
 
             <!-- What's available offline -->
@@ -33,20 +32,20 @@
                 <div class="card-body p-4">
                     <h2 class="h6 fw-bold mb-3">
                         <i class="bi bi-check-circle-fill text-success me-2" aria-hidden="true"></i>
-                        Available offline
+                        @L["Offline_AvailableOffline"]
                     </h2>
                     <ul class="list-unstyled mb-0 small text-muted">
                         <li class="mb-2">
                             <i class="bi bi-calendar3 me-2 text-primary" aria-hidden="true"></i>
-                            Previously loaded calendar data
+                            @L["Offline_CalendarData"]
                         </li>
                         <li class="mb-2">
                             <i class="bi bi-journal-bookmark me-2 text-primary" aria-hidden="true"></i>
-                            Cached reservation details
+                            @L["Offline_CachedReservations"]
                         </li>
                         <li class="mb-0">
                             <i class="bi bi-person me-2 text-primary" aria-hidden="true"></i>
-                            Guest information (read-only)
+                            @L["Offline_GuestInfoReadonly"]
                         </li>
                     </ul>
                 </div>
@@ -56,7 +55,7 @@
             <div id="connectionStatus" class="mt-4 small text-muted" role="status" aria-live="polite">
                 <span id="statusText">
                     <i class="bi bi-circle-fill text-danger me-1" style="font-size:0.5rem;" aria-hidden="true"></i>
-                    Offline
+                    @L["Offline_StatusOffline"]
                 </span>
             </div>
 
@@ -70,7 +69,7 @@
     window.addEventListener('online', function () {
         document.getElementById('statusText').innerHTML =
             '<i class="bi bi-circle-fill text-success me-1" style="font-size:0.5rem;" aria-hidden="true"></i>' +
-            'Back online – redirecting…';
+            '@Html.Raw(L["Offline_BackOnlineRedirecting"].Value)';
         setTimeout(() => {
             const intended = sessionStorage.getItem('offline_intended_url') || '/';
             window.location.href = intended;
@@ -80,7 +79,7 @@
     window.addEventListener('offline', function () {
         document.getElementById('statusText').innerHTML =
             '<i class="bi bi-circle-fill text-danger me-1" style="font-size:0.5rem;" aria-hidden="true"></i>' +
-            'Offline';
+            '@Html.Raw(L["Offline_StatusOffline"].Value)';
     });
 
     // Store the page the user was trying to reach

@@ -6,9 +6,9 @@
     <div class="row">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>Reports & Analytics</h2>
+                <h2>@L["Reports_Title"]</h2>
                 <button type="button" class="btn btn-primary" id="exportReportBtn">
-                    <i class="fas fa-download"></i> Export Report
+                    <i class="fas fa-download"></i> @L["Reports_ExportReport"]
                 </button>
             </div>
         </div>
@@ -19,46 +19,46 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">Report Filters</h5>
+                    <h5 class="card-title mb-0">@L["Reports_Filters"]</h5>
                 </div>
                 <div class="card-body">
                     <form id="reportFiltersForm">
                         <div class="row">
                             <div class="col-md-3">
-                                <label for="reportType" class="form-label">Report Type</label>
+                                <label for="reportType" class="form-label">@L["Reports_Type"]</label>
                                 <select class="form-select" id="reportType" name="reportType">
-                                    <option value="occupancy">Occupancy Report</option>
-                                    <option value="revenue">Revenue Report</option>
-                                    <option value="guestPattern">Guest Pattern Report</option>
+                                    <option value="occupancy">@L["Reports_Occupancy"]</option>
+                                    <option value="revenue">@L["Reports_Revenue"]</option>
+                                    <option value="guestPattern">@L["Reports_GuestPattern"]</option>
                                 </select>
                             </div>
                             <div class="col-md-2">
-                                <label for="hotelFilter" class="form-label">Hotel</label>
+                                <label for="hotelFilter" class="form-label">@L["Calendar_Hotel"]</label>
                                 <select class="form-select" id="hotelFilter" name="hotelId">
-                                    <option value="">All Hotels</option>
+                                    <option value="">@L["Calendar_AllHotels"]</option>
                                 </select>
                             </div>
                             <div class="col-md-2">
-                                <label for="startDate" class="form-label">Start Date</label>
+                                <label for="startDate" class="form-label">@L["Common_StartDate"]</label>
                                 <input type="date" class="form-control" id="startDate" name="startDate" required>
                             </div>
                             <div class="col-md-2">
-                                <label for="endDate" class="form-label">End Date</label>
+                                <label for="endDate" class="form-label">@L["Common_EndDate"]</label>
                                 <input type="date" class="form-control" id="endDate" name="endDate" required>
                             </div>
                             <div class="col-md-2">
-                                <label for="quickDateRange" class="form-label">Quick Range</label>
+                                <label for="quickDateRange" class="form-label">@L["Reports_QuickRange"]</label>
                                 <select class="form-select" id="quickDateRange">
-                                    <option value="">Custom</option>
-                                    <option value="7">Last 7 days</option>
-                                    <option value="30">Last 30 days</option>
-                                    <option value="90">Last 90 days</option>
-                                    <option value="365">Last year</option>
+                                    <option value="">@L["Reports_Custom"]</option>
+                                    <option value="7">@L["Reports_Last7Days"]</option>
+                                    <option value="30">@L["Reports_Last30Days"]</option>
+                                    <option value="90">@L["Reports_Last90Days"]</option>
+                                    <option value="365">@L["Reports_LastYear"]</option>
                                 </select>
                             </div>
                             <div class="col-md-1 d-flex align-items-end">
                                 <button type="submit" class="btn btn-success w-100">
-                                    <i class="fas fa-chart-bar"></i> Generate
+                                    <i class="fas fa-chart-bar"></i> @L["Reports_Generate"]
                                 </button>
                             </div>
                         </div>
@@ -75,7 +75,7 @@
                 <!-- Report content will be loaded here -->
                 <div class="text-center py-5">
                     <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
-                    <h4 class="text-muted">Select report parameters and click Generate to view reports</h4>
+                    <h4 class="text-muted">@L["Reports_SelectParams"]</h4>
                 </div>
             </div>
         </div>
@@ -87,13 +87,13 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Export Report</h5>
+                <h5 class="modal-title">@L["Reports_ExportReport"]</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="exportForm">
                     <div class="mb-3">
-                        <label for="exportFormat" class="form-label">Export Format</label>
+                        <label for="exportFormat" class="form-label">@L["Reports_ExportFormat"]</label>
                         <select class="form-select" id="exportFormat" name="exportFormat" required>
                             <option value="json">JSON</option>
                             <option value="pdf">PDF</option>
@@ -103,15 +103,15 @@
                     </div>
                     <div class="mb-3">
                         <small class="text-muted">
-                            The report will be exported with the current filter settings.
+                            @L["Reports_ExportCurrentFilters"]
                         </small>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@L["Common_Cancel"]</button>
                 <button type="button" class="btn btn-primary" id="confirmExportBtn">
-                    <i class="fas fa-download"></i> Export
+                    <i class="fas fa-download"></i> @L["Common_Export"]
                 </button>
             </div>
         </div>
