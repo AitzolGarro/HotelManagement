@@ -8,16 +8,32 @@ namespace HotelReservationSystem.Models.DTOs;
 public class TwoFactorSetupDto
 {
     /// <summary>Clave secreta en formato Base32 para el autenticador</summary>
-    public string SecretKey { get; set; } = string.Empty;
+    public string ManualEntryKey { get; set; } = string.Empty;
 
     /// <summary>URI otpauth:// compatible con Google Authenticator y Authy</summary>
-    public string QrCodeUri { get; set; } = string.Empty;
+    public string AuthenticatorUri { get; set; } = string.Empty;
 
     /// <summary>Nombre de la cuenta mostrado en la app autenticadora</summary>
     public string AccountName { get; set; } = string.Empty;
 
     /// <summary>Nombre del emisor mostrado en la app autenticadora</summary>
     public string Issuer { get; set; } = string.Empty;
+
+    /// <summary>Códigos de recuperación generados para el usuario</summary>
+    public string[]? RecoveryCodes { get; set; }
+}
+
+/// <summary>
+/// Respuesta base para la configuración y el estado de 2FA
+/// </summary>
+public class TwoFactorSetupResponse
+{
+    public string ManualEntryKey { get; set; } = string.Empty;
+    public string AuthenticatorUri { get; set; } = string.Empty;
+    public string AccountName { get; set; } = string.Empty;
+    public string Issuer { get; set; } = string.Empty;
+    public bool IsTwoFactorEnabled { get; set; }
+    public int RecoveryCodesRemaining { get; set; }
 }
 
 /// <summary>

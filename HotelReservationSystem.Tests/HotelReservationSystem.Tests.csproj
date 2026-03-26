@@ -49,8 +49,6 @@
     <Compile Remove="Integration/ReservationsControllerTests.cs" />
     <Compile Remove="Integration/RoomsControllerTests.cs" />
     <Compile Remove="Integration/RepositoryIntegrationTests.cs" />
-    <Compile Remove="Integration/TwoFactorLoginFlowTests.cs" />
-    <Compile Remove="Controllers/AuthController2FATests.cs" />
     <Compile Remove="Controllers/NotificationsControllerTests.cs" />
     <Compile Remove="Services/NotificationServiceTests.cs" />
     <Compile Remove="Services/DashboardServiceTests.cs" />

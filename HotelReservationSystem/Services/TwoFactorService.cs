@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.AspNetCore.Identity;
 using HotelReservationSystem.Models;
 using HotelReservationSystem.Models.DTOs;
@@ -40,58 +38,101 @@ public class TwoFactorService : ITwoFactorService
     /// <summary>
     /// Genera la configuración inicial de 2FA: secreto Base32 y URI otpauth://
     /// </summary>
+    public async Task<TwoFactorSetupResponse> GetSetupInfoAsync(User user)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        var secretKey = await ObtenerOGenerarClaveAsync(user);
+        var accountName = user.Email ?? user.UserName ?? user.Id.ToString();
+
+        _logger.LogInformation("Configuración 2FA generada para usuario {UserId}", user.Id);
+
+        return new TwoFactorSetupResponse
+        {
+            ManualEntryKey = FormatearClaveBase32(secretKey),
+            AuthenticatorUri = GenerarQrCodeUri(accountName, secretKey),
+            AccountName = accountName,
+            Issuer = IssuerName,
+            IsTwoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user),
+            RecoveryCodesRemaining = await _userManager.CountRecoveryCodesAsync(user)
+        };
+    }
+
     public async Task<TwoFactorSetupDto> GenerateSetupAsync(string userId)
     {
         var user = await ObtenerUsuarioAsync(userId);
-
-        // Obtener o generar la clave del autenticador de Identity
-        var secretKey = await ObtenerOGenerarClaveAsync(user);
-
-        // Construir la URI otpauth:// compatible con Google Authenticator
-        var qrCodeUri = GenerarQrCodeUri(user.Email ?? user.UserName ?? userId, secretKey);
-
-        _logger.LogInformation("Configuración 2FA generada para usuario {UserId}", userId);
+        var setupInfo = await GetSetupInfoAsync(user);
 
         return new TwoFactorSetupDto
         {
-            SecretKey = FormatearClaveBase32(secretKey),
-            QrCodeUri = qrCodeUri,
-            AccountName = user.Email ?? user.UserName ?? userId,
-            Issuer = IssuerName
+            ManualEntryKey = setupInfo.ManualEntryKey,
+            AuthenticatorUri = setupInfo.AuthenticatorUri,
+            AccountName = setupInfo.AccountName,
+            Issuer = setupInfo.Issuer
         };
     }
 
     /// <summary>
     /// Habilita 2FA verificando que el código TOTP sea válido antes de activar
     /// </summary>
-    public async Task<bool> EnableTwoFactorAsync(string userId, string verificationCode)
+    public async Task<(bool Success, IEnumerable<string>? RecoveryCodes)> EnableAsync(User user, string verificationCode)
     {
-        var user = await ObtenerUsuarioAsync(userId);
+        ArgumentNullException.ThrowIfNull(user);
 
-        // Verificar el código antes de habilitar
         var codigoValido = await VerificarCodigoTotpAsync(user, verificationCode);
         if (!codigoValido)
         {
-            _logger.LogWarning("Código 2FA inválido al intentar habilitar para usuario {UserId}", userId);
-            return false;
+            _logger.LogWarning("Código 2FA inválido al intentar habilitar para usuario {UserId}", user.Id);
+            return (false, null);
         }
 
-        // Habilitar 2FA en Identity
         var resultado = await _userManager.SetTwoFactorEnabledAsync(user, true);
         if (!resultado.Succeeded)
         {
             _logger.LogError("Error al habilitar 2FA para usuario {UserId}: {Errors}",
-                userId, string.Join(", ", resultado.Errors.Select(e => e.Description)));
-            return false;
+                user.Id, string.Join(", ", resultado.Errors.Select(e => e.Description)));
+            return (false, null);
         }
 
-        _logger.LogInformation("2FA habilitado exitosamente para usuario {UserId}", userId);
-        return true;
+        var recoveryCodes = (await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 8)).ToArray();
+
+        _logger.LogInformation("2FA habilitado exitosamente para usuario {UserId}", user.Id);
+        return (true, recoveryCodes);
+    }
+
+    public async Task<bool> EnableTwoFactorAsync(string userId, string verificationCode)
+    {
+        var user = await ObtenerUsuarioAsync(userId);
+        var result = await EnableAsync(user, verificationCode);
+        return result.Success;
     }
 
     /// <summary>
     /// Deshabilita 2FA y elimina el secreto almacenado del usuario
     /// </summary>
+    public async Task<bool> DisableAsync(User user, string password)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        var passwordValida = await _userManager.CheckPasswordAsync(user, password);
+        if (!passwordValida)
+        {
+            _logger.LogWarning("Contraseña inválida al intentar deshabilitar 2FA para usuario {UserId}", user.Id);
+            return false;
+        }
+
+        var resultado = await _userManager.SetTwoFactorEnabledAsync(user, false);
+        if (!resultado.Succeeded)
+        {
+            _logger.LogError("Error al deshabilitar 2FA para usuario {UserId}: {Errors}",
+                user.Id, string.Join(", ", resultado.Errors.Select(e => e.Description)));
+            return false;
+        }
+
+        _logger.LogInformation("2FA deshabilitado exitosamente para usuario {UserId}", user.Id);
+        return true;
+    }
+
     public async Task<bool> DisableTwoFactorAsync(string userId)
     {
         var user = await ObtenerUsuarioAsync(userId);
@@ -117,10 +158,41 @@ public class TwoFactorService : ITwoFactorService
     /// <summary>
     /// Verifica un código TOTP de 6 dígitos para el usuario especificado
     /// </summary>
+    public async Task<bool> VerifyCodeAsync(User user, string code)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (await VerificarCodigoTotpAsync(user, code))
+        {
+            return true;
+        }
+
+        return await VerifyRecoveryCodeAsync(user, code);
+    }
+
     public async Task<bool> VerifyCodeAsync(string userId, string code)
     {
         var user = await ObtenerUsuarioAsync(userId);
-        return await VerificarCodigoTotpAsync(user, code);
+        return await VerifyCodeAsync(user, code);
+    }
+
+    public async Task<IEnumerable<string>> GenerateRecoveryCodesAsync(User user)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+        return await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 8);
+    }
+
+    public async Task<bool> VerifyRecoveryCodeAsync(User user, string code)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+        var result = await _userManager.RedeemTwoFactorRecoveryCodeAsync(user, code);
+        return result.Succeeded;
+    }
+
+    public async Task<int> GetRemainingRecoveryCodeCountAsync(User user)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+        return await _userManager.CountRecoveryCodesAsync(user);
     }
 
     // ─────────────────────────────────────────────
@@ -164,14 +236,21 @@ public class TwoFactorService : ITwoFactorService
     /// </summary>
     private async Task<bool> VerificarCodigoTotpAsync(User user, string code)
     {
+        var normalizedCode = NormalizarCodigo(code);
+
         // El AuthenticatorTokenProvider de Identity implementa TOTP (RFC 6238)
         // compatible con Google Authenticator, Authy y cualquier app estándar
         var esValido = await _userManager.VerifyTwoFactorTokenAsync(
             user,
             _userManager.Options.Tokens.AuthenticatorTokenProvider,
-            code);
+            normalizedCode);
 
         return esValido;
+    }
+
+    private static string NormalizarCodigo(string code)
+    {
+        return (code ?? string.Empty).Replace(" ", string.Empty).Replace("-", string.Empty);
     }
 
     /// <summary>

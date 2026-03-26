@@ -1,9 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Security.Cryptography;
 using System.Text.Json;
 using FluentAssertions;
 using HotelReservationSystem.Models;
-using HotelReservationSystem.Models.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,11 +25,14 @@ public class TwoFactorLoginFlowTests : IClassFixture<WebApplicationFactory<Progr
     private readonly IServiceScope _scope;
     private readonly HotelReservationContext _context;
     private readonly UserManager<User> _userManager;
+    private readonly string _databaseName;
 
     private const string TestPassword = "TestPass1!";
 
     public TwoFactorLoginFlowTests(WebApplicationFactory<Program> factory)
     {
+        _databaseName = $"2FAIntegrationDb_{Guid.NewGuid()}";
+
         _factory = factory.WithWebHostBuilder(builder =>
         {
             builder.ConfigureServices(services =>
@@ -40,7 +43,7 @@ public class TwoFactorLoginFlowTests : IClassFixture<WebApplicationFactory<Progr
 
                 services.AddDbContext<HotelReservationContext>(options =>
                 {
-                    options.UseInMemoryDatabase($"2FAIntegrationDb_{Guid.NewGuid()}");
+                    options.UseInMemoryDatabase(_databaseName);
                 });
             });
         });
@@ -52,7 +55,7 @@ public class TwoFactorLoginFlowTests : IClassFixture<WebApplicationFactory<Progr
         _context.Database.EnsureCreated();
     }
 
-    private async Task<User> CreateTestUserAsync(string email, bool twoFactorEnabled = false)
+    private async Task<(User User, string? AuthenticatorKey)> CreateTestUserAsync(string email, bool twoFactorEnabled = false)
     {
         var user = new User
         {
@@ -68,12 +71,62 @@ public class TwoFactorLoginFlowTests : IClassFixture<WebApplicationFactory<Progr
         var result = await _userManager.CreateAsync(user, TestPassword);
         result.Succeeded.Should().BeTrue($"Failed to create user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
 
+        string? authenticatorKey = null;
+
         if (twoFactorEnabled)
         {
+            await _userManager.ResetAuthenticatorKeyAsync(user);
+            authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);
+            authenticatorKey.Should().NotBeNullOrWhiteSpace();
             await _userManager.SetTwoFactorEnabledAsync(user, true);
         }
 
-        return user;
+        return (user, authenticatorKey);
+    }
+
+    private static string GenerateTotpCode(string authenticatorKey)
+    {
+        var normalizedKey = authenticatorKey.Replace(" ", string.Empty).ToUpperInvariant();
+        var keyBytes = DecodeBase32(normalizedKey);
+        var timestep = DateTimeOffset.UtcNow.ToUnixTimeSeconds() / 30;
+        Span<byte> counter = stackalloc byte[8];
+        System.Buffers.Binary.BinaryPrimitives.WriteInt64BigEndian(counter, timestep);
+
+        using var hmac = new HMACSHA1(keyBytes);
+        var hash = hmac.ComputeHash(counter.ToArray());
+        var offset = hash[^1] & 0x0F;
+        var binaryCode = ((hash[offset] & 0x7F) << 24)
+                         | (hash[offset + 1] << 16)
+                         | (hash[offset + 2] << 8)
+                         | hash[offset + 3];
+
+        return (binaryCode % 1_000_000).ToString("D6");
+    }
+
+    private static byte[] DecodeBase32(string input)
+    {
+        const string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+
+        var output = new List<byte>();
+        var buffer = 0;
+        var bitsLeft = 0;
+
+        foreach (var character in input)
+        {
+            var value = alphabet.IndexOf(character);
+            value.Should().BeGreaterThanOrEqualTo(0, $"'{character}' should be a valid Base32 character");
+
+            buffer = (buffer << 5) | value;
+            bitsLeft += 5;
+
+            if (bitsLeft >= 8)
+            {
+                output.Add((byte)((buffer >> (bitsLeft - 8)) & 0xFF));
+                bitsLeft -= 8;
+            }
+        }
+
+        return output.ToArray();
     }
 
     [Fact]
@@ -106,11 +159,11 @@ public class TwoFactorLoginFlowTests : IClassFixture<WebApplicationFactory<Progr
         root.TryGetProperty("token", out var token).Should().BeTrue();
         token.GetString().Should().NotBeNullOrEmpty();
 
-        // challengeToken should be null or absent
-        if (root.TryGetProperty("challengeToken", out var challengeToken))
-        {
-            challengeToken.ValueKind.Should().BeOneOf(JsonValueKind.Null, JsonValueKind.Undefined);
-        }
+        root.TryGetProperty("challengeToken", out var challengeToken).Should().BeTrue();
+        challengeToken.GetString().Should().BeNullOrEmpty();
+
+        root.TryGetProperty("twoFactorEnabled", out var twoFactorEnabled).Should().BeTrue();
+        twoFactorEnabled.GetBoolean().Should().BeFalse();
     }
 
     [Fact]
@@ -143,11 +196,61 @@ public class TwoFactorLoginFlowTests : IClassFixture<WebApplicationFactory<Progr
         root.TryGetProperty("challengeToken", out var challengeToken).Should().BeTrue();
         challengeToken.GetString().Should().NotBeNullOrEmpty();
 
-        // Full accessToken should be absent/empty
-        if (root.TryGetProperty("token", out var token))
+        root.TryGetProperty("token", out var token).Should().BeTrue();
+        token.GetString().Should().BeNullOrEmpty();
+
+        root.TryGetProperty("twoFactorEnabled", out var twoFactorEnabled).Should().BeTrue();
+        twoFactorEnabled.GetBoolean().Should().BeTrue();
+    }
+
+    [Fact]
+    [Trait("Category", "Integration")]
+    [Trait("Feature", "TwoFactor")]
+    public async Task Challenge2FA_ValidCode_ReturnsFullJwt()
+    {
+        // Arrange
+        var email = $"challenge_{Guid.NewGuid():N}@test.com";
+        var (_, authenticatorKey) = await CreateTestUserAsync(email, twoFactorEnabled: true);
+        authenticatorKey.Should().NotBeNullOrWhiteSpace();
+
+        var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", new
         {
-            token.GetString().Should().BeNullOrEmpty();
-        }
+            email,
+            password = TestPassword
+        });
+
+        loginResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        using var loginDocument = JsonDocument.Parse(await loginResponse.Content.ReadAsStringAsync());
+        var challengeToken = loginDocument.RootElement.GetProperty("challengeToken").GetString();
+        challengeToken.Should().NotBeNullOrWhiteSpace();
+
+        var code = GenerateTotpCode(authenticatorKey!);
+
+        // Act
+        var challengeResponse = await _client.PostAsJsonAsync("/api/auth/2fa/challenge", new
+        {
+            challengeToken,
+            code
+        });
+
+        // Assert
+        challengeResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        using var challengeDocument = JsonDocument.Parse(await challengeResponse.Content.ReadAsStringAsync());
+        var root = challengeDocument.RootElement;
+
+        root.TryGetProperty("requiresTwoFactor", out var requiresTwoFactor).Should().BeTrue();
+        requiresTwoFactor.GetBoolean().Should().BeFalse();
+
+        root.TryGetProperty("token", out var token).Should().BeTrue();
+        token.GetString().Should().NotBeNullOrEmpty();
+
+        root.TryGetProperty("challengeToken", out var returnedChallengeToken).Should().BeTrue();
+        returnedChallengeToken.GetString().Should().BeNullOrEmpty();
+
+        root.TryGetProperty("user", out var user).Should().BeTrue();
+        user.GetProperty("email").GetString().Should().Be(email);
     }
 
     [Fact]

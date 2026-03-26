@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text.Json;
 using HotelReservationSystem.Models;
 using HotelReservationSystem.Models.DTOs;
 using HotelReservationSystem.Services.Interfaces;
 using HotelReservationSystem.Authorization;
-using HotelReservationSystem.Infrastructure;
 
 namespace HotelReservationSystem.Controllers;
 [ApiController]
@@ -14,18 +17,25 @@ public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
     private readonly ITwoFactorService _twoFactorService;
-    private readonly IJwtService _jwtService;
+    private readonly UserManager<User> _userManager;
+    private readonly IMemoryCache _memoryCache;
     private readonly ILogger<AuthController> _logger;
+    private static readonly JsonSerializerOptions CamelCaseJson = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
 
     public AuthController(
         IAuthService authService,
         ITwoFactorService twoFactorService,
-        IJwtService jwtService,
+        UserManager<User> userManager,
+        IMemoryCache memoryCache,
         ILogger<AuthController> logger)
     {
         _authService = authService;
         _twoFactorService = twoFactorService;
-        _jwtService = jwtService;
+        _userManager = userManager;
+        _memoryCache = memoryCache;
         _logger = logger;
     }
 
@@ -35,12 +45,12 @@ public class AuthController : ControllerBase
         try
         {
             var response = await _authService.LoginAsync(request);
-            return Ok(response);
+            return JsonResponse(response);
         }
         catch (UnauthorizedAccessException ex)
         {
             _logger.LogWarning("Login attempt failed for {Email}: {Message}", request.Email, ex.Message);
-            return Unauthorized(new { message = "Invalid credentials" });
+            return StatusCodeOnly(StatusCodes.Status401Unauthorized);
         }
         catch (Exception ex)
         {
@@ -206,55 +216,6 @@ public class AuthController : ControllerBase
         }
     }
 
-    [HttpPost("enable-2fa")]
-    [Authorize]
-    public async Task<IActionResult> Enable2FA()
-    {
-        try
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
-            {
-                return Unauthorized();
-            }
-
-            var key = await _authService.Enable2FAAsync(userId);
-            return Ok(new { message = "2FA enabled", authenticatorKey = key });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error enabling 2FA");
-            return StatusCode(500, new { message = "An error occurred while enabling 2FA" });
-        }
-    }
-
-    [HttpPost("verify-2fa")]
-    [Authorize]
-    public async Task<IActionResult> Verify2FA([FromBody] Verify2FARequest request)
-    {
-        try
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
-            {
-                return Unauthorized();
-            }
-
-            var success = await _authService.Verify2FACodeAsync(userId, request.Code);
-            if (success)
-            {
-                return Ok(new { message = "2FA verified successfully" });
-            }
-
-            return BadRequest(new { message = "Invalid 2FA code" });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error verifying 2FA");
-            return StatusCode(500, new { message = "An error occurred while verifying 2FA" });
-        }
-    }
-
     [HttpDelete("users/{id}")]
     [RequireRole(UserRole.Admin)]
     public async Task<IActionResult> DeactivateUser(int id)
@@ -342,16 +303,33 @@ public class AuthController : ControllerBase
     /// </summary>
     [HttpPost("2fa/disable")]
     [Authorize]
-    public async Task<IActionResult> Disable2FA()
+    public async Task<IActionResult> Disable2FA([FromBody] Disable2FARequest request)
     {
         try
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var userId = ObtenerUserIdActual();
             if (userId == null) return Unauthorized();
 
-            var deshabilitado = await _twoFactorService.DisableTwoFactorAsync(userId);
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null || !user.IsActive)
+            {
+                return Unauthorized();
+            }
+
+            var deshabilitado = await _twoFactorService.DisableAsync(user, request.Password);
             if (!deshabilitado)
             {
+                var passwordValida = await _userManager.CheckPasswordAsync(user, request.Password);
+                if (!passwordValida)
+                {
+                    return Unauthorized(new { message = "Contraseña inválida" });
+                }
+
                 return BadRequest(new { message = "No se pudo deshabilitar 2FA" });
             }
 
@@ -369,62 +347,82 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Verifica un código TOTP durante el flujo de login con 2FA activo
-    /// </summary>
-    [HttpPost("2fa/verify")]
-    [Authorize]
-    public async Task<IActionResult> Verify2FACode([FromBody] Verify2FARequest request)
-    {
-        try
-        {
-            var userId = ObtenerUserIdActual();
-            if (userId == null) return Unauthorized();
-
-            var valido = await _twoFactorService.VerifyCodeAsync(userId, request.Code);
-            if (!valido)
-            {
-                return BadRequest(new { message = "Código 2FA inválido" });
-            }
-
-            return Ok(new { message = "Código 2FA verificado exitosamente" });
-        }
-        catch (ArgumentException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error verificando código 2FA");
-            return StatusCode(500, new { message = "Error al verificar el código 2FA" });
-        }
-    }
-
-    /// <summary>
-    /// Genera un token parcial para validar 2FA - endpoint del desafío 2FA
+    /// Completa el desafío 2FA usando el token parcial emitido durante login
     /// </summary>
     [HttpPost("2fa/challenge")]
-    [Authorize]
-    public IActionResult Generate2FAPartialToken()
+    [AllowAnonymous]
+    public async Task<ActionResult<LoginResponse>> Complete2FAChallenge([FromBody] TwoFactorChallengeRequest request)
     {
         try
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            if (!ModelState.IsValid)
             {
-                return Unauthorized();
+                return BadRequest(ModelState);
             }
 
-            var partialToken = _jwtService.IssuePartialAuthToken(userId.ToString());
-            return Ok(new { 
-                message = "2FA challenge token generated successfully",
-                token = partialToken,
-                type = "2fa-challenge"
-            });
+            JwtSecurityToken challengeToken;
+
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                challengeToken = tokenHandler.ReadJwtToken(request.ChallengeToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Token de desafío 2FA inválido o malformado");
+                return StatusCodeOnly(StatusCodes.Status401Unauthorized);
+            }
+
+            var tokenType = challengeToken.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            if (!string.Equals(tokenType, "2fa-challenge", StringComparison.Ordinal))
+            {
+                return StatusCodeOnly(StatusCodes.Status401Unauthorized);
+            }
+
+            if (challengeToken.ValidTo <= DateTime.UtcNow)
+            {
+                return StatusCodeOnly(StatusCodes.Status401Unauthorized);
+            }
+
+            var userId = challengeToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub || c.Type == "sub")?.Value;
+            var jti = challengeToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti || c.Type == "jti")?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(jti))
+            {
+                return StatusCodeOnly(StatusCodes.Status401Unauthorized);
+            }
+
+            var consumedKey = $"auth:2fa:challenge:consumed:{jti}";
+            if (_memoryCache.TryGetValue(consumedKey, out _))
+            {
+                return StatusCodeOnly(StatusCodes.Status401Unauthorized);
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null || !user.IsActive)
+            {
+                return StatusCodeOnly(StatusCodes.Status401Unauthorized);
+            }
+
+            var valido = await _twoFactorService.VerifyCodeAsync(user, request.Code);
+            if (!valido)
+            {
+                return StatusCodeOnly(StatusCodes.Status401Unauthorized);
+            }
+
+            _memoryCache.Set(consumedKey, true, TimeSpan.FromMinutes(6));
+
+            var response = await _authService.IssueAuthenticatedResponseAsync(user.Id);
+            return JsonResponse(response);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return StatusCodeOnly(StatusCodes.Status401Unauthorized);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error generating 2FA partial token");
-            return StatusCode(500, new { message = "An error occurred while generating 2FA challenge token" });
+            _logger.LogError(ex, "Error completando desafío 2FA");
+            return StatusCode(500, new { message = "An error occurred while completing 2FA challenge" });
         }
     }
 
@@ -439,5 +437,25 @@ public class AuthController : ControllerBase
     {
         var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         return string.IsNullOrEmpty(claim) ? null : claim;
+    }
+
+    private ContentResult JsonResponse<T>(T payload, int statusCode = StatusCodes.Status200OK)
+    {
+        return new ContentResult
+        {
+            StatusCode = statusCode,
+            ContentType = "application/json",
+            Content = JsonSerializer.Serialize(payload, CamelCaseJson)
+        };
+    }
+
+    private ContentResult StatusCodeOnly(int statusCode)
+    {
+        return new ContentResult
+        {
+            StatusCode = statusCode,
+            ContentType = "application/json",
+            Content = string.Empty
+        };
     }
 }

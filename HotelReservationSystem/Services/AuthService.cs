@@ -8,6 +8,7 @@ using HotelReservationSystem.Models;
 using HotelReservationSystem.Models.DTOs;
 using HotelReservationSystem.Services.Interfaces;
 using HotelReservationSystem.Data;
+using HotelReservationSystem.Infrastructure;
 
 namespace HotelReservationSystem.Services;
 
@@ -16,6 +17,7 @@ public class AuthService : IAuthService
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly IConfiguration _configuration;
+    private readonly IJwtService _jwtService;
     private readonly HotelReservationContext _context;
     private readonly ICacheService _cacheService;
     private readonly ILogger<AuthService> _logger;
@@ -24,6 +26,7 @@ public class AuthService : IAuthService
         UserManager<User> userManager,
         SignInManager<User> signInManager,
         IConfiguration configuration,
+        IJwtService jwtService,
         HotelReservationContext context,
         ICacheService cacheService,
         ILogger<AuthService> logger)
@@ -31,6 +34,7 @@ public class AuthService : IAuthService
         _userManager = userManager;
         _signInManager = signInManager;
         _configuration = configuration;
+        _jwtService = jwtService;
         _context = context;
         _cacheService = cacheService;
         _logger = logger;
@@ -62,29 +66,44 @@ public class AuthService : IAuthService
         // Verificar expiración de contraseña (90 días)
         VerifyPasswordExpiration(user, request.Email);
 
-        // Verificar autenticación de dos factores si está habilitada
+        // Emitir desafío 2FA si está habilitado; la verificación ocurre en el endpoint de challenge
         if (user.TwoFactorEnabled)
         {
-            if (string.IsNullOrEmpty(request.TwoFactorCode))
-                throw new UnauthorizedAccessException("Two-factor code required.");
+            var partialToken = _jwtService.IssuePartialAuthToken(user.Id.ToString());
 
-            var is2faValid = await _userManager.VerifyTwoFactorTokenAsync(
-                user, _userManager.Options.Tokens.AuthenticatorTokenProvider, request.TwoFactorCode);
+            _logger.LogInformation("Usuario {Email} requiere desafío 2FA antes de emitir JWT", request.Email);
 
-            if (!is2faValid)
-                throw new UnauthorizedAccessException("Invalid two-factor code.");
+            return new LoginResponse
+            {
+                RequiresTwoFactor = true,
+                ChallengeToken = partialToken,
+                TwoFactorEnabled = true
+            };
+        }
+
+        _logger.LogInformation("Usuario {Email} inició sesión correctamente", request.Email);
+
+        return await IssueAuthenticatedResponseAsync(user.Id);
+    }
+
+    public async Task<LoginResponse> IssueAuthenticatedResponseAsync(int userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null || !user.IsActive)
+        {
+            throw new UnauthorizedAccessException("Invalid credentials");
         }
 
         var token = await GenerateJwtTokenAsync(user);
         var userDto = await MapToUserDtoAsync(user);
 
-        _logger.LogInformation("Usuario {Email} inició sesión correctamente", request.Email);
-
         return new LoginResponse
         {
             Token = token,
             Expires = DateTime.UtcNow.AddHours(8),
-            User = userDto
+            User = userDto,
+            RequiresTwoFactor = false,
+            TwoFactorEnabled = user.TwoFactorEnabled
         };
     }
 
@@ -262,33 +281,6 @@ public class AuthService : IAuthService
         }
 
         return result.Succeeded;
-    }
-
-    public async Task<string> Enable2FAAsync(int userId)
-    {
-        var user = await _userManager.FindByIdAsync(userId.ToString());
-        if (user == null) throw new ArgumentException("User not found");
-
-        var unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
-        if (string.IsNullOrEmpty(unformattedKey))
-        {
-            await _userManager.ResetAuthenticatorKeyAsync(user);
-            unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
-        }
-
-        user.TwoFactorEnabled = true;
-        await _userManager.UpdateAsync(user);
-
-        return unformattedKey!;
-    }
-
-    public async Task<bool> Verify2FACodeAsync(int userId, string code)
-    {
-        var user = await _userManager.FindByIdAsync(userId.ToString());
-        if (user == null) return false;
-
-        var isValid = await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, code);
-        return isValid;
     }
 
     public async Task<bool> DeactivateUserAsync(int userId)

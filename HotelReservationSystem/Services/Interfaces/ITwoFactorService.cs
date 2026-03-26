@@ -1,29 +1,23 @@
+using HotelReservationSystem.Models;
 using HotelReservationSystem.Models.DTOs;
 
 namespace HotelReservationSystem.Services.Interfaces;
 
 /// <summary>
-/// Contrato del servicio de autenticación de dos factores (2FA) basado en TOTP
+/// Contrato base del servicio de autenticación de dos factores (2FA)
 /// </summary>
 public interface ITwoFactorService
 {
-    /// <summary>
-    /// Genera la configuración inicial de 2FA para un usuario (secreto + URI QR)
-    /// </summary>
+    Task<(bool Success, IEnumerable<string>? RecoveryCodes)> EnableAsync(User user, string verificationCode);
+    Task<bool> DisableAsync(User user, string password);
+    Task<bool> VerifyCodeAsync(User user, string code);
+    Task<IEnumerable<string>> GenerateRecoveryCodesAsync(User user);
+    Task<bool> VerifyRecoveryCodeAsync(User user, string code);
+    Task<int> GetRemainingRecoveryCodeCountAsync(User user);
+    Task<TwoFactorSetupResponse> GetSetupInfoAsync(User user);
+
     Task<TwoFactorSetupDto> GenerateSetupAsync(string userId);
-
-    /// <summary>
-    /// Habilita 2FA para el usuario después de verificar el código TOTP
-    /// </summary>
     Task<bool> EnableTwoFactorAsync(string userId, string verificationCode);
-
-    /// <summary>
-    /// Deshabilita 2FA para el usuario
-    /// </summary>
     Task<bool> DisableTwoFactorAsync(string userId);
-
-    /// <summary>
-    /// Verifica un código TOTP para el usuario especificado
-    /// </summary>
     Task<bool> VerifyCodeAsync(string userId, string code);
 }

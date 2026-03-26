@@ -21,6 +21,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using StackExchange.Redis;
 using FluentValidation;
+using HotelReservationSystem.Infrastructure;
 
 // Configuración inicial de Serilog (bootstrap) para capturar errores de arranque
 Log.Logger = new LoggerConfiguration()
@@ -282,6 +283,7 @@ try
 
     // Registrar servicio de ID de correlación para propagación a llamadas externas
     builder.Services.AddScoped<ICorrelationIdService, CorrelationIdService>();    // Register services
+    builder.Services.AddScoped<IJwtService, JwtService>();
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<ITwoFactorService, TwoFactorService>();
     builder.Services.AddScoped<IReservationService, ReservationService>();

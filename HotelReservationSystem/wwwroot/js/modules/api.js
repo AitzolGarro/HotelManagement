@@ -225,6 +225,29 @@ class ApiClient {
         return this.get('/auth/me');
     }
 
+    async challenge2FA(challengeToken, code) {
+        return this.post('/auth/2fa/challenge', {
+            challengeToken,
+            code
+        });
+    }
+
+    async setup2FA() {
+        return this.post('/auth/2fa/setup');
+    }
+
+    async enable2FA(code) {
+        return this.post('/auth/2fa/enable', {
+            verificationCode: code
+        });
+    }
+
+    async disable2FA(password) {
+        return this.post('/auth/2fa/disable', {
+            password
+        });
+    }
+
     // Silent keep-alive request for session management
     async keepAlive() {
         return this.request('/auth/me', {

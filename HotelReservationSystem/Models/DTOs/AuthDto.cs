@@ -19,6 +19,19 @@ public class LoginResponse
     public string Token { get; set; } = string.Empty;
     public DateTime Expires { get; set; }
     public UserDto User { get; set; } = null!;
+    public bool RequiresTwoFactor { get; set; }
+    public string? ChallengeToken { get; set; }
+    public bool TwoFactorEnabled { get; set; }
+}
+
+public class TwoFactorChallengeRequest
+{
+    [Required]
+    public string ChallengeToken { get; set; } = string.Empty;
+
+    [Required]
+    [StringLength(8, MinimumLength = 6)]
+    public string Code { get; set; } = string.Empty;
 }
 
 public class UserDto

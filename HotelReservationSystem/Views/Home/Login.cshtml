@@ -206,13 +206,19 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="d-grid mb-3">
-                                        <button type="submit" class="btn btn-primary btn-login">
-                                            <i class="bi bi-box-arrow-in-right me-2"></i>
-                                            @L["Login_SignIn"]
-                                        </button>
-                                    </div>
-                                </form>
+                                     <div class="d-grid mb-3">
+                                         <button type="submit" class="btn btn-primary btn-login">
+                                             <i class="bi bi-box-arrow-in-right me-2"></i>
+                                             @L["Login_SignIn"]
+                                         </button>
+                                     </div>
+
+                                     <div id="totp-step" style="display:none">
+                                         <input id="totp-code" maxlength="8" />
+                                         <button id="totp-submit" type="button">Verify code</button>
+                                         <div id="totp-error"></div>
+                                     </div>
+                                 </form>
                                 
                                 <div class="divider">
                                     <span>@L["Login_NeedHelp"]</span>

@@ -4,6 +4,7 @@ class AuthManager {
         this.tokenKey = 'jwt_token';
         this.refreshTokenKey = 'refresh_token';
         this.userKey = 'current_user';
+        this.twoFactorChallengeKey = '2fa_challenge_token';
         this.sessionTimeout = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
         
         this.initializeAuth();
@@ -29,42 +30,19 @@ class AuthManager {
     async login(credentials) {
         try {
             const response = await API.login(credentials);
+
+            if (response.requiresTwoFactor === true) {
+                if (!response.challengeToken) {
+                    throw new Error('Two-factor challenge token was not returned by the server.');
+                }
+
+                this.setPendingTwoFactorChallenge(response.challengeToken);
+                this.showTwoFactorStep();
+                return false;
+            }
             
-            if (response.token) {
-                console.log('Login successful, storing token'); // Debug log
-                this.setToken(response.token);
-                if (response.refreshToken) {
-                    this.setRefreshToken(response.refreshToken);
-                }
-                if (response.user) {
-                    console.log('Storing user data:', response.user); // Debug log
-                    this.setUser(response.user);
-                }
-                
-                // Handle remember me functionality
-                if (credentials.rememberMe) {
-                    localStorage.setItem('remember_me', 'true');
-                } else {
-                    localStorage.removeItem('remember_me');
-                }
-                
-                this.updateUIForAuthenticatedUser();
-                this.startTokenRefreshTimer();
-                this.resetSessionTimeout();
-                
-                // Initialize SignalR after successful authentication
-                this.initializeSignalRAfterAuth();
-                
-                UI.showSuccess('Sign in successful!');
-                
-                // Small delay to show success message
-                setTimeout(() => {
-                    // Redirect to dashboard or intended page
-                    const intendedUrl = sessionStorage.getItem('intended_url') || '/';
-                    sessionStorage.removeItem('intended_url');
-                    window.location.href = intendedUrl;
-                }, 1000);
-                
+            if (this.hasAccessToken(response)) {
+                await this.completeLogin(response, credentials.rememberMe);
                 return true;
             } else {
                 throw new Error('Invalid response from server');
@@ -83,6 +61,7 @@ class AuthManager {
         this.disconnectSignalR();
         
         this.clearTokens();
+        this.clearPendingTwoFactorChallenge();
         this.clearUser();
         this.updateUIForUnauthenticatedUser();
         this.clearSessionTimeout();
@@ -128,6 +107,18 @@ class AuthManager {
     clearTokens() {
         localStorage.removeItem(this.tokenKey);
         localStorage.removeItem(this.refreshTokenKey);
+    }
+
+    getPendingTwoFactorChallenge() {
+        return sessionStorage.getItem(this.twoFactorChallengeKey);
+    }
+
+    setPendingTwoFactorChallenge(challengeToken) {
+        sessionStorage.setItem(this.twoFactorChallengeKey, challengeToken);
+    }
+
+    clearPendingTwoFactorChallenge() {
+        sessionStorage.removeItem(this.twoFactorChallengeKey);
     }
 
     // User management
@@ -180,6 +171,374 @@ class AuthManager {
             this.logout();
             return false;
         }
+    }
+
+    hasAccessToken(response) {
+        return Boolean(response && (response.token || response.accessToken));
+    }
+
+    getAccessToken(response) {
+        return response.token || response.accessToken;
+    }
+
+    async completeLogin(response, rememberMe = false) {
+        const token = this.getAccessToken(response);
+
+        if (!token) {
+            throw new Error('Authentication token missing from server response');
+        }
+
+        console.log('Login successful, storing token'); // Debug log
+        this.setToken(token);
+        this.clearPendingTwoFactorChallenge();
+        this.hideTwoFactorStep();
+
+        if (response.refreshToken) {
+            this.setRefreshToken(response.refreshToken);
+        }
+
+        if (response.user) {
+            console.log('Storing user data:', response.user); // Debug log
+            this.setUser(response.user);
+        }
+
+        if (rememberMe) {
+            localStorage.setItem('remember_me', 'true');
+        } else {
+            localStorage.removeItem('remember_me');
+        }
+
+        this.updateUIForAuthenticatedUser();
+        this.startTokenRefreshTimer();
+        this.resetSessionTimeout();
+        await this.initializeSignalRAfterAuth();
+
+        UI.showSuccess('Sign in successful!');
+
+        setTimeout(() => {
+            const intendedUrl = sessionStorage.getItem('intended_url') || '/';
+            sessionStorage.removeItem('intended_url');
+            window.location.href = intendedUrl;
+        }, 1000);
+    }
+
+    showTwoFactorStep() {
+        const totpStep = document.getElementById('totp-step');
+        const totpCodeInput = document.getElementById('totp-code');
+        const totpError = document.getElementById('totp-error');
+        const loginStepSelectors = [
+            '#loginForm .form-floating',
+            '#loginForm .row.mb-3',
+            '#loginForm .d-grid.mb-3'
+        ];
+
+        loginStepSelectors.forEach(selector => {
+            document.querySelectorAll(selector).forEach(element => {
+                element.style.display = 'none';
+            });
+        });
+
+        if (totpStep) {
+            totpStep.style.display = 'block';
+        }
+
+        if (totpError) {
+            totpError.textContent = '';
+            totpError.style.display = 'none';
+        }
+
+        if (totpCodeInput) {
+            totpCodeInput.value = '';
+            totpCodeInput.focus();
+        }
+    }
+
+    hideTwoFactorStep() {
+        const totpStep = document.getElementById('totp-step');
+        const totpError = document.getElementById('totp-error');
+        const loginStepSelectors = [
+            '#loginForm .form-floating',
+            '#loginForm .row.mb-3',
+            '#loginForm .d-grid.mb-3'
+        ];
+
+        loginStepSelectors.forEach(selector => {
+            document.querySelectorAll(selector).forEach(element => {
+                element.style.display = '';
+            });
+        });
+
+        if (totpStep) {
+            totpStep.style.display = 'none';
+        }
+
+        if (totpError) {
+            totpError.textContent = '';
+            totpError.style.display = 'none';
+        }
+    }
+
+    async submitTwoFactorCode() {
+        const challengeToken = this.getPendingTwoFactorChallenge();
+        const codeInput = document.getElementById('totp-code');
+        const errorContainer = document.getElementById('totp-error');
+        const rememberMeInput = document.getElementById('rememberMe');
+        const code = codeInput ? codeInput.value.trim() : '';
+
+        if (!challengeToken) {
+            if (errorContainer) {
+                errorContainer.textContent = 'Your login challenge expired. Please sign in again.';
+                errorContainer.style.display = 'block';
+            }
+            this.hideTwoFactorStep();
+            return;
+        }
+
+        if (!code) {
+            if (errorContainer) {
+                errorContainer.textContent = 'Please enter your authentication code.';
+                errorContainer.style.display = 'block';
+            }
+            if (codeInput) {
+                codeInput.focus();
+            }
+            return;
+        }
+
+        try {
+            const response = await API.challenge2FA(challengeToken, code);
+            await this.completeLogin(response, rememberMeInput ? rememberMeInput.checked : false);
+        } catch (error) {
+            if (errorContainer) {
+                errorContainer.textContent = error.message || 'Invalid authentication code. Please try again.';
+                errorContainer.style.display = 'block';
+            }
+
+            if (codeInput) {
+                codeInput.value = '';
+                codeInput.focus();
+            }
+        }
+    }
+
+    initializeTwoFactorChallengeHandlers() {
+        const totpSubmitButton = document.getElementById('totp-submit');
+        const totpCodeInput = document.getElementById('totp-code');
+
+        if (totpSubmitButton && !totpSubmitButton.dataset.authBound) {
+            totpSubmitButton.dataset.authBound = 'true';
+            totpSubmitButton.addEventListener('click', async () => {
+                await this.submitTwoFactorCode();
+            });
+        }
+
+        if (totpCodeInput && !totpCodeInput.dataset.authBound) {
+            totpCodeInput.dataset.authBound = 'true';
+            totpCodeInput.addEventListener('keydown', async (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    await this.submitTwoFactorCode();
+                }
+            });
+        }
+    }
+
+    initializeTwoFactorSetupHandlers() {
+        const qrcodeElement = document.getElementById('qrcode');
+
+        if (!qrcodeElement) {
+            return;
+        }
+
+        this.setup2FA();
+
+        const retryButton = document.getElementById('retryBtn');
+        const enableButton = document.getElementById('enableBtn');
+        const verificationCodeInput = document.getElementById('verificationCode');
+        const copyKeyButton = document.getElementById('copyKeyBtn');
+        const copyCodesButton = document.getElementById('copyCodesBtn');
+        const downloadCodesButton = document.getElementById('downloadCodesBtn');
+
+        if (retryButton && !retryButton.dataset.authBound) {
+            retryButton.dataset.authBound = 'true';
+            retryButton.addEventListener('click', () => this.setup2FA());
+        }
+
+        if (enableButton && !enableButton.dataset.authBound) {
+            enableButton.dataset.authBound = 'true';
+            enableButton.addEventListener('click', async () => {
+                await this.enableTwoFactorSetup();
+            });
+        }
+
+        if (verificationCodeInput && !verificationCodeInput.dataset.authBound) {
+            verificationCodeInput.dataset.authBound = 'true';
+            verificationCodeInput.addEventListener('keypress', async (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    await this.enableTwoFactorSetup();
+                }
+            });
+        }
+
+        if (copyKeyButton && !copyKeyButton.dataset.authBound) {
+            copyKeyButton.dataset.authBound = 'true';
+            copyKeyButton.addEventListener('click', async () => {
+                const manualEntryKeyInput = document.getElementById('manualEntryKey');
+                if (manualEntryKeyInput && manualEntryKeyInput.value) {
+                    await navigator.clipboard.writeText(manualEntryKeyInput.value);
+                    UI.showToast('Key copied to clipboard', 'success');
+                }
+            });
+        }
+
+        if (copyCodesButton && !copyCodesButton.dataset.authBound) {
+            copyCodesButton.dataset.authBound = 'true';
+            copyCodesButton.addEventListener('click', async () => {
+                if (Array.isArray(this.recoveryCodes) && this.recoveryCodes.length > 0) {
+                    await navigator.clipboard.writeText(this.recoveryCodes.join('\n'));
+                    UI.showToast('Recovery codes copied to clipboard', 'success');
+                }
+            });
+        }
+
+        if (downloadCodesButton && !downloadCodesButton.dataset.authBound) {
+            downloadCodesButton.dataset.authBound = 'true';
+            downloadCodesButton.addEventListener('click', () => {
+                if (!Array.isArray(this.recoveryCodes) || this.recoveryCodes.length === 0) {
+                    return;
+                }
+
+                const content = 'Hotel Reservation System — 2FA Recovery Codes\n\n' + this.recoveryCodes.join('\n');
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'hotel-2fa-recovery-codes.txt';
+                link.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+    }
+
+    showTwoFactorSetupStep(stepId) {
+        ['step-setup', 'step-recovery', 'step-loading', 'step-error'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.style.display = id === stepId ? 'block' : 'none';
+            }
+        });
+    }
+
+    getResponseValue(response, ...propertyNames) {
+        for (const propertyName of propertyNames) {
+            if (response && response[propertyName] !== undefined && response[propertyName] !== null) {
+                return response[propertyName];
+            }
+        }
+
+        return null;
+    }
+
+    async setup2FA() {
+        const setupErrorMessage = document.getElementById('setupErrorMessage');
+        const qrCodeContainer = document.getElementById('qrcode');
+        const manualEntryKeyInput = document.getElementById('manualEntryKey');
+
+        if (!qrCodeContainer || !manualEntryKeyInput) {
+            return;
+        }
+
+        this.showTwoFactorSetupStep('step-loading');
+
+        try {
+            const response = await API.setup2FA();
+            const authenticatorUri = this.getResponseValue(response, 'AuthenticatorUri', 'authenticatorUri');
+            const manualEntryKey = this.getResponseValue(response, 'ManualEntryKey', 'manualEntryKey');
+
+            if (!authenticatorUri || !manualEntryKey) {
+                throw new Error('Incomplete two-factor setup response from server.');
+            }
+
+            qrCodeContainer.innerHTML = '';
+            new QRCode(qrCodeContainer, {
+                text: authenticatorUri,
+                width: 200,
+                height: 200,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+
+            manualEntryKeyInput.value = manualEntryKey;
+            this.showTwoFactorSetupStep('step-setup');
+        } catch (error) {
+            if (setupErrorMessage) {
+                setupErrorMessage.textContent = error.message || 'Failed to load 2FA setup information.';
+            }
+            this.showTwoFactorSetupStep('step-error');
+        }
+    }
+
+    async enableTwoFactorSetup() {
+        const codeInput = document.getElementById('verificationCode');
+        const codeError = document.getElementById('codeError');
+        const code = codeInput ? codeInput.value.trim() : '';
+
+        if (!codeInput || !codeError) {
+            return;
+        }
+
+        if (!code || code.length < 6 || code.length > 8) {
+            codeInput.classList.add('is-invalid');
+            codeError.textContent = 'Please enter a valid 6-8 digit code.';
+            return;
+        }
+
+        codeInput.classList.remove('is-invalid');
+
+        try {
+            UI.showLoading('Enabling 2FA...');
+            const response = await API.enable2FA(code);
+            const recoveryCodes = this.getResponseValue(response, 'RecoveryCodes', 'recoveryCodes');
+
+            if (!Array.isArray(recoveryCodes) || recoveryCodes.length === 0) {
+                throw new Error('Recovery codes were not returned by the server.');
+            }
+
+            this.recoveryCodes = recoveryCodes;
+            this.renderRecoveryCodes(recoveryCodes);
+            this.showTwoFactorSetupStep('step-recovery');
+        } catch (error) {
+            codeInput.classList.add('is-invalid');
+            codeError.textContent = error.message || 'Invalid code. Please try again.';
+            codeInput.value = '';
+            codeInput.focus();
+        } finally {
+            UI.hideLoading();
+        }
+    }
+
+    renderRecoveryCodes(codes) {
+        const recoveryCodesList = document.getElementById('recoveryCodesList');
+
+        if (!recoveryCodesList) {
+            return;
+        }
+
+        recoveryCodesList.innerHTML = codes
+            .map(code => `<div class="mb-1">${this.escapeHtml(code)}</div>`)
+            .join('');
+    }
+
+    escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, match => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        }[match]));
     }
 
     // Start automatic token refresh
@@ -918,4 +1277,6 @@ window.Auth = new AuthManager();
 // Initialize logout button when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     Auth.initializeLogoutButton();
+    Auth.initializeTwoFactorChallengeHandlers();
+    Auth.initializeTwoFactorSetupHandlers();
 });
