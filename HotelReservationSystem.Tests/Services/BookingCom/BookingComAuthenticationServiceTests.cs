@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using HotelReservationSystem.Services.BookingCom;
 using HotelReservationSystem.Models.BookingCom;
+using ServiceAuthRequest = HotelReservationSystem.Services.BookingCom.AuthenticationTestRequest;
+using ServiceAuthResponse = HotelReservationSystem.Services.BookingCom.AuthenticationTestResponse;
 
 namespace HotelReservationSystem.Tests.Services.BookingCom;
 
@@ -116,7 +118,7 @@ public class BookingComAuthenticationServiceTests
     {
         // Arrange
         var testXml = "<request><authentication><username>testuser</username><password>testpass</password></authentication><test>auth</test></request>";
-        var successResponse = new AuthenticationTestResponse
+        var successResponse = new ServiceAuthResponse
         {
             Authenticated = true,
             UserInfo = new UserInfo
@@ -127,11 +129,11 @@ public class BookingComAuthenticationServiceTests
         };
 
         _xmlSerializerMock
-            .Setup(x => x.Serialize(It.IsAny<AuthenticationTestRequest>()))
+            .Setup(x => x.Serialize(It.IsAny<ServiceAuthRequest>()))
             .Returns(testXml);
 
         _httpClientMock
-            .Setup(x => x.SendRequestAsync<AuthenticationTestResponse>("auth/test", testXml, It.IsAny<CancellationToken>()))
+            .Setup(x => x.SendRequestAsync<ServiceAuthResponse>("auth/test", testXml, It.IsAny<CancellationToken>()))
             .ReturnsAsync(successResponse);
 
         // Act
@@ -146,9 +148,9 @@ public class BookingComAuthenticationServiceTests
     {
         // Arrange
         var testXml = "<request><authentication><username>testuser</username><password>testpass</password></authentication><test>auth</test></request>";
-        var faultResponse = new AuthenticationTestResponse
+        var faultResponse = new ServiceAuthResponse
         {
-            Fault = new BookingComFault
+            Fault = new FaultObject
             {
                 Code = "AUTH_ERROR",
                 Message = "Invalid credentials"
@@ -156,11 +158,11 @@ public class BookingComAuthenticationServiceTests
         };
 
         _xmlSerializerMock
-            .Setup(x => x.Serialize(It.IsAny<AuthenticationTestRequest>()))
+            .Setup(x => x.Serialize(It.IsAny<ServiceAuthRequest>()))
             .Returns(testXml);
 
         _httpClientMock
-            .Setup(x => x.SendRequestAsync<AuthenticationTestResponse>("auth/test", testXml, It.IsAny<CancellationToken>()))
+            .Setup(x => x.SendRequestAsync<ServiceAuthResponse>("auth/test", testXml, It.IsAny<CancellationToken>()))
             .ReturnsAsync(faultResponse);
 
         // Act
@@ -177,11 +179,11 @@ public class BookingComAuthenticationServiceTests
         var testXml = "<request><authentication><username>testuser</username><password>testpass</password></authentication><test>auth</test></request>";
 
         _xmlSerializerMock
-            .Setup(x => x.Serialize(It.IsAny<AuthenticationTestRequest>()))
+            .Setup(x => x.Serialize(It.IsAny<ServiceAuthRequest>()))
             .Returns(testXml);
 
         _httpClientMock
-            .Setup(x => x.SendRequestAsync<AuthenticationTestResponse>("auth/test", testXml, It.IsAny<CancellationToken>()))
+            .Setup(x => x.SendRequestAsync<ServiceAuthResponse>("auth/test", testXml, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new BookingComApiException("Network error"));
 
         // Act
@@ -222,11 +224,11 @@ public class BookingComAuthenticationServiceTests
         var testXml = "<request><authentication><username>testuser</username><password>testpass</password></authentication><test>auth</test></request>";
 
         _xmlSerializerMock
-            .Setup(x => x.Serialize(It.IsAny<AuthenticationTestRequest>()))
+            .Setup(x => x.Serialize(It.IsAny<ServiceAuthRequest>()))
             .Returns(testXml);
 
         _httpClientMock
-            .Setup(x => x.SendRequestAsync<AuthenticationTestResponse>("auth/test", testXml, It.IsAny<CancellationToken>()))
+            .Setup(x => x.SendRequestAsync<ServiceAuthResponse>("auth/test", testXml, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("Unexpected error"));
 
         // Act
@@ -245,11 +247,11 @@ public class BookingComAuthenticationServiceTests
         cts.Cancel();
 
         _xmlSerializerMock
-            .Setup(x => x.Serialize(It.IsAny<AuthenticationTestRequest>()))
+            .Setup(x => x.Serialize(It.IsAny<ServiceAuthRequest>()))
             .Returns(testXml);
 
         _httpClientMock
-            .Setup(x => x.SendRequestAsync<AuthenticationTestResponse>("auth/test", testXml, It.IsAny<CancellationToken>()))
+            .Setup(x => x.SendRequestAsync<ServiceAuthResponse>("auth/test", testXml, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new TaskCanceledException());
 
         // Act & Assert

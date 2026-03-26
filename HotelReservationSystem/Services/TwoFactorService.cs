@@ -94,7 +94,7 @@ public class TwoFactorService : ITwoFactorService
             return (false, null);
         }
 
-        var recoveryCodes = (await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 8)).ToArray();
+        var recoveryCodes = (await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 8) ?? Enumerable.Empty<string>()).ToArray();
 
         _logger.LogInformation("2FA habilitado exitosamente para usuario {UserId}", user.Id);
         return (true, recoveryCodes);
@@ -179,7 +179,7 @@ public class TwoFactorService : ITwoFactorService
     public async Task<IEnumerable<string>> GenerateRecoveryCodesAsync(User user)
     {
         ArgumentNullException.ThrowIfNull(user);
-        return await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 8);
+        return await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 8) ?? Enumerable.Empty<string>();
     }
 
     public async Task<bool> VerifyRecoveryCodeAsync(User user, string code)

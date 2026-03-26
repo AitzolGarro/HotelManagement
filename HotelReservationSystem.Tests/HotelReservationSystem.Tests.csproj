@@ -41,9 +41,6 @@
     <Compile Remove="Performance/**" />
     <Compile Remove="TestConfiguration/**" />
     <!-- Files with compilation errors excluded -->
-    <Compile Remove="Services/BookingCom/BookingIntegrationServiceTests.cs" />
-    <Compile Remove="Services/BookingCom/BookingComHttpClientTests.cs" />
-    <Compile Remove="Services/BookingCom/XmlSerializationServiceTests.cs" />
 
     <Compile Remove="Integration/HotelsControllerTests.cs" />
     <Compile Remove="Integration/ReservationsControllerTests.cs" />
@@ -65,14 +62,9 @@
     <Compile Remove="Repositories/RoomRepositoryTests.cs" />
     <Compile Remove="Repositories/UnitOfWorkTests.cs" />
     <Compile Remove="Services/PerformanceMonitoringServiceTests.cs" />
-    <Compile Remove="Integration/BookingComSyncIntegrationTests.cs" />
-    <Compile Remove="Services/TwoFactorServiceTests.cs" />
-    <Compile Remove="Controllers/BookingComWebhookControllerTests.cs" />
-    <Compile Remove="Services/Expedia/ExpediaChannelServiceBugFixTests.cs" />
-    <Compile Remove="Services/BookingCom/BookingComAuthenticationServiceTests.cs" />
-    <Compile Remove="Integration/BookingComIntegrationTests.cs" />
     <Compile Remove="Services/CacheServiceTests.cs" />
-    <Compile Remove="Integration/ExpediaWebhookControllerTests.cs" />
+    <Compile Remove="Services/BookingCom/BookingIntegrationServiceTests.cs" />
+    <Compile Remove="Integration/BookingComSyncIntegrationTests.cs" />
     <!-- Features not yet implemented -->
     <!--
     <Compile Remove="Controllers/BookingComWebhookControllerTests.cs" />

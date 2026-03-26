@@ -7,6 +7,7 @@ using HotelReservationSystem.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using HotelReservationSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -37,6 +38,9 @@ public class TwoFactorLoginFlowTests : IClassFixture<WebApplicationFactory<Progr
         {
             builder.ConfigureServices(services =>
             {
+                var hostedServices = services.Where(d => d.ServiceType == typeof(IHostedService)).ToList();
+                foreach (var hostedService in hostedServices) services.Remove(hostedService);
+
                 var descriptor = services.SingleOrDefault(
                     d => d.ServiceType == typeof(DbContextOptions<HotelReservationContext>));
                 if (descriptor != null) services.Remove(descriptor);

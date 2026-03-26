@@ -13,7 +13,8 @@ async function loadI18n() {
         const res = await fetch('/api/i18n/strings?lang=' + lang);
         const data = await res.json();
         _I18N = data.strings || {};
-    } catch(e) { _I18N = {}; }
+        window._I18N = _I18N;
+    } catch(e) { _I18N = {}; window._I18N = _I18N; }
 }
 
 class DashboardManager {

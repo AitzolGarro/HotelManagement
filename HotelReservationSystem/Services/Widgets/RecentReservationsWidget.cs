@@ -12,7 +12,10 @@ public class RecentReservationsWidget : DashboardWidgetBase
     private readonly IStringLocalizer _localizer;
 
     public RecentReservationsWidget(IDashboardService dashboardService, IStringLocalizer<HardcodedStringLocalizer> localizer)
-        => _dashboardService = dashboardService;
+    {
+        _dashboardService = dashboardService;
+        _localizer = localizer;
+    }
 
     public override string     WidgetId    => "recent-reservations";
     public override WidgetType Type        => WidgetType.RecentReservations;

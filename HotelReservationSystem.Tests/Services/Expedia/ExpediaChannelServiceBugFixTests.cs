@@ -53,6 +53,7 @@ public class ExpediaChannelServiceBugFixTests : IDisposable
             _bookingComMock.Object,
             _expediaServiceMock.Object,
             _encryptionMock.Object,
+            _dbContext,
             _logger);
 
     private async Task<HotelChannel> SetupExpediaChannelAsync(int hotelId = 1)
@@ -79,7 +80,7 @@ public class ExpediaChannelServiceBugFixTests : IDisposable
 
         _unitOfWorkMock
             .Setup(u => u.ChannelSyncLogs.AddAsync(It.IsAny<ChannelSyncLog>()))
-            .Returns(Task.CompletedTask);
+            .ReturnsAsync((ChannelSyncLog log) => log);
 
         _unitOfWorkMock
             .Setup(u => u.SaveChangesAsync())

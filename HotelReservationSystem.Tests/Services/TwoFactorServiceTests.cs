@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 using FluentAssertions;
@@ -26,8 +27,12 @@ public class TwoFactorServiceTests
     {
         // UserManager requires a store mock
         var storeMock = new Mock<IUserStore<User>>();
+        var identityOptions = Options.Create(new IdentityOptions
+        {
+            Tokens = new TokenOptions { AuthenticatorTokenProvider = "Authenticator" }
+        });
         _userManagerMock = new Mock<UserManager<User>>(
-            storeMock.Object, null, null, null, null, null, null, null, null);
+            storeMock.Object, identityOptions, null!, null!, null!, null!, null!, null!, null!);
         _loggerMock = new Mock<ILogger<TwoFactorService>>();
 
         _service = new TwoFactorService(_userManagerMock.Object, _loggerMock.Object);
@@ -56,15 +61,9 @@ public class TwoFactorServiceTests
     {
         // Arrange
         var user = CreateTestUser();
-        var tokenProvider = "Authenticator";
         var recoveryCodes = new[] { "CODE1", "CODE2", "CODE3", "CODE4", "CODE5", "CODE6", "CODE7", "CODE8" };
 
-        _userManagerMock.Setup(um => um.Options)
-            .Returns(new IdentityOptions
-            {
-                Tokens = new TokenOptions { AuthenticatorTokenProvider = tokenProvider }
-            });
-        _userManagerMock.Setup(um => um.VerifyTwoFactorTokenAsync(user, tokenProvider, "123456"))
+        _userManagerMock.Setup(um => um.VerifyTwoFactorTokenAsync(user, "Authenticator", "123456"))
             .ReturnsAsync(true);
         _userManagerMock.Setup(um => um.SetTwoFactorEnabledAsync(user, true))
             .ReturnsAsync(IdentityResult.Success);
@@ -90,14 +89,7 @@ public class TwoFactorServiceTests
     {
         // Arrange
         var user = CreateTestUser();
-        var tokenProvider = "Authenticator";
-
-        _userManagerMock.Setup(um => um.Options)
-            .Returns(new IdentityOptions
-            {
-                Tokens = new TokenOptions { AuthenticatorTokenProvider = tokenProvider }
-            });
-        _userManagerMock.Setup(um => um.VerifyTwoFactorTokenAsync(user, tokenProvider, "000000"))
+        _userManagerMock.Setup(um => um.VerifyTwoFactorTokenAsync(user, "Authenticator", "000000"))
             .ReturnsAsync(false);
 
         // Act
@@ -163,14 +155,7 @@ public class TwoFactorServiceTests
     {
         // Arrange
         var user = CreateTestUser();
-        var tokenProvider = "Authenticator";
-
-        _userManagerMock.Setup(um => um.Options)
-            .Returns(new IdentityOptions
-            {
-                Tokens = new TokenOptions { AuthenticatorTokenProvider = tokenProvider }
-            });
-        _userManagerMock.Setup(um => um.VerifyTwoFactorTokenAsync(user, tokenProvider, "123456"))
+        _userManagerMock.Setup(um => um.VerifyTwoFactorTokenAsync(user, "Authenticator", "123456"))
             .ReturnsAsync(true);
 
         // Act
@@ -190,14 +175,7 @@ public class TwoFactorServiceTests
     {
         // Arrange
         var user = CreateTestUser();
-        var tokenProvider = "Authenticator";
-
-        _userManagerMock.Setup(um => um.Options)
-            .Returns(new IdentityOptions
-            {
-                Tokens = new TokenOptions { AuthenticatorTokenProvider = tokenProvider }
-            });
-        _userManagerMock.Setup(um => um.VerifyTwoFactorTokenAsync(user, tokenProvider, "RECOVERY1"))
+        _userManagerMock.Setup(um => um.VerifyTwoFactorTokenAsync(user, "Authenticator", "RECOVERY1"))
             .ReturnsAsync(false);
         _userManagerMock.Setup(um => um.RedeemTwoFactorRecoveryCodeAsync(user, "RECOVERY1"))
             .ReturnsAsync(IdentityResult.Success);
@@ -218,14 +196,7 @@ public class TwoFactorServiceTests
     {
         // Arrange
         var user = CreateTestUser();
-        var tokenProvider = "Authenticator";
-
-        _userManagerMock.Setup(um => um.Options)
-            .Returns(new IdentityOptions
-            {
-                Tokens = new TokenOptions { AuthenticatorTokenProvider = tokenProvider }
-            });
-        _userManagerMock.Setup(um => um.VerifyTwoFactorTokenAsync(user, tokenProvider, "000000"))
+        _userManagerMock.Setup(um => um.VerifyTwoFactorTokenAsync(user, "Authenticator", "000000"))
             .ReturnsAsync(false);
         _userManagerMock.Setup(um => um.RedeemTwoFactorRecoveryCodeAsync(user, "000000"))
             .ReturnsAsync(IdentityResult.Failed(new IdentityError { Description = "Invalid recovery code" }));

@@ -54,11 +54,11 @@ public class ExpediaWebhookController : ControllerBase
 
             var signature = Request.Headers["X-Expedia-Signature"].FirstOrDefault();
             if (string.IsNullOrEmpty(signature))
-                return Unauthorized();
+                return new ContentResult { StatusCode = 401, ContentType = "application/json", Content = "{\"error\":\"Missing signature\"}" };
 
             var rawBodyBytes = Encoding.UTF8.GetBytes(rawBodyStr);
             if (!ValidateHmacSignature(rawBodyBytes, signature))
-                return Unauthorized();
+                return new ContentResult { StatusCode = 401, ContentType = "application/json", Content = "{\"error\":\"Invalid signature\"}" };
 
             if (string.IsNullOrEmpty(rawBodyStr))
             {

@@ -25,65 +25,65 @@ namespace HotelReservationSystem.Services
 
         public async Task<IEnumerable<EnumDto>> GetRoomTypesAsync()
         {
-            return await _cacheService.GetOrSetAsync(CacheKeys.RoomTypes, async () =>
+            return await _cacheService.GetOrSetAsync(CacheKeys.RoomTypes, () =>
             {
                 _logger.LogDebug("Loading room types from enum");
-                return Enum.GetValues<RoomType>()
+                return Task.FromResult<IEnumerable<EnumDto>>(Enum.GetValues<RoomType>()
                     .Select(rt => new EnumDto
                     {
                         Value = (int)rt,
                         Name = rt.ToString(),
                         DisplayName = GetRoomTypeDisplayName(rt)
                     })
-                    .ToList();
+                    .ToList());
             }, CacheKeys.Expiration.Static);
         }
 
         public async Task<IEnumerable<EnumDto>> GetRoomStatusesAsync()
         {
-            return await _cacheService.GetOrSetAsync(CacheKeys.RoomStatuses, async () =>
+            return await _cacheService.GetOrSetAsync(CacheKeys.RoomStatuses, () =>
             {
                 _logger.LogDebug("Loading room statuses from enum");
-                return Enum.GetValues<RoomStatus>()
+                return Task.FromResult<IEnumerable<EnumDto>>(Enum.GetValues<RoomStatus>()
                     .Select(rs => new EnumDto
                     {
                         Value = (int)rs,
                         Name = rs.ToString(),
                         DisplayName = GetRoomStatusDisplayName(rs)
                     })
-                    .ToList();
+                    .ToList());
             }, CacheKeys.Expiration.Static);
         }
 
         public async Task<IEnumerable<EnumDto>> GetReservationStatusesAsync()
         {
-            return await _cacheService.GetOrSetAsync(CacheKeys.ReservationStatuses, async () =>
+            return await _cacheService.GetOrSetAsync(CacheKeys.ReservationStatuses, () =>
             {
                 _logger.LogDebug("Loading reservation statuses from enum");
-                return Enum.GetValues<ReservationStatus>()
+                return Task.FromResult<IEnumerable<EnumDto>>(Enum.GetValues<ReservationStatus>()
                     .Select(rs => new EnumDto
                     {
                         Value = (int)rs,
                         Name = rs.ToString(),
                         DisplayName = GetReservationStatusDisplayName(rs)
                     })
-                    .ToList();
+                    .ToList());
             }, CacheKeys.Expiration.Static);
         }
 
         public async Task<IEnumerable<EnumDto>> GetReservationSourcesAsync()
         {
-            return await _cacheService.GetOrSetAsync("static:reservationsources", async () =>
+            return await _cacheService.GetOrSetAsync("static:reservationsources", () =>
             {
                 _logger.LogDebug("Loading reservation sources from enum");
-                return Enum.GetValues<ReservationSource>()
+                return Task.FromResult<IEnumerable<EnumDto>>(Enum.GetValues<ReservationSource>()
                     .Select(rs => new EnumDto
                     {
                         Value = (int)rs,
                         Name = rs.ToString(),
                         DisplayName = GetReservationSourceDisplayName(rs)
                     })
-                    .ToList();
+                    .ToList());
             }, CacheKeys.Expiration.Static);
         }
 

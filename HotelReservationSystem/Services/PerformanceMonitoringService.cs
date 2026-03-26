@@ -152,7 +152,7 @@ namespace HotelReservationSystem.Services
         {
             var cacheKey = string.Format(CacheKeys.SlowQueries, date.ToString("yyyy-MM-dd"));
             
-            return await _cacheService.GetOrSetAsync(cacheKey, async () =>
+            return await _cacheService.GetOrSetAsync(cacheKey, () =>
             {
                 var dateKey = date.ToString("yyyy-MM-dd");
                 var slowQueries = new List<SlowQuery>();
@@ -170,7 +170,7 @@ namespace HotelReservationSystem.Services
                         }));
                 }
 
-                return slowQueries.OrderByDescending(q => q.Duration).AsEnumerable();
+                return Task.FromResult(slowQueries.OrderByDescending(q => q.Duration).AsEnumerable());
             }, CacheKeys.Expiration.Long);
         }
 

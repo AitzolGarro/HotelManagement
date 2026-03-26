@@ -78,7 +78,10 @@ public class BookingComAuthenticationService : IBookingComAuthenticationService
             _logger.LogInformation("Testing Booking.com authentication");
 
             // Check cancellation before proceeding
-            cancellationToken.ThrowIfCancellationRequested();
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new TaskCanceledException();
+            }
 
             // Create a simple authentication test request
             var testRequest = new AuthenticationTestRequest
@@ -109,6 +112,11 @@ public class BookingComAuthenticationService : IBookingComAuthenticationService
         {
             _logger.LogError(ex, "Authentication test was cancelled");
             throw; // Re-throw to let test catch it
+        }
+        catch (OperationCanceledException ex)
+        {
+            _logger.LogError(ex, "Authentication test was cancelled");
+            throw;
         }
         catch (Exception ex)
         {

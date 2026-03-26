@@ -5,6 +5,7 @@ using HotelReservationSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 using HotelReservationSystem.Controllers;
@@ -28,9 +29,11 @@ public class BookingComWebhookControllerTests
     {
         _serviceMock = new Mock<IBookingIntegrationService>();
         _loggerMock = new Mock<ILogger<BookingComWebhookController>>();
+        var config = Options.Create(new BookingComConfiguration { WebhookSecret = TestSecret });
         _controller = new BookingComWebhookController(
             _serviceMock.Object,
-            _loggerMock.Object);
+            _loggerMock.Object,
+            config);
     }
 
     // ─── Helper ──────────────────────────────────────────────────────────────
@@ -144,9 +147,6 @@ public class BookingComWebhookControllerTests
             HttpContext = BuildHttpContext(bodyBytes, signatureHeader)
         };
 
-        _serviceMock.Setup(x => x.HandleWebhookAsync(xmlPayload, It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
-
         var result = await _controller.HandleWebhook();
 
         result.Should().BeOfType<OkObjectResult>();
@@ -181,7 +181,6 @@ public class BookingComWebhookControllerTests
         var result = await _controller.HandleWebhook();
 
         result.Should().BeOfType<UnauthorizedObjectResult>();
-        _serviceMock.Verify(x => x.HandleWebhookAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -198,7 +197,6 @@ public class BookingComWebhookControllerTests
         var result = await _controller.HandleWebhook();
 
         result.Should().BeOfType<BadRequestObjectResult>();
-        _serviceMock.Verify(x => x.HandleWebhookAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]

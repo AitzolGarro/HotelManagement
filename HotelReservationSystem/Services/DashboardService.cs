@@ -225,10 +225,10 @@ public class DashboardService : IDashboardService
         };
     }
 
-    public async Task<SystemNotificationDto> CreateNotificationAsync(NotificationType type, string title, string message, string? relatedEntityType = null, int? relatedEntityId = null)
+    public Task<SystemNotificationDto> CreateNotificationAsync(NotificationType type, string title, string message, string? relatedEntityType = null, int? relatedEntityId = null)
     {
         // In a real implementation, this would save to a notifications table
-        return new SystemNotificationDto
+        return Task.FromResult(new SystemNotificationDto
         {
             Id = new Random().Next(1000, 9999),
             Type = type,
@@ -238,25 +238,25 @@ public class DashboardService : IDashboardService
             IsRead = false,
             RelatedEntityType = relatedEntityType,
             RelatedEntityId = relatedEntityId
-        };
+        });
     }
 
-    public async Task<bool> MarkNotificationAsReadAsync(int notificationId)
+    public Task<bool> MarkNotificationAsReadAsync(int notificationId)
     {
         // In a real implementation, this would update the notifications table
-        return true;
+        return Task.FromResult(true);
     }
 
-    public async Task<bool> MarkAllNotificationsAsReadAsync(int? hotelId = null)
+    public Task<bool> MarkAllNotificationsAsReadAsync(int? hotelId = null)
     {
         // In a real implementation, this would update all notifications for the hotel
-        return true;
+        return Task.FromResult(true);
     }
 
-    public async Task<List<SystemNotificationDto>> GetUnreadNotificationsAsync(int? hotelId = null)
+    public Task<List<SystemNotificationDto>> GetUnreadNotificationsAsync(int? hotelId = null)
     {
         // In a real implementation, this would query unread notifications from the database
-        return new List<SystemNotificationDto>();
+        return Task.FromResult(new List<SystemNotificationDto>());
     }
 
     public async Task<List<DailyRevenueDto>> GetDailyRevenueBreakdownAsync(DateTime startDate, DateTime endDate, int? hotelId = null)

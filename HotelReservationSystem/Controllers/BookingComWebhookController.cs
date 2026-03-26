@@ -32,19 +32,28 @@ public class BookingComWebhookController : ControllerBase
     /// <param name="signature">Signature from request header</param>
     /// <param name="secret">Webhook secret</param>
     /// <returns>True if signature is valid</returns>
-    private static bool VerifySignature(string payload, string signature, string secret)
+    public static bool VerifySignature(byte[] payload, string? signature, string? secret)
     {
-        if (string.IsNullOrEmpty(secret)) return true; // unconfigured — log warning only
+        if (payload == null || payload.Length == 0 || string.IsNullOrWhiteSpace(signature) || string.IsNullOrWhiteSpace(secret))
+            return false;
+
+        if (!signature.StartsWith("sha256=", StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        var normalizedSignature = signature[7..];
+
         var key = System.Text.Encoding.UTF8.GetBytes(secret);
-        var data = System.Text.Encoding.UTF8.GetBytes(payload);
         using var hmac = new System.Security.Cryptography.HMACSHA256(key);
-        var expected = hmac.ComputeHash(data);
+        var expected = hmac.ComputeHash(payload);
         var expectedHex = Convert.ToHexString(expected).ToLowerInvariant();
-        var sigBytes = System.Text.Encoding.UTF8.GetBytes(signature);
+        var sigBytes = System.Text.Encoding.UTF8.GetBytes(normalizedSignature.ToLowerInvariant());
         var expBytes = System.Text.Encoding.UTF8.GetBytes(expectedHex);
         if (sigBytes.Length != expBytes.Length) return false;
         return System.Security.Cryptography.CryptographicOperations.FixedTimeEquals(sigBytes, expBytes);
     }
+
+    public static bool VerifySignature(string payload, string? signature, string? secret)
+        => VerifySignature(Encoding.UTF8.GetBytes(payload ?? string.Empty), signature, secret);
 
 /// <summary>
 /// Handles webhook notifications from Booking.com

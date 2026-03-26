@@ -5,7 +5,7 @@
  */
 let _I18N = {};
 async function loadI18n() {
-    try { const lang=window.__hotelLocale||'en'; const res=await fetch('/api/i18n/strings?lang='+lang); const data=await res.json(); _I18N=data.strings||{}; } catch(e){_I18N={};}
+    try { const lang=window.__hotelLocale||'en'; const res=await fetch('/api/i18n/strings?lang='+lang); const data=await res.json(); _I18N=data.strings||{}; window._I18N=_I18N; } catch(e){_I18N={}; window._I18N=_I18N;}
 }
 
 // Call loadI18n when the page loads
@@ -793,13 +793,13 @@ class CalendarManager {
         $picker.daterangepicker({
             opens: 'left',
             autoUpdateInput: false,
-            locale: { cancelLabel: 'Clear', format: 'MM/DD/YYYY' },
+            locale: { cancelLabel: (_I18N['Calendar_Clear'] || 'Clear'), format: 'MM/DD/YYYY' },
             ranges: {
-                'Today':       [moment(), moment()],
-                'This Week':   [moment().startOf('week'), moment().endOf('week')],
-                'Next 7 Days': [moment(), moment().add(6, 'days')],
-                'This Month':  [moment().startOf('month'), moment().endOf('month')],
-                'Next Month':  [moment().add(1, 'month').startOf('month'), moment().add(1, 'month').endOf('month')]
+                (_I18N['Calendar_Today'] || 'Today'): [moment(), moment()],
+                (_I18N['Calendar_ThisWeek'] || 'This Week'): [moment().startOf('week'), moment().endOf('week')],
+                (_I18N['Calendar_Next7Days'] || 'Next 7 Days'): [moment(), moment().add(6, 'days')],
+                (_I18N['Calendar_ThisMonth'] || 'This Month'): [moment().startOf('month'), moment().endOf('month')],
+                (_I18N['Calendar_NextMonth'] || 'Next Month'): [moment().add(1, 'month').startOf('month'), moment().add(1, 'month').endOf('month')]
             }
         });
 

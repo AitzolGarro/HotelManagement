@@ -99,7 +99,8 @@ public class BookingComHttpClient : IBookingComHttpClient
                 throw new BookingComApiException(
                     $"API fault: {baseResponse.Fault.Message}",
                     HttpStatusCode.BadRequest,
-                    baseResponse.Fault.Code);
+                    baseResponse.Fault.Code,
+                    null);
             }
             
             return response;

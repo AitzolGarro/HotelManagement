@@ -169,7 +169,7 @@ public class BookingComHttpClientTests : IDisposable
         var responseXml = "<response><fault code=\"AUTH_ERROR\">Authentication failed</fault></response>";
         var faultResponse = new BookingComResponse 
         { 
-            Fault = new BookingComFault 
+            Fault = new FaultObject 
             { 
                 Code = "AUTH_ERROR", 
                 Message = "Authentication failed" 
