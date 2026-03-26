@@ -1,31 +1,28 @@
-# Base stage: Using the official ASP.NET 8 runtime
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
+# Base stage: runtime
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 WORKDIR /app
-# .NET 8 defaults to port 8080
 EXPOSE 8080
 EXPOSE 8081
 
-# Build stage: Using the SDK to compile
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-# Copy only the project file to restore dependencies (leverages Docker cache)
+# Copiar csproj y restaurar
 COPY ["HotelReservationSystem.csproj", "./"]
 RUN dotnet restore "HotelReservationSystem.csproj"
 
-# Copy all other source files and build
+# Copiar todo y compilar
 COPY . .
-WORKDIR "/src"
 RUN dotnet build "HotelReservationSystem.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# Publish stage: Prepare the optimized production files
+# Publish
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "HotelReservationSystem.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# Final stage: Create the lean runtime image
+# Final
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
