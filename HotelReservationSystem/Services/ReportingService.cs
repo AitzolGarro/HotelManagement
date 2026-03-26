@@ -642,7 +642,7 @@ public class ReportingService : IReportingService
         };
     }
 
-    public async Task<byte[]> ExportToPdfAsync<T>(T reportData, string reportTitle)
+    public Task<byte[]> ExportToPdfAsync<T>(T reportData, string reportTitle)
     {
         // Create a simple PDF-like text format
         var sb = new StringBuilder();
@@ -707,10 +707,10 @@ public class ReportingService : IReportingService
             }
         }
         
-        return Encoding.UTF8.GetBytes(sb.ToString());
+        return Task.FromResult(Encoding.UTF8.GetBytes(sb.ToString()));
     }
 
-    public async Task<byte[]> ExportToExcelAsync<T>(T reportData, string reportTitle)
+    public Task<byte[]> ExportToExcelAsync<T>(T reportData, string reportTitle)
     {
         // Create a CSV-like format that can be opened in Excel
         var sb = new StringBuilder();
@@ -760,10 +760,10 @@ public class ReportingService : IReportingService
             }
         }
         
-        return Encoding.UTF8.GetBytes(sb.ToString());
+        return Task.FromResult(Encoding.UTF8.GetBytes(sb.ToString()));
     }
 
-    public async Task<byte[]> ExportToCsvAsync<T>(IEnumerable<T> reportData)
+    public Task<byte[]> ExportToCsvAsync<T>(IEnumerable<T> reportData)
     {
         var sb = new StringBuilder();
         
@@ -797,7 +797,7 @@ public class ReportingService : IReportingService
             }
         }
         
-        return Encoding.UTF8.GetBytes(sb.ToString());
+        return Task.FromResult(Encoding.UTF8.GetBytes(sb.ToString()));
     }
 
     public async Task<decimal> CalculateOccupancyVarianceAsync(DateTime currentStart, DateTime currentEnd, DateTime previousStart, DateTime previousEnd, int? hotelId = null)

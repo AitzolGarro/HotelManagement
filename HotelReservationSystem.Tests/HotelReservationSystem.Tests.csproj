@@ -63,8 +63,6 @@
     <Compile Remove="Repositories/UnitOfWorkTests.cs" />
     <Compile Remove="Services/PerformanceMonitoringServiceTests.cs" />
     <Compile Remove="Services/CacheServiceTests.cs" />
-    <Compile Remove="Services/BookingCom/BookingIntegrationServiceTests.cs" />
-    <Compile Remove="Integration/BookingComSyncIntegrationTests.cs" />
     <!-- Features not yet implemented -->
     <!--
     <Compile Remove="Controllers/BookingComWebhookControllerTests.cs" />

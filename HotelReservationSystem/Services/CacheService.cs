@@ -172,7 +172,7 @@ namespace HotelReservationSystem.Services
             }
         }
 
-        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getItem, TimeSpan? expiration = null) where T : class
+        public async Task<T?> GetOrSetAsync<T>(string key, Func<Task<T?>> getItem, TimeSpan? expiration = null) where T : class
         {
             var cachedValue = await GetAsync<T>(key);
             if (cachedValue != null)

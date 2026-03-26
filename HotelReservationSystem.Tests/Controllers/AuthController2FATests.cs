@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Json;
@@ -30,17 +31,17 @@ public class AuthController2FATests
     {
         _authServiceMock = new Mock<IAuthService>();
         _twoFactorServiceMock = new Mock<ITwoFactorService>();
-        var storeMock = new Mock<IUserStore<User>>();
+        var storeMock = new Mock<IUserPasswordStore<User>>();
         _userManagerMock = new Mock<UserManager<User>>(
             storeMock.Object,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null);
+            Mock.Of<IOptions<IdentityOptions>>(),
+            Mock.Of<IPasswordHasher<User>>(),
+            Array.Empty<IUserValidator<User>>(),
+            Array.Empty<IPasswordValidator<User>>(),
+            Mock.Of<ILookupNormalizer>(),
+            new IdentityErrorDescriber(),
+            Mock.Of<IServiceProvider>(),
+            Mock.Of<ILogger<UserManager<User>>>());
         _memoryCache = new MemoryCache(new MemoryCacheOptions());
         _loggerMock = new Mock<ILogger<AuthController>>();
 
@@ -133,7 +134,7 @@ public class AuthController2FATests
         contentResult.StatusCode.Should().Be(200);
         var response = JsonSerializer.Deserialize<LoginResponse>(contentResult.Content ?? "{}", JsonOptions);
         response.Should().NotBeNull();
-        response.Token.Should().Be("access-token");
+        response!.Token.Should().Be("access-token");
         _authServiceMock.Verify(x => x.IssueAuthenticatedResponseAsync(user.Id), Times.Once);
     }
 

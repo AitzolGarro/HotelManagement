@@ -179,7 +179,7 @@ public class ExpediaWebhookControllerTests : IClassFixture<WebApplicationFactory
         // return false (missing hotel/room/guest data in test DB) which returns BadRequest,
         // but the important thing is NOT 401 (signature was accepted).
         response.Should().NotBeNull();
-        response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized,
+        response!.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized,
             "a valid HMAC signature must not be rejected");
     }
 

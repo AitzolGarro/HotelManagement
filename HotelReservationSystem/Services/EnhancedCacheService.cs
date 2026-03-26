@@ -185,7 +185,7 @@ public class EnhancedCacheService : ICacheService
     /// Patrón cache-aside: obtiene del caché o ejecuta la función para obtener el valor
     /// y lo almacena para futuras consultas.
     /// </summary>
-    public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getItem, TimeSpan? expiration = null) where T : class
+    public async Task<T?> GetOrSetAsync<T>(string key, Func<Task<T?>> getItem, TimeSpan? expiration = null) where T : class
     {
         var cachedValue = await GetAsync<T>(key);
         if (cachedValue != null)

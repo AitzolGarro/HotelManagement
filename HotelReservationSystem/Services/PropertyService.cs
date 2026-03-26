@@ -56,23 +56,33 @@ public class PropertyService : IPropertyService
     {
         using var timer = _performanceMonitoring.StartTimer("PropertyService.GetHotelById");
         var cacheKey = string.Format(CacheKeys.HotelById, id);
-        
-        return await _cacheService.GetOrSetAsync(cacheKey, async () =>
+
+        var cached = await _cacheService.GetAsync<HotelDto>(cacheKey);
+        if (cached != null)
         {
-            var hotel = await _unitOfWork.Hotels.GetHotelWithRoomsAsync(id);
-            return hotel != null ? MapToHotelDto(hotel) : null;
-        }, CacheKeys.Expiration.Medium);
+            return cached;
+        }
+
+        var hotel = await _unitOfWork.Hotels.GetHotelWithRoomsAsync(id);
+        if (hotel == null)
+        {
+            return null;
+        }
+
+        var dto = MapToHotelDto(hotel);
+        await _cacheService.SetAsync(cacheKey, dto, CacheKeys.Expiration.Medium);
+        return dto;
     }
 
     public async Task<IEnumerable<HotelDto>> GetAllHotelsAsync()
     {
         using var timer = _performanceMonitoring.StartTimer("PropertyService.GetAllHotels");
         
-        return await _cacheService.GetOrSetAsync(CacheKeys.AllHotels, async () =>
+        return (await _cacheService.GetOrSetAsync(CacheKeys.AllHotels, async () =>
         {
             var hotels = await _unitOfWork.Hotels.GetActiveHotelsAsync();
             return hotels.Select(MapToHotelDto).ToList();
-        }, CacheKeys.Expiration.Long);
+        }, CacheKeys.Expiration.Long)) ?? Enumerable.Empty<HotelDto>();
     }
 
     public async Task<PagedResultDto<HotelDto>> GetPagedHotelsAsync(int pageNumber, int pageSize)
@@ -191,23 +201,33 @@ public class PropertyService : IPropertyService
     {
         using var timer = _performanceMonitoring.StartTimer("PropertyService.GetRoomById");
         var cacheKey = string.Format(CacheKeys.RoomById, id);
-        
-        return await _cacheService.GetOrSetAsync(cacheKey, async () =>
+
+        var cached = await _cacheService.GetAsync<RoomDto>(cacheKey);
+        if (cached != null)
         {
-            var room = await _unitOfWork.Rooms.GetRoomWithHotelAsync(id);
-            return room != null ? MapToRoomDto(room, room.Hotel?.Name ?? "") : null;
-        }, CacheKeys.Expiration.Medium);
+            return cached;
+        }
+
+        var room = await _unitOfWork.Rooms.GetRoomWithHotelAsync(id);
+        if (room == null)
+        {
+            return null;
+        }
+
+        var dto = MapToRoomDto(room, room.Hotel?.Name ?? "");
+        await _cacheService.SetAsync(cacheKey, dto, CacheKeys.Expiration.Medium);
+        return dto;
     }
 
     public async Task<IEnumerable<RoomDto>> GetAllRoomsAsync()
     {
         using var timer = _performanceMonitoring.StartTimer("PropertyService.GetAllRooms");
         
-        return await _cacheService.GetOrSetAsync("rooms:all", async () =>
+        return (await _cacheService.GetOrSetAsync("rooms:all", async () =>
         {
             var rooms = await _unitOfWork.Rooms.GetAllRoomsWithHotelAsync();
             return rooms.Select(room => MapToRoomDto(room, room.Hotel?.Name ?? "")).ToList();
-        }, CacheKeys.Expiration.Long);
+        }, CacheKeys.Expiration.Long)) ?? Enumerable.Empty<RoomDto>();
     }
 
     public async Task<IEnumerable<RoomDto>> GetRoomsByHotelIdAsync(int hotelId)
@@ -216,13 +236,13 @@ public class PropertyService : IPropertyService
         await ValidateHotelExistsAsync(hotelId);
         
         var cacheKey = string.Format(CacheKeys.RoomsByHotel, hotelId);
-        return await _cacheService.GetOrSetAsync(cacheKey, async () =>
+        return (await _cacheService.GetOrSetAsync(cacheKey, async () =>
         {
             var rooms = await _unitOfWork.Rooms.GetRoomsByHotelAsync(hotelId);
             var hotel = await _unitOfWork.Hotels.GetByIdAsync(hotelId);
             
             return rooms.Select(room => MapToRoomDto(room, hotel?.Name ?? "")).ToList();
-        }, CacheKeys.Expiration.Medium);
+        }, CacheKeys.Expiration.Medium)) ?? Enumerable.Empty<RoomDto>();
     }
 
     public async Task<RoomDto> UpdateRoomAsync(int id, UpdateRoomRequest request)
@@ -305,13 +325,13 @@ public class PropertyService : IPropertyService
         }
 
         var cacheKey = string.Format(CacheKeys.AvailableRooms, hotelId, checkIn.ToString("yyyy-MM-dd"), checkOut.ToString("yyyy-MM-dd"));
-        return await _cacheService.GetOrSetAsync(cacheKey, async () =>
+        return (await _cacheService.GetOrSetAsync(cacheKey, async () =>
         {
             var rooms = await _unitOfWork.Rooms.GetAvailableRoomsAsync(hotelId, checkIn, checkOut);
             var hotel = await _unitOfWork.Hotels.GetByIdAsync(hotelId);
             
             return rooms.Select(room => MapToRoomDto(room, hotel?.Name ?? "")).ToList();
-        }, CacheKeys.Expiration.Short); // Short expiration for availability data
+        }, CacheKeys.Expiration.Short)) ?? Enumerable.Empty<RoomDto>(); // Short expiration for availability data
     }
 
     public async Task<bool> SetRoomStatusAsync(int roomId, RoomStatus status)

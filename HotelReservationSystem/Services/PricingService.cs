@@ -100,12 +100,12 @@ public class PricingService : IPricingService
     {
         var cacheKey = string.Format(CacheKeys.PricingRulesByHotel, hotelId);
 
-        return await _cacheService.GetOrSetAsync(cacheKey, async () =>
+        return (await _cacheService.GetOrSetAsync(cacheKey, async () =>
         {
             _logger.LogDebug("Cargando reglas de precios desde BD para hotel {HotelId}", hotelId);
             var rules = await _unitOfWork.PricingRules.FindAsync(pr => pr.HotelId == hotelId && pr.IsActive);
             return rules.ToList();
-        }, CacheKeys.Expiration.PricingRules);
+        }, CacheKeys.Expiration.PricingRules)) ?? Enumerable.Empty<PricingRule>();
     }
 
     private decimal ApplyRules(decimal baseRate, DateTime date, IEnumerable<PricingRule> rules)

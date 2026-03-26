@@ -396,7 +396,7 @@ public class ReservationService : IReservationService
             await ValidateRoomCapacityAsync(request.RoomId.Value, reservation.NumberOfGuests);
             reservation.RoomId = request.RoomId.Value;
             // Clear related entity so it reloads
-            reservation.Room = null; 
+            reservation.Room = null!; 
         }
 
         reservation.UpdatedAt = DateTime.UtcNow;
@@ -688,15 +688,15 @@ public class ReservationService : IReservationService
         // Cargar entidades relacionadas si no están ya cargadas
         if (reservation.Hotel == null)
         {
-            reservation.Hotel = await _unitOfWork.Hotels.GetByIdAsync(reservation.HotelId);
+            reservation.Hotel = (await _unitOfWork.Hotels.GetByIdAsync(reservation.HotelId))!;
         }
         if (reservation.Room == null)
         {
-            reservation.Room = await _unitOfWork.Rooms.GetByIdAsync(reservation.RoomId);
+            reservation.Room = (await _unitOfWork.Rooms.GetByIdAsync(reservation.RoomId))!;
         }
         if (reservation.Guest == null)
         {
-            reservation.Guest = await _unitOfWork.Guests.GetByIdAsync(reservation.GuestId);
+            reservation.Guest = (await _unitOfWork.Guests.GetByIdAsync(reservation.GuestId))!;
         }
 
         return new ReservationDto

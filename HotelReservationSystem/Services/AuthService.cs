@@ -334,25 +334,25 @@ public class AuthService : IAuthService
         if (user.Role == UserRole.Admin)
         {
             var cacheKeyAdmin = string.Format(CacheKeys.UserHotelAccess, $"{userId}:admin");
-            return await _cacheService.GetOrSetAsync(cacheKeyAdmin, async () =>
+            return (await _cacheService.GetOrSetAsync(cacheKeyAdmin, async () =>
             {
                 return await _context.Hotels
                     .Where(h => h.IsActive)
                     .Select(h => h.Id)
                     .ToListAsync();
-            }, CacheKeys.Expiration.UserPermissions);
+            }, CacheKeys.Expiration.UserPermissions)) ?? new List<int>();
         }
 
         // Usuarios regulares: obtener hoteles asignados desde caché (expiración 10 minutos)
         var cacheKey = string.Format(CacheKeys.UserHotelAccess, userId);
-        return await _cacheService.GetOrSetAsync(cacheKey, async () =>
+        return (await _cacheService.GetOrSetAsync(cacheKey, async () =>
         {
             _logger.LogDebug("Cargando permisos de hotel para usuario {UserId} desde BD", userId);
             return await _context.UserHotelAccess
                 .Where(uha => uha.UserId == userId)
                 .Select(uha => uha.HotelId)
                 .ToListAsync();
-        }, CacheKeys.Expiration.UserPermissions);
+        }, CacheKeys.Expiration.UserPermissions)) ?? new List<int>();
     }
 
     private async Task<string> GenerateJwtTokenAsync(User user)

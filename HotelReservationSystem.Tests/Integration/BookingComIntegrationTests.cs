@@ -191,7 +191,7 @@ public class BookingComIntegrationTests : IDisposable
     }
 
     [Fact]
-    public async Task EndToEnd_WebhookNotification_DeserializesCorrectly()
+    public void EndToEnd_WebhookNotification_DeserializesCorrectly()
     {
         // Arrange
         var xmlSerializer = _serviceProvider.GetRequiredService<IXmlSerializationService>();

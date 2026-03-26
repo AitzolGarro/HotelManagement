@@ -27,7 +27,7 @@ namespace HotelReservationSystem.Services.Interfaces
         /// Obtiene del caché o ejecuta la función para obtener el valor y almacenarlo.
         /// Implementa el patrón cache-aside.
         /// </summary>
-        Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getItem, TimeSpan? expiration = null) where T : class;
+        Task<T?> GetOrSetAsync<T>(string key, Func<Task<T?>> getItem, TimeSpan? expiration = null) where T : class;
 
         /// <summary>Retorna estadísticas de uso del caché incluyendo hits L1 y L2</summary>
         CacheStatistics GetStatistics();

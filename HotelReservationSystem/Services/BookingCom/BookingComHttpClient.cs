@@ -77,7 +77,7 @@ public class BookingComHttpClient : IBookingComHttpClient
         }
         catch (TaskCanceledException ex)
         {
-            _logger.LogWarning("Request was cancelled for endpoint: {Endpoint}", endpoint);
+            _logger.LogWarning(ex, "Request was cancelled for endpoint: {Endpoint}", endpoint);
             throw;
         }
     }

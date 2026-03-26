@@ -115,7 +115,7 @@ namespace HotelReservationSystem.Services
         {
             var cacheKey = string.Format(CacheKeys.PerformanceMetrics, date.ToString("yyyy-MM-dd"));
             
-            return await _cacheService.GetOrSetAsync(cacheKey, async () =>
+            return (await _cacheService.GetOrSetAsync(cacheKey, async () =>
             {
                 var dateKey = date.ToString("yyyy-MM-dd");
                 var metrics = new PerformanceMetrics { Date = date };
@@ -145,14 +145,14 @@ namespace HotelReservationSystem.Services
                     .ToDictionary(g => g.Key, g => g.Average(q => q.Duration.TotalMilliseconds));
 
                 return metrics;
-            }, CacheKeys.Expiration.Medium);
+            }, CacheKeys.Expiration.Medium)) ?? new PerformanceMetrics { Date = date };
         }
 
         public async Task<IEnumerable<SlowQuery>> GetSlowQueriesAsync(DateTime date, int threshold = 1000)
         {
             var cacheKey = string.Format(CacheKeys.SlowQueries, date.ToString("yyyy-MM-dd"));
             
-            return await _cacheService.GetOrSetAsync(cacheKey, () =>
+            return (await _cacheService.GetOrSetAsync(cacheKey, () =>
             {
                 var dateKey = date.ToString("yyyy-MM-dd");
                 var slowQueries = new List<SlowQuery>();
@@ -170,8 +170,8 @@ namespace HotelReservationSystem.Services
                         }));
                 }
 
-                return Task.FromResult(slowQueries.OrderByDescending(q => q.Duration).AsEnumerable());
-            }, CacheKeys.Expiration.Long);
+                return Task.FromResult<IEnumerable<SlowQuery>?>(slowQueries.OrderByDescending(q => q.Duration).AsEnumerable());
+            }, CacheKeys.Expiration.Long)) ?? Enumerable.Empty<SlowQuery>();
         }
 
         /// <summary>
