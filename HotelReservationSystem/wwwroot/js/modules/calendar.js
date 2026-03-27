@@ -795,11 +795,11 @@ class CalendarManager {
             autoUpdateInput: false,
             locale: { cancelLabel: (_I18N['Calendar_Clear'] || 'Clear'), format: 'MM/DD/YYYY' },
             ranges: {
-                (_I18N['Calendar_Today'] || 'Today'): [moment(), moment()],
-                (_I18N['Calendar_ThisWeek'] || 'This Week'): [moment().startOf('week'), moment().endOf('week')],
-                (_I18N['Calendar_Next7Days'] || 'Next 7 Days'): [moment(), moment().add(6, 'days')],
-                (_I18N['Calendar_ThisMonth'] || 'This Month'): [moment().startOf('month'), moment().endOf('month')],
-                (_I18N['Calendar_NextMonth'] || 'Next Month'): [moment().add(1, 'month').startOf('month'), moment().add(1, 'month').endOf('month')]
+                [(_I18N['Calendar_Today'] || 'Today')]: [moment(), moment()],
+                [(_I18N['Calendar_ThisWeek'] || 'This Week')]: [moment().startOf('week'), moment().endOf('week')],
+                [(_I18N['Calendar_Next7Days'] || 'Next 7 Days')]: [moment(), moment().add(6, 'days')],
+                [(_I18N['Calendar_ThisMonth'] || 'This Month')]: [moment().startOf('month'), moment().endOf('month')],
+                [(_I18N['Calendar_NextMonth'] || 'Next Month')]: [moment().add(1, 'month').startOf('month'), moment().add(1, 'month').endOf('month')]
             }
         });
 

@@ -17,6 +17,10 @@ async function loadI18n() {
     } catch(e) { _I18N = {}; window._I18N = _I18N; }
 }
 
+function _t(key, fallback = key) {
+    return _I18N[key] || fallback;
+}
+
 class DashboardManager {
     constructor() {
         this.api            = new ApiClient();
@@ -160,10 +164,10 @@ class DashboardManager {
   </div>
   <div class="card-body p-2 overflow-auto widget-body" id="wb-${cfg.widgetId}">
     <div class="d-flex align-items-center justify-content-center h-100 text-muted">
-      <div class="spinner-border spinner-border-sm me-2" role="status">
-        <span class="visually-hidden">Loading…</span>
-      </div>
-      <small>Loading…</small>
+       <div class="spinner-border spinner-border-sm me-2" role="status">
+         <span class="visually-hidden">${_t('Common_Loading', 'Loading…')}</span>
+       </div>
+       <small>${_t('Common_Loading', 'Loading…')}</small>
     </div>
   </div>
 </div>`;
@@ -209,7 +213,7 @@ class DashboardManager {
     // ── Widget content renderers ──────────────────────────────────────────
 
     _renderWidgetContent(widgetId, data, body) {
-        if (!data) { this._setWidgetError(body, 'No data'); return; }
+        if (!data) { this._setWidgetError(body, _t('Dashboard_NoData', 'No data')); return; }
 
         switch (widgetId) {
             case 'occupancy-rate':       this._renderOccupancyRate(data, body);       break;
@@ -234,8 +238,8 @@ class DashboardManager {
 <div class="d-flex justify-content-between align-items-center h-100 px-2">
   <div>
     <div class="display-6 fw-bold text-primary">${d.todayRate}%</div>
-    <div class="text-muted small">Today's Occupancy</div>
-    <div class="small mt-1">${d.occupiedRoomsToday}/${d.totalRooms} rooms ${trend}</div>
+    <div class="text-muted small">${_t('Dashboard_TodaysOccupancy', "Today's Occupancy")}</div>
+    <div class="small mt-1">${d.occupiedRoomsToday}/${d.totalRooms} ${_t('Properties_Rooms', 'Rooms').toLowerCase()} ${trend}</div>
   </div>
   <i class="bi bi-graph-up fs-1 text-primary opacity-25" aria-hidden="true"></i>
 </div>`;
@@ -248,8 +252,8 @@ class DashboardManager {
 <div class="d-flex justify-content-between align-items-center h-100 px-2">
   <div>
     <div class="display-6 fw-bold text-success">${this._fmt(d.monthRevenue)}</div>
-    <div class="text-muted small">Monthly Revenue</div>
-    <div class="small mt-1 ${color}">${sign}${d.monthlyVariance?.toFixed(1)}% vs last month</div>
+    <div class="text-muted small">${_t('Dashboard_MonthlyRevenue', 'Monthly Revenue')}</div>
+    <div class="small mt-1 ${color}">${sign}${d.monthlyVariance?.toFixed(1)}% ${_t('Dashboard_VsLastMonth', 'vs last month')}</div>
   </div>
   <i class="bi bi-currency-dollar fs-1 text-success opacity-25" aria-hidden="true"></i>
 </div>`;
@@ -258,12 +262,12 @@ class DashboardManager {
     _renderCheckIns(d, body) {
         const list = d.todayCheckIns || [];
         if (!list.length) {
-            body.innerHTML = '<p class="text-muted text-center py-3 small">No check-ins today</p>';
+            body.innerHTML = `<p class="text-muted text-center py-3 small">${_t('Dashboard_NoCheckInsToday', 'No check-ins today')}</p>`;
             return;
         }
         body.innerHTML = `
 <div class="d-flex justify-content-between align-items-center mb-2">
-  <span class="small fw-semibold">Today's Check-ins</span>
+  <span class="small fw-semibold">${_t('Dashboard_TodaysCheckIns', "Today's Check-ins")}</span>
   <span class="badge bg-success">${d.totalCheckIns}</span>
 </div>
 <div class="list-group list-group-flush small">
@@ -271,23 +275,23 @@ class DashboardManager {
   <div class="list-group-item px-0 py-1">
     <div class="d-flex justify-content-between">
       <span class="fw-semibold">${c.guestName}</span>
-      <span class="badge bg-${this._statusColor(c.status)} ms-1">${c.status}</span>
+      <span class="badge bg-${this._statusColor(c.status)} ms-1">${_t('status_' + String(c.status || '').replace(/([a-z])([A-Z])/g,'$1_$2').toLowerCase(), c.status)}</span>
     </div>
-    <div class="text-muted">Room ${c.roomNumber} · ${c.hotelName}</div>
+    <div class="text-muted">${_t('room', 'Room')} ${c.roomNumber} · ${c.hotelName}</div>
   </div>`).join('')}
-  ${list.length > 5 ? `<div class="text-muted text-center py-1">+${list.length - 5} more</div>` : ''}
+  ${list.length > 5 ? `<div class="text-muted text-center py-1">+${list.length - 5} ${_t('Dashboard_More', 'more')}</div>` : ''}
 </div>`;
     }
 
     _renderCheckOuts(d, body) {
         const list = d.todayCheckOuts || [];
         if (!list.length) {
-            body.innerHTML = '<p class="text-muted text-center py-3 small">No check-outs today</p>';
+            body.innerHTML = `<p class="text-muted text-center py-3 small">${_t('Dashboard_NoCheckOutsToday', 'No check-outs today')}</p>`;
             return;
         }
         body.innerHTML = `
 <div class="d-flex justify-content-between align-items-center mb-2">
-  <span class="small fw-semibold">Today's Check-outs</span>
+  <span class="small fw-semibold">${_t('Dashboard_TodaysCheckOuts', "Today's Check-outs")}</span>
   <span class="badge bg-warning text-dark">${d.totalCheckOuts}</span>
 </div>
 <div class="list-group list-group-flush small">
@@ -295,18 +299,18 @@ class DashboardManager {
   <div class="list-group-item px-0 py-1">
     <div class="d-flex justify-content-between">
       <span class="fw-semibold">${c.guestName}</span>
-      <span class="badge bg-${this._statusColor(c.status)} ms-1">${c.status}</span>
+      <span class="badge bg-${this._statusColor(c.status)} ms-1">${_t('status_' + String(c.status || '').replace(/([a-z])([A-Z])/g,'$1_$2').toLowerCase(), c.status)}</span>
     </div>
-    <div class="text-muted">Room ${c.roomNumber} · ${c.hotelName}</div>
+    <div class="text-muted">${_t('room', 'Room')} ${c.roomNumber} · ${c.hotelName}</div>
   </div>`).join('')}
-  ${list.length > 5 ? `<div class="text-muted text-center py-1">+${list.length - 5} more</div>` : ''}
+  ${list.length > 5 ? `<div class="text-muted text-center py-1">+${list.length - 5} ${_t('Dashboard_More', 'more')}</div>` : ''}
 </div>`;
     }
 
     _renderRecentReservations(data, body) {
         const list = Array.isArray(data) ? data : [];
         if (!list.length) {
-            body.innerHTML = '<p class="text-muted text-center py-3 small">No recent reservations</p>';
+            body.innerHTML = `<p class="text-muted text-center py-3 small">${_t('Dashboard_NoRecentReservations', 'No recent reservations')}</p>`;
             return;
         }
         body.innerHTML = `
@@ -314,8 +318,8 @@ class DashboardManager {
   <table class="table table-sm table-hover mb-0 small">
     <thead class="table-light">
       <tr>
-        <th>Ref</th><th>Guest</th><th>Hotel</th><th>Room</th>
-        <th>Check-in</th><th>Check-out</th><th>Status</th><th></th>
+        <th>${_t('Reservations_BookingReference', 'Ref')}</th><th>${_t('Search_GuestName', 'Guest')}</th><th>${_t('Calendar_Hotel', 'Hotel')}</th><th>${_t('room', 'Room')}</th>
+        <th>${_t('Search_CheckInFrom', 'Check-in')}</th><th>${_t('Search_CheckOutTo', 'Check-out')}</th><th>${_t('Calendar_Status', 'Status')}</th><th></th>
       </tr>
     </thead>
     <tbody>
@@ -327,10 +331,10 @@ class DashboardManager {
         <td>${r.roomNumber}</td>
         <td>${this._fmtDate(r.checkInDate)}</td>
         <td>${this._fmtDate(r.checkOutDate)}</td>
-        <td><span class="badge bg-${this._statusColor(r.status)}">${r.status}</span></td>
+        <td><span class="badge bg-${this._statusColor(r.status)}">${_t('status_' + String(r.status || '').replace(/([a-z])([A-Z])/g,'$1_$2').toLowerCase(), r.status)}</span></td>
         <td>
           <a href="/reservations/details/${r.id}" class="btn btn-xs btn-outline-primary py-0 px-1"
-             title="View" aria-label="View reservation ${r.bookingReference}">
+             title="${_t('Common_View', 'View')}" aria-label="${_t('Common_View', 'View')} ${_t('cancel_reservation', 'reservation')} ${r.bookingReference}">
             <i class="bi bi-eye" aria-hidden="true"></i>
           </a>
         </td>
@@ -346,26 +350,26 @@ class DashboardManager {
 <div class="d-flex gap-3 mb-2 text-center">
   <div class="flex-fill">
     <div class="fw-bold text-danger">${d.criticalCount || 0}</div>
-    <div class="text-muted" style="font-size:.7rem;">Critical</div>
+    <div class="text-muted" style="font-size:.7rem;">${_t('Dashboard_Critical', 'Critical')}</div>
   </div>
   <div class="flex-fill">
     <div class="fw-bold text-warning">${d.warningCount || 0}</div>
-    <div class="text-muted" style="font-size:.7rem;">Warning</div>
+    <div class="text-muted" style="font-size:.7rem;">${_t('Notif_Type_Warning', 'Warning')}</div>
   </div>
   <div class="flex-fill">
     <div class="fw-bold text-info">${d.infoCount || 0}</div>
-    <div class="text-muted" style="font-size:.7rem;">Info</div>
+    <div class="text-muted" style="font-size:.7rem;">${_t('Notif_Type_Info', 'Info')}</div>
   </div>
 </div>
 ${list.length === 0
-    ? '<p class="text-muted text-center small py-2">No notifications</p>'
+    ? `<p class="text-muted text-center small py-2">${_t('Notif_NoNotifications', 'No notifications')}</p>`
     : list.slice(0, 6).map(n => `
 <div class="border-start border-3 border-${this._notifColor(n.type)} ps-2 mb-2">
   <div class="small fw-semibold">${n.title}</div>
   <div class="text-muted" style="font-size:.72rem;">${n.message}</div>
   <div class="text-muted" style="font-size:.68rem;">${this._fmtDateTime(n.createdAt)}</div>
 </div>`).join('')}
-${list.length > 6 ? `<a href="/notifications" class="btn btn-sm btn-link p-0 small">View all</a>` : ''}`;
+${list.length > 6 ? `<a href="/notifications" class="btn btn-sm btn-link p-0 small">${_t('Notif_ViewAll', 'View all')}</a>` : ''}`;
     }
 
     _renderQuickActions(data, body) {
@@ -393,7 +397,7 @@ ${list.length > 6 ? `<a href="/notifications" class="btn btn-sm btn-link p-0 sma
         body.innerHTML = '<canvas id="revenueChartCanvas" style="max-height:220px;"></canvas>';
         const ctx = body.querySelector('#revenueChartCanvas');
         if (!ctx || !daily.length) {
-            body.innerHTML = '<p class="text-muted text-center small py-3">No revenue data for period</p>';
+            body.innerHTML = `<p class="text-muted text-center small py-3">${_t('Dashboard_NoRevenueData', 'No revenue data for period')}</p>`;
             return;
         }
 
@@ -402,7 +406,7 @@ ${list.length > 6 ? `<a href="/notifications" class="btn btn-sm btn-link p-0 sma
             data: {
                 labels  : daily.map(d => this._fmtDate(d.date)),
                 datasets: [{
-                    label          : 'Daily Revenue',
+                    label          : _t('Dashboard_DailyRevenue', 'Daily Revenue'),
                     data           : daily.map(d => d.revenue),
                     borderColor    : '#0d6efd',
                     backgroundColor: 'rgba(13,110,253,.1)',
@@ -430,9 +434,9 @@ ${list.length > 6 ? `<a href="/notifications" class="btn btn-sm btn-link p-0 sma
 
     _renderOccupancyBreakdown(d, body) {
         const bars = [
-            { label: 'Today',      value: d.todayRate, rooms: d.occupiedRoomsToday,  color: 'primary' },
-            { label: 'This Week',  value: d.weekRate,  rooms: d.occupiedRoomsWeek,   color: 'info'    },
-            { label: 'This Month', value: d.monthRate, rooms: d.occupiedRoomsMonth,  color: 'success' },
+            { label: _t('Calendar_Today', 'Today'), value: d.todayRate, rooms: d.occupiedRoomsToday, color: 'primary' },
+            { label: _t('Calendar_ThisWeek', 'This Week'), value: d.weekRate, rooms: d.occupiedRoomsWeek, color: 'info' },
+            { label: _t('Calendar_ThisMonth', 'This Month'), value: d.monthRate, rooms: d.occupiedRoomsMonth, color: 'success' },
         ];
         body.innerHTML = bars.map(b => `
 <div class="mb-2">
@@ -454,9 +458,9 @@ ${list.length > 6 ? `<a href="/notifications" class="btn btn-sm btn-link p-0 sma
         body.innerHTML = `
 <div class="d-flex align-items-center justify-content-center h-100 text-muted">
   <div class="spinner-border spinner-border-sm me-2" role="status">
-    <span class="visually-hidden">Loading…</span>
-  </div>
-  <small>Loading…</small>
+         <span class="visually-hidden">${_t('Common_Loading', 'Loading…')}</span>
+       </div>
+  <small>${_t('Common_Loading', 'Loading…')}</small>
 </div>`;
     }
 
@@ -490,7 +494,7 @@ ${list.length > 6 ? `<a href="/notifications" class="btn btn-sm btn-link p-0 sma
 
     async _saveLayout() {
         const btn = document.getElementById('saveLayoutBtn');
-        if (btn) { btn.disabled = true; btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving…'; }
+        if (btn) { btn.disabled = true; btn.innerHTML = `<i class="bi bi-hourglass-split"></i> ${_t('Common_Saving', 'Saving…')}`; }
 
         try {
             await this.api.post('/dashboard/layout', { widgets: this.currentLayout });
@@ -499,22 +503,22 @@ ${list.length > 6 ? `<a href="/notifications" class="btn btn-sm btn-link p-0 sma
             console.error('Save layout error:', e);
             this._toast(_I18N['Toast_LayoutSaveFailed'] || 'Failed to save layout', 'danger');
         } finally {
-            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-save"></i> <span class="d-none d-sm-inline">Save Layout</span>'; }
+            if (btn) { btn.disabled = false; btn.innerHTML = `<i class="bi bi-save"></i> <span class="d-none d-sm-inline">${_t('Dashboard_SaveLayout', 'Save Layout')}</span>`; }
         }
     }
 
     async _resetLayout() {
-        if (!confirm('Reset dashboard to default layout? Your current layout will be lost.')) return;
+        if (!confirm(_t('Dashboard_ResetConfirm', 'Reset dashboard to default layout? Your current layout will be lost.'))) return;
 
         try {
             const layout = await this.api.delete('/dashboard/layout');
             this.currentLayout = layout.widgets || [];
             this._renderWidgetShells();
             await this._refreshAllWidgets();
-            this._toast('Layout reset to default', 'info');
+            this._toast(_t('Dashboard_LayoutReset', 'Layout reset to default'), 'info');
         } catch (e) {
             console.error('Reset layout error:', e);
-            this._toast('Failed to reset layout', 'danger');
+            this._toast(_t('Dashboard_ResetFailed', 'Failed to reset layout'), 'danger');
         }
     }
 
