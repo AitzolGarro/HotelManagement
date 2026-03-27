@@ -47,7 +47,7 @@ public class RateLimitingMiddleware
 
         var cacheKey = BuildCacheKey(context);
         var window = TimeSpan.FromSeconds(_settings.WindowSizeSeconds);
-        var limit = _settings.RequestsPerWindow;
+        var limit = ResolveLimit(context.Request.Method);
 
         var entry = GetOrCreateEntry(cacheKey, window);
         var currentCount = IncrementCounter(entry);
@@ -88,16 +88,28 @@ public class RateLimitingMiddleware
     /// </summary>
     private static string BuildCacheKey(HttpContext context)
     {
+        var method = context.Request.Method?.ToUpperInvariant() ?? "GET";
+
         // Usar ID de usuario si está autenticado, de lo contrario usar IP
         var userId = context.User.Identity?.IsAuthenticated == true
             ? context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
             : null;
 
         if (!string.IsNullOrEmpty(userId))
-            return $"rl_user_{userId}";
+            return $"rl_{method}_user_{userId}";
 
         var ipAddress = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
-        return $"rl_ip_{ipAddress}";
+        return $"rl_{method}_ip_{ipAddress}";
+    }
+
+    private int ResolveLimit(string? method)
+    {
+        method ??= HttpMethods.Get;
+
+        if (HttpMethods.IsGet(method) || HttpMethods.IsHead(method))
+            return _settings.ReadRequestsPerWindow > 0 ? _settings.ReadRequestsPerWindow : _settings.RequestsPerWindow;
+
+        return _settings.WriteRequestsPerWindow > 0 ? _settings.WriteRequestsPerWindow : _settings.RequestsPerWindow;
     }
 
     /// <summary>
