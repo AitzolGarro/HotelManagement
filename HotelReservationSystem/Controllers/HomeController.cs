@@ -23,6 +23,12 @@ namespace HotelReservationSystem.Controllers
             return View();
         }
 
+        public IActionResult UserManagement()
+        {
+            ViewData["Title"] = "User Management";
+            return View();
+        }
+
         public IActionResult Reservations()
         {
             ViewData["Title"] = "Reservations";

@@ -245,7 +245,7 @@ class PropertiesManager {
 
     setupEventListeners() {
         // Add Hotel button
-        const addHotelBtn = document.querySelector('[data-role="admin"]');
+        const addHotelBtn = document.getElementById('addHotelBtn');
         if (addHotelBtn) {
             addHotelBtn.addEventListener('click', () => {
                 this.showAddHotelModal();
@@ -253,7 +253,7 @@ class PropertiesManager {
         }
 
         // Add Room button
-        const addRoomBtn = document.querySelector('#roomsSection [data-role="manager"]');
+        const addRoomBtn = document.getElementById('addRoomBtn');
         if (addRoomBtn) {
             addRoomBtn.addEventListener('click', () => {
                 this.showAddRoomModal();
@@ -295,15 +295,128 @@ class PropertiesManager {
 
     // Placeholder methods for future implementation
     showAddHotelModal() {
-        UI.showInfo('Add Hotel functionality will be implemented in a future update');
+        const existing = document.getElementById('hotelModal');
+        if (existing) existing.remove();
+        document.body.insertAdjacentHTML('beforeend', `
+            <div class="modal fade" id="hotelModal" tabindex="-1">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">${_propT('Properties_AddHotel', 'Add Hotel')}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <form id="hotelForm">
+                    <div class="modal-body">
+                      <div class="mb-3"><label class="form-label">${_propT('Common_Name', 'Name')}</label><input class="form-control" name="name" required maxlength="200"></div>
+                      <div class="mb-3"><label class="form-label">${_propT('GP_Prof_Address', 'Address')}</label><input class="form-control" name="address" maxlength="500"></div>
+                      <div class="mb-3"><label class="form-label">${_propT('Calendar_Phone', 'Phone')}</label><input class="form-control" name="phone" maxlength="20"></div>
+                      <div class="mb-3"><label class="form-label">${_propT('Calendar_Email', 'Email')}</label><input type="email" class="form-control" name="email" maxlength="100"></div>
+                      <div class="form-check form-switch"><input class="form-check-input" type="checkbox" name="isActive" checked><label class="form-check-label">${_propT('Common_Active', 'Active')}</label></div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${_propT('Common_Cancel', 'Cancel')}</button>
+                      <button type="submit" class="btn btn-primary">${_propT('Properties_AddHotel', 'Add Hotel')}</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>`);
+        const modalEl = document.getElementById('hotelModal');
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+        modalEl.addEventListener('hidden.bs.modal', () => modalEl.remove());
+        document.getElementById('hotelForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = new FormData(e.target);
+            const payload = {
+                name: form.get('name'),
+                address: form.get('address') || null,
+                phone: form.get('phone') || null,
+                email: form.get('email') || null,
+                isActive: form.get('isActive') === 'on'
+            };
+            try {
+                await API.createHotel(payload);
+                modal.hide();
+                UI.showSuccess(_propT('Properties_AddHotelSuccess', 'Hotel created successfully'));
+                await this.loadHotels();
+            } catch (error) {
+                UI.showError(error.message || _propT('Properties_AddHotelFailed', 'Failed to create hotel'));
+            }
+        });
     }
 
     showAddRoomModal() {
         if (!this.selectedHotel) {
-            UI.showError('Please select a hotel first');
+            UI.showError(_propT('Properties_SelectHotelFirst', 'Please select a hotel first'));
             return;
         }
-        UI.showInfo('Add Room functionality will be implemented in a future update');
+        const existing = document.getElementById('roomModal');
+        if (existing) existing.remove();
+        document.body.insertAdjacentHTML('beforeend', `
+            <div class="modal fade" id="roomModal" tabindex="-1">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">${_propT('Properties_AddRoom', 'Add Room')} - ${this.selectedHotel.name}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <form id="roomForm">
+                    <div class="modal-body">
+                      <div class="mb-3"><label class="form-label">${_propT('Properties_RoomNumber', 'Room Number')}</label><input class="form-control" name="roomNumber" required maxlength="10"></div>
+                      <div class="mb-3"><label class="form-label">${_propT('Properties_Type', 'Type')}</label>
+                        <select class="form-select" name="type" required>
+                          <option value="0">${_propT('room_type_single','Single')}</option>
+                          <option value="1">${_propT('room_type_double','Double')}</option>
+                          <option value="2">${_propT('room_type_suite','Suite')}</option>
+                          <option value="3">${_propT('room_type_family','Family')}</option>
+                        </select>
+                      </div>
+                      <div class="mb-3"><label class="form-label">${_propT('Properties_Capacity', 'Capacity')}</label><input type="number" min="1" max="20" class="form-control" name="capacity" required value="2"></div>
+                      <div class="mb-3"><label class="form-label">${_propT('Properties_BaseRate', 'Base Rate')}</label><input type="number" min="0.01" step="0.01" class="form-control" name="baseRate" required value="100"></div>
+                      <div class="mb-3"><label class="form-label">${_propT('Calendar_Status', 'Status')}</label>
+                        <select class="form-select" name="status">
+                          <option value="0">${_propT('room_status_available','Available')}</option>
+                          <option value="1">${_propT('room_status_occupied','Occupied')}</option>
+                          <option value="2">${_propT('room_status_maintenance','Maintenance')}</option>
+                          <option value="3">${_propT('room_status_out_of_order','Out of Order')}</option>
+                        </select>
+                      </div>
+                      <div class="mb-3"><label class="form-label">Description</label><textarea class="form-control" name="description" rows="3" maxlength="1000"></textarea></div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${_propT('Common_Cancel', 'Cancel')}</button>
+                      <button type="submit" class="btn btn-primary">${_propT('Properties_AddRoom', 'Add Room')}</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>`);
+        const modalEl = document.getElementById('roomModal');
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+        modalEl.addEventListener('hidden.bs.modal', () => modalEl.remove());
+        document.getElementById('roomForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = new FormData(e.target);
+            const payload = {
+                hotelId: this.selectedHotel.id,
+                roomNumber: form.get('roomNumber'),
+                type: parseInt(form.get('type'), 10),
+                capacity: parseInt(form.get('capacity'), 10),
+                baseRate: parseFloat(form.get('baseRate')),
+                status: parseInt(form.get('status'), 10),
+                description: form.get('description') || null
+            };
+            try {
+                await API.createRoom(this.selectedHotel.id, payload);
+                modal.hide();
+                UI.showSuccess(_propT('Properties_AddRoomSuccess', 'Room created successfully'));
+                await this.loadRooms(this.selectedHotel.id);
+            } catch (error) {
+                UI.showError(error.message || _propT('Properties_AddRoomFailed', 'Failed to create room'));
+            }
+        });
     }
 
     editHotel(hotelId) {

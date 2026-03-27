@@ -922,7 +922,7 @@ class AuthManager {
         if (userManagementLink) {
             userManagementLink.addEventListener('click', (e) => {
                 e.preventDefault();
-                window.location.href = '/admin/users';
+                window.location.href = '/Home/UserManagement';
             });
         }
 
