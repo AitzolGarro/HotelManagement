@@ -203,42 +203,60 @@ class PropertiesManager {
 
     getRoomTypeDisplay(type) {
         const typeMap = {
-            0: _propT('room_type_single', 'Single'),
-            1: _propT('room_type_double', 'Double'), 
-            2: _propT('room_type_suite', 'Suite'),
-            3: _propT('room_type_family', 'Family'),
+            1: _propT('room_type_single', 'Single'),
+            2: _propT('room_type_double', 'Double'), 
+            3: _propT('room_type_suite', 'Suite'),
+            4: _propT('room_type_family', 'Family'),
+            5: _propT('room_type_deluxe', 'Deluxe'),
+            6: _propT('room_type_twin', 'Twin'),
+            7: _propT('room_type_triple', 'Triple'),
+            8: _propT('room_type_quad', 'Quad'),
+            9: _propT('room_type_standard', 'Standard'),
             'Single': _propT('room_type_single', 'Single'),
             'Double': _propT('room_type_double', 'Double'),
             'Suite': _propT('room_type_suite', 'Suite'), 
-            'Family': _propT('room_type_family', 'Family')
+            'Family': _propT('room_type_family', 'Family'),
+            'Deluxe': _propT('room_type_deluxe', 'Deluxe'),
+            'Twin': _propT('room_type_twin', 'Twin'),
+            'Triple': _propT('room_type_triple', 'Triple'),
+            'Quad': _propT('room_type_quad', 'Quad'),
+            'Standard': _propT('room_type_standard', 'Standard')
         };
         return typeMap[type] || type;
     }
 
     getRoomStatusDisplay(status) {
         const statusMap = {
-            0: _propT('room_status_available', 'Available'),
-            1: _propT('room_status_occupied', 'Occupied'),
+            1: _propT('room_status_available', 'Available'),
             2: _propT('room_status_maintenance', 'Maintenance'),
-            3: _propT('room_status_out_of_order', 'Out of Order'),
+            3: _propT('room_status_blocked', 'Blocked'),
+            4: _propT('room_status_out_of_order', 'Out of Order'),
+            5: _propT('room_status_occupied', 'Occupied'),
+            6: _propT('room_status_cleaning', 'Cleaning'),
             'Available': _propT('room_status_available', 'Available'),
             'Occupied': _propT('room_status_occupied', 'Occupied'),
             'Maintenance': _propT('room_status_maintenance', 'Maintenance'),
-            'OutOfOrder': _propT('room_status_out_of_order', 'Out of Order')
+            'Blocked': _propT('room_status_blocked', 'Blocked'),
+            'OutOfOrder': _propT('room_status_out_of_order', 'Out of Order'),
+            'Cleaning': _propT('room_status_cleaning', 'Cleaning')
         };
         return statusMap[status] || status;
     }
 
     getRoomStatusClass(status) {
         const classMap = {
-            0: 'bg-success',
-            1: 'bg-warning',
+            1: 'bg-success',
             2: 'bg-info',
-            3: 'bg-danger',
+            3: 'bg-secondary',
+            4: 'bg-danger',
+            5: 'bg-warning',
+            6: 'bg-primary',
             'Available': 'bg-success',
             'Occupied': 'bg-warning', 
             'Maintenance': 'bg-info',
-            'OutOfOrder': 'bg-danger'
+            'Blocked': 'bg-secondary',
+            'OutOfOrder': 'bg-danger',
+            'Cleaning': 'bg-primary'
         };
         return classMap[status] || 'bg-secondary';
     }
@@ -427,11 +445,99 @@ class PropertiesManager {
     }
 
     editHotel(hotelId) {
-        UI.showInfo('Edit Hotel functionality will be implemented in a future update');
+        const hotel = this.hotels.find(h => h.id === hotelId);
+        if (!hotel) return;
+        const existing = document.getElementById('hotelModal');
+        if (existing) existing.remove();
+        document.body.insertAdjacentHTML('beforeend', `
+            <div class="modal fade" id="hotelModal" tabindex="-1">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header"><h5 class="modal-title">${_propT('Properties_EditHotel','Edit Hotel')}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                  <form id="hotelForm"><div class="modal-body">
+                    <div class="mb-3"><label class="form-label">${_propT('Common_Name','Name')}</label><input class="form-control" name="name" required maxlength="200" value="${hotel.name ?? ''}"></div>
+                    <div class="mb-3"><label class="form-label">${_propT('GP_Prof_Address','Address')}</label><input class="form-control" name="address" maxlength="500" value="${hotel.address ?? ''}"></div>
+                    <div class="mb-3"><label class="form-label">${_propT('Calendar_Phone','Phone')}</label><input class="form-control" name="phone" maxlength="20" value="${hotel.phone ?? ''}"></div>
+                    <div class="mb-3"><label class="form-label">${_propT('Calendar_Email','Email')}</label><input type="email" class="form-control" name="email" maxlength="100" value="${hotel.email ?? ''}"></div>
+                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" name="isActive" ${hotel.isActive ? 'checked' : ''}><label class="form-check-label">${_propT('Common_Active','Active')}</label></div>
+                  </div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${_propT('Common_Cancel','Cancel')}</button><button type="submit" class="btn btn-primary">${_propT('Common_Save','Save')}</button></div></form>
+                </div>
+              </div>
+            </div>`);
+        const modalEl = document.getElementById('hotelModal');
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+        modalEl.addEventListener('hidden.bs.modal', () => modalEl.remove());
+        document.getElementById('hotelForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = new FormData(e.target);
+            const payload = {
+                name: form.get('name'),
+                address: form.get('address') || null,
+                phone: form.get('phone') || null,
+                email: form.get('email') || null,
+                isActive: form.get('isActive') === 'on'
+            };
+            try {
+                await API.updateHotel(hotelId, payload);
+                modal.hide();
+                UI.showSuccess(_propT('Properties_UpdateHotelSuccess', 'Hotel updated successfully'));
+                await this.loadHotels();
+            } catch (error) {
+                UI.showError(error.message || _propT('Properties_UpdateHotelFailed', 'Failed to update hotel'));
+            }
+        });
     }
 
     editRoom(roomId) {
-        UI.showInfo('Edit Room functionality will be implemented in a future update');
+        const room = this.rooms.find(r => r.id === roomId);
+        if (!room) return;
+        const existing = document.getElementById('roomModal');
+        if (existing) existing.remove();
+        document.body.insertAdjacentHTML('beforeend', `
+            <div class="modal fade" id="roomModal" tabindex="-1">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header"><h5 class="modal-title">${_propT('Properties_EditRoom','Edit Room')} ${room.roomNumber}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                  <form id="roomForm"><div class="modal-body">
+                    <div class="mb-3"><label class="form-label">${_propT('Properties_RoomNumber','Room Number')}</label><input class="form-control" name="roomNumber" required maxlength="10" value="${room.roomNumber}"></div>
+                    <div class="mb-3"><label class="form-label">${_propT('Properties_Type','Type')}</label>
+                      <select class="form-select" name="type" required>${[1,2,3,4,5,6,7,8,9].map(v=>`<option value="${v}" ${String(room.type) == String(v) ? 'selected' : ''}>${this.getRoomTypeDisplay(v)}</option>`).join('')}</select>
+                    </div>
+                    <div class="mb-3"><label class="form-label">${_propT('Properties_Capacity','Capacity')}</label><input type="number" min="1" max="20" class="form-control" name="capacity" required value="${room.capacity}"></div>
+                    <div class="mb-3"><label class="form-label">${_propT('Properties_BaseRate','Base Rate')}</label><input type="number" min="0.01" step="0.01" class="form-control" name="baseRate" required value="${room.baseRate}"></div>
+                    <div class="mb-3"><label class="form-label">${_propT('Calendar_Status','Status')}</label>
+                      <select class="form-select" name="status">${[1,2,3,4,5,6].map(v=>`<option value="${v}" ${String(room.status) == String(v) ? 'selected' : ''}>${this.getRoomStatusDisplay(v)}</option>`).join('')}</select>
+                    </div>
+                    <div class="mb-3"><label class="form-label">Description</label><textarea class="form-control" name="description" rows="3" maxlength="1000">${room.description ?? ''}</textarea></div>
+                  </div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${_propT('Common_Cancel','Cancel')}</button><button type="submit" class="btn btn-primary">${_propT('Common_Save','Save')}</button></div></form>
+                </div>
+              </div>
+            </div>`);
+        const modalEl = document.getElementById('roomModal');
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+        modalEl.addEventListener('hidden.bs.modal', () => modalEl.remove());
+        document.getElementById('roomForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = new FormData(e.target);
+            const payload = {
+                roomNumber: form.get('roomNumber'),
+                type: parseInt(form.get('type'), 10),
+                capacity: parseInt(form.get('capacity'), 10),
+                baseRate: parseFloat(form.get('baseRate')),
+                status: parseInt(form.get('status'), 10),
+                description: form.get('description') || null
+            };
+            try {
+                await API.request(`/rooms/${roomId}`, { method: 'PUT', body: JSON.stringify(payload) });
+                modal.hide();
+                UI.showSuccess(_propT('Properties_UpdateRoomSuccess', 'Room updated successfully'));
+                await this.loadRooms(this.selectedHotel.id);
+            } catch (error) {
+                UI.showError(error.message || _propT('Properties_UpdateRoomFailed', 'Failed to update room'));
+            }
+        });
     }
 
     async deleteHotel(hotelId) {
@@ -441,7 +547,14 @@ class PropertiesManager {
         const confirmed = confirm(`Are you sure you want to delete "${hotel.name}"? This action cannot be undone.`);
         if (!confirmed) return;
 
-        UI.showInfo('Delete Hotel functionality will be implemented in a future update');
+        try {
+            await API.deleteHotel(hotelId);
+            UI.showSuccess(_propT('Properties_DeleteHotelSuccess', 'Hotel deleted successfully'));
+            if (this.selectedHotel?.id === hotelId) this.hideRoomsSection();
+            await this.loadHotels();
+        } catch (error) {
+            UI.showError(error.message || _propT('Properties_DeleteHotelFailed', 'Failed to delete hotel'));
+        }
     }
 
     async deleteRoom(roomId) {
@@ -451,7 +564,13 @@ class PropertiesManager {
         const confirmed = confirm(`Are you sure you want to delete room "${room.roomNumber}"? This action cannot be undone.`);
         if (!confirmed) return;
 
-        UI.showInfo('Delete Room functionality will be implemented in a future update');
+        try {
+            await API.delete(`/rooms/${roomId}`);
+            UI.showSuccess(_propT('Properties_DeleteRoomSuccess', 'Room deleted successfully'));
+            await this.loadRooms(this.selectedHotel.id);
+        } catch (error) {
+            UI.showError(error.message || _propT('Properties_DeleteRoomFailed', 'Failed to delete room'));
+        }
     }
 
     // Public methods for external use
