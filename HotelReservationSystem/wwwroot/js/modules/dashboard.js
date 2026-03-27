@@ -424,7 +424,14 @@ ${list.length > 6 ? `<a href="/notifications" class="btn btn-sm btn-link p-0 sma
                 scales : {
                     y: {
                         beginAtZero: true,
-                        ticks: { callback: v => '$' + v.toLocaleString() }
+                        ticks: {
+                            callback: v => new Intl.NumberFormat(_I18N['Fmt_CurrencyLocale'] || localStorage.getItem('app_locale') || 'en-US', {
+                                style: 'currency',
+                                currency: localStorage.getItem('app_currency') || 'EUR',
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 0
+                            }).format(v)
+                        }
                     },
                     x: { ticks: { maxTicksLimit: 10 } }
                 }
@@ -699,8 +706,8 @@ ${list.length > 6 ? `<a href="/notifications" class="btn btn-sm btn-link p-0 sma
     // ── Utility formatters ────────────────────────────────────────────────
 
     _fmt(amount) {
-        return new Intl.NumberFormat(_I18N['Fmt_CurrencyLocale'] || 'en-US', {
-            style: 'currency', currency: 'USD',
+        return new Intl.NumberFormat(_I18N['Fmt_CurrencyLocale'] || localStorage.getItem('app_locale') || 'en-US', {
+            style: 'currency', currency: localStorage.getItem('app_currency') || 'EUR',
             minimumFractionDigits: 0, maximumFractionDigits: 0
         }).format(amount || 0);
     }

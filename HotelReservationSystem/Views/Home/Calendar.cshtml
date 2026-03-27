@@ -267,6 +267,9 @@
         let calendarManager;
 
         document.addEventListener('DOMContentLoaded', async function () {
+            if (typeof loadI18n === 'function') {
+                await loadI18n();
+            }
             calendarManager = new CalendarManager();
             await calendarManager.initialize();
 

@@ -264,11 +264,11 @@ class CalendarManager {
                     : 'dayGridMonth,timeGridWeek,listWeek'
             },
             views: {
-                resourceTimelineDay:   { buttonText: 'Day',   slotDuration: '01:00:00' },
-                resourceTimelineWeek:  { buttonText: 'Week',  slotDuration: '01:00:00' },
-                resourceTimelineMonth: { buttonText: 'Month', slotDuration: '24:00:00', slotLabelFormat: { weekday: 'short', day: 'numeric' } },
-                dayGridMonth:          { buttonText: 'Grid' },
-                listWeek:              { buttonText: 'List' }
+                resourceTimelineDay:   { buttonText: _t('Calendar_Day', 'Day'),   slotDuration: '01:00:00' },
+                resourceTimelineWeek:  { buttonText: _t('Calendar_Week', 'Week'),  slotDuration: '01:00:00' },
+                resourceTimelineMonth: { buttonText: _t('Calendar_Month', 'Month'), slotDuration: '24:00:00', slotLabelFormat: { weekday: 'short', day: 'numeric' } },
+                dayGridMonth:          { buttonText: _t('Calendar_Grid', 'Grid') },
+                listWeek:              { buttonText: _t('Calendar_List', 'List') }
             },
             height: 'auto',
             stickyHeaderDates: true,
@@ -278,7 +278,7 @@ class CalendarManager {
             resources: this._getRoomResources.bind(this),
             resourceGroupField: 'hotelName',
             resourceAreaWidth: 'var(--cal-resource-w, 220px)',
-            resourceAreaHeaderContent: 'Rooms',
+            resourceAreaHeaderContent: _t('Properties_Rooms', 'Rooms'),
             resourceLabelContent: this._renderResourceLabel.bind(this),
 
             // ── Events ────────────────────────────────────────
@@ -330,7 +330,7 @@ class CalendarManager {
             return {
                 id: room.id.toString(),
                 title: room.roomNumber,
-                hotelName: hotel ? hotel.name : 'Unknown Hotel',
+                hotelName: hotel ? hotel.name : _t('Properties_UnknownHotel', 'Unknown Hotel'),
                 extendedProps: { room, hotelName: hotel ? hotel.name : '' }
             };
         });
@@ -368,7 +368,7 @@ class CalendarManager {
                 <div class="resource-label">
                     <div class="resource-room-number">${room.roomNumber}</div>
                     <div class="resource-room-type">${typeLabel}</div>
-                    <div class="resource-room-meta">${room.capacity} guests · $${room.baseRate}/night</div>
+                    <div class="resource-room-meta">${room.capacity} ${_t('guests', 'guests')} · ${new Intl.NumberFormat(localStorage.getItem('app_locale') || window.__hotelLocale || 'en-US', { style: 'currency', currency: localStorage.getItem('app_currency') || 'EUR' }).format(room.baseRate)}/${_t('GP_Res_Night', 'night')}</div>
                     <div class="resource-room-status">
                         <span class="badge ${statusClass}">${statusLabel}</span>
                     </div>
@@ -392,7 +392,7 @@ class CalendarManager {
                 return {
                     id: r.id.toString(),
                     resourceId: r.roomId ? r.roomId.toString() : undefined,
-                    title: r.guestName || 'Guest',
+                    title: r.guestName || _t('GP_Dash_DefaultGuest', 'Guest'),
                     start: r.checkInDate,
                     end:   r.checkOutDate,
                     extendedProps: { reservation: r, statusStr, nights }
@@ -405,7 +405,7 @@ class CalendarManager {
     // ─────────────────────────────────────────────────────────────
     _renderEventContent(info) {
         const { reservation, statusStr, nights } = info.event.extendedProps;
-        const guestName = reservation.guestName || 'Guest';
+        const guestName = reservation.guestName || _t('GP_Dash_DefaultGuest', 'Guest');
         const isBookingCom = reservation.source === 2 || reservation.source === 'BookingCom';
         const sourceIcon = isBookingCom ? '<i class="bi bi-globe cal-event-source-icon" title="' + _t('booking_com', 'Booking.com') + '"></i>' : '';
         const nightsLabel = nights > 0 ? `${nights}n` : '';
@@ -926,7 +926,7 @@ class CalendarManager {
                 <div class="cal-tooltip-row"><i class="bi bi-calendar-check"></i><span>${fmt(reservation.checkInDate)} → ${fmt(reservation.checkOutDate)}</span></div>
                 <div class="cal-tooltip-row"><i class="bi bi-moon"></i><span>${nights} ${_t('nights', 'nights')}</span></div>
                 <div class="cal-tooltip-row"><i class="bi bi-people"></i><span>${reservation.numberOfGuests || 1} ${_t('guests', 'guests')}</span></div>
-                <div class="cal-tooltip-row"><i class="bi bi-currency-dollar"></i><span>${(reservation.totalAmount || 0).toFixed(2)}</span></div>
+                <div class="cal-tooltip-row"><i class="bi bi-currency-dollar"></i><span>${new Intl.NumberFormat(localStorage.getItem('app_locale') || window.__hotelLocale || 'en-US', { style: 'currency', currency: localStorage.getItem('app_currency') || 'EUR' }).format(reservation.totalAmount || 0)}</span></div>
                 ${isBookingCom ? '<div class="cal-tooltip-row"><i class="bi bi-globe"></i><span>' + _t('booking_com', 'Booking.com') + '</span></div>' : ''}
                 ${reservation.specialRequests ? `<div class="cal-tooltip-row"><i class="bi bi-chat-text"></i><span>${this._escHtml(reservation.specialRequests.substring(0, 60))}${reservation.specialRequests.length > 60 ? '…' : ''}</span></div>` : ''}
             </div>`;

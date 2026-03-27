@@ -1,4 +1,20 @@
 // Properties module for hotel and room management
+function _propT(key, fallback = key) {
+    return (window._I18N && window._I18N[key]) || fallback;
+}
+
+async function _propLoadI18n() {
+    if (window._I18N) return;
+    try {
+        const lang = window.__hotelLocale || 'en';
+        const res = await fetch('/api/i18n/strings?lang=' + lang);
+        const data = await res.json();
+        window._I18N = data.strings || {};
+    } catch (_) {
+        window._I18N = {};
+    }
+}
+
 class PropertiesManager {
     constructor() {
         this.hotels = [];
@@ -9,6 +25,7 @@ class PropertiesManager {
     async initialize() {
         try {
             console.log('Properties manager initializing...');
+            await _propLoadI18n();
             
             // Load hotels data
             await this.loadHotels();
@@ -19,7 +36,7 @@ class PropertiesManager {
             console.log('Properties manager initialized successfully');
         } catch (error) {
             console.error('Error initializing properties manager:', error);
-            UI.showError('Failed to initialize properties management');
+            UI.showError(_propT('Properties_InitFailed', 'Failed to initialize properties management'));
         }
     }
 
@@ -35,7 +52,7 @@ class PropertiesManager {
             
         } catch (error) {
             console.error('Error loading hotels:', error);
-            this.showHotelsError('Failed to load hotels');
+            this.showHotelsError(_propT('Properties_LoadHotelsFailed', 'Failed to load hotels'));
         } finally {
             UI.hideLoading();
         }
@@ -49,8 +66,8 @@ class PropertiesManager {
                 <tr>
                     <td colspan="7" class="text-center text-muted py-4">
                         <i class="bi bi-building fs-1"></i>
-                        <p class="mt-2">No hotels found</p>
-                        <p class="small text-muted">Click "Add Hotel" to create your first hotel</p>
+                        <p class="mt-2">${_propT('Properties_NoHotelsFound', 'No hotels found')}</p>
+                        <p class="small text-muted">${_propT('Properties_AddFirstHotel', 'Click "Add Hotel" to create your first hotel')}</p>
                     </td>
                 </tr>
             `;
@@ -61,20 +78,20 @@ class PropertiesManager {
             <tr data-hotel-id="${hotel.id}">
                 <td>
                     <strong>${hotel.name}</strong>
-                    ${hotel.isActive ? '' : '<span class="badge bg-secondary ms-2">Inactive</span>'}
+                    ${hotel.isActive ? '' : `<span class="badge bg-secondary ms-2">${_propT('Properties_Inactive', 'Inactive')}</span>`}
                 </td>
-                <td>${hotel.address || 'Not specified'}</td>
-                <td>${hotel.phone || 'Not specified'}</td>
-                <td>${hotel.email || 'Not specified'}</td>
+                <td>${hotel.address || _propT('Common_NotSpecified', 'Not specified')}</td>
+                <td>${hotel.phone || _propT('Common_NotSpecified', 'Not specified')}</td>
+                <td>${hotel.email || _propT('Common_NotSpecified', 'Not specified')}</td>
                 <td>
                     <button class="btn btn-link btn-sm p-0" onclick="propertiesManager.showHotelRooms(${hotel.id}, '${hotel.name}')">
                         <i class="bi bi-door-closed"></i>
-                        View Rooms
+                        ${_propT('Properties_ViewRooms', 'View Rooms')}
                     </button>
                 </td>
                 <td>
                     <span class="badge ${hotel.isActive ? 'bg-success' : 'bg-secondary'}">
-                        ${hotel.isActive ? 'Active' : 'Inactive'}
+                        ${hotel.isActive ? _propT('Common_Active', 'Active') : _propT('Properties_Inactive', 'Inactive')}
                     </span>
                 </td>
                 <td>
@@ -107,7 +124,7 @@ class PropertiesManager {
             
         } catch (error) {
             console.error('Error showing hotel rooms:', error);
-            UI.showError('Failed to load hotel rooms');
+            UI.showError(_propT('Properties_LoadRoomsFailed', 'Failed to load hotel rooms'));
         }
     }
 
@@ -118,7 +135,7 @@ class PropertiesManager {
                 <tr>
                     <td colspan="6" class="text-center text-muted py-3">
                         <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-                        Loading rooms...
+                        ${_propT('Properties_LoadingRooms', 'Loading rooms...')}
                     </td>
                 </tr>
             `;
@@ -131,7 +148,7 @@ class PropertiesManager {
             
         } catch (error) {
             console.error('Error loading rooms:', error);
-            this.showRoomsError('Failed to load rooms');
+            this.showRoomsError(_propT('Properties_LoadRoomsFailed', 'Failed to load rooms'));
         }
     }
 
@@ -143,8 +160,8 @@ class PropertiesManager {
                 <tr>
                     <td colspan="6" class="text-center text-muted py-4">
                         <i class="bi bi-door-closed fs-1"></i>
-                        <p class="mt-2">No rooms found for this hotel</p>
-                        <p class="small text-muted">Click "Add Room" to create the first room</p>
+                        <p class="mt-2">${_propT('Properties_NoRoomsFound', 'No rooms found for this hotel')}</p>
+                        <p class="small text-muted">${_propT('Properties_AddFirstRoom', 'Click "Add Room" to create the first room')}</p>
                     </td>
                 </tr>
             `;
@@ -159,11 +176,11 @@ class PropertiesManager {
                 </td>
                 <td>
                     <i class="bi bi-people"></i>
-                    ${room.capacity} guest${room.capacity > 1 ? 's' : ''}
+                    ${room.capacity} ${room.capacity > 1 ? _propT('GP_Res_Guests', 'guests') : _propT('GP_Res_Guest', 'guest')}
                 </td>
                 <td>
-                    <strong>$${room.baseRate.toFixed(2)}</strong>
-                    <small class="text-muted">/night</small>
+                    <strong>${UI.formatCurrency(room.baseRate)}</strong>
+                    <small class="text-muted">/${_propT('GP_Res_Night', 'night')}</small>
                 </td>
                 <td>
                     <span class="badge ${this.getRoomStatusClass(room.status)}">
@@ -186,28 +203,28 @@ class PropertiesManager {
 
     getRoomTypeDisplay(type) {
         const typeMap = {
-            0: 'Single',
-            1: 'Double', 
-            2: 'Suite',
-            3: 'Family',
-            'Single': 'Single',
-            'Double': 'Double',
-            'Suite': 'Suite', 
-            'Family': 'Family'
+            0: _propT('room_type_single', 'Single'),
+            1: _propT('room_type_double', 'Double'), 
+            2: _propT('room_type_suite', 'Suite'),
+            3: _propT('room_type_family', 'Family'),
+            'Single': _propT('room_type_single', 'Single'),
+            'Double': _propT('room_type_double', 'Double'),
+            'Suite': _propT('room_type_suite', 'Suite'), 
+            'Family': _propT('room_type_family', 'Family')
         };
         return typeMap[type] || type;
     }
 
     getRoomStatusDisplay(status) {
         const statusMap = {
-            0: 'Available',
-            1: 'Occupied',
-            2: 'Maintenance',
-            3: 'Out of Order',
-            'Available': 'Available',
-            'Occupied': 'Occupied',
-            'Maintenance': 'Maintenance',
-            'OutOfOrder': 'Out of Order'
+            0: _propT('room_status_available', 'Available'),
+            1: _propT('room_status_occupied', 'Occupied'),
+            2: _propT('room_status_maintenance', 'Maintenance'),
+            3: _propT('room_status_out_of_order', 'Out of Order'),
+            'Available': _propT('room_status_available', 'Available'),
+            'Occupied': _propT('room_status_occupied', 'Occupied'),
+            'Maintenance': _propT('room_status_maintenance', 'Maintenance'),
+            'OutOfOrder': _propT('room_status_out_of_order', 'Out of Order')
         };
         return statusMap[status] || status;
     }

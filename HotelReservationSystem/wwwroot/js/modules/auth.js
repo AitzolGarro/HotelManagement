@@ -6,9 +6,34 @@ class AuthManager {
         this.userKey = 'current_user';
         this.twoFactorChallengeKey = '2fa_challenge_token';
         this.sessionTimeout = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
+        this.themeKey = 'app_theme';
+        this.currencyKey = 'app_currency';
+        this.localeKey = 'app_locale';
         
+        this.applyAppearanceSettings();
         this.initializeAuth();
         this.setupSessionTimeout();
+    }
+
+    getUiLocale() {
+        return localStorage.getItem(this.localeKey) || window.__hotelLocale || 'en-US';
+    }
+
+    applyAppearanceSettings() {
+        const theme = localStorage.getItem(this.themeKey) || 'auto';
+        const resolvedTheme = theme === 'auto'
+            ? (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+            : theme;
+
+        document.documentElement.setAttribute('data-bs-theme', resolvedTheme);
+        document.body?.setAttribute('data-bs-theme', resolvedTheme);
+
+        if (!localStorage.getItem(this.currencyKey)) {
+            localStorage.setItem(this.currencyKey, 'EUR');
+        }
+        if (!localStorage.getItem(this.localeKey)) {
+            localStorage.setItem(this.localeKey, this.getUiLocale());
+        }
     }
 
     // Initialize authentication state
@@ -1120,6 +1145,8 @@ class AuthManager {
 
     // Show settings modal
     showSettingsModal() {
+        const currentTheme = localStorage.getItem(this.themeKey) || 'auto';
+        const currentCurrency = localStorage.getItem(this.currencyKey) || 'EUR';
         const modalHtml = `
             <div class="modal fade" id="settingsModal" tabindex="-1">
                 <div class="modal-dialog">
@@ -1127,43 +1154,51 @@ class AuthManager {
                         <div class="modal-header">
                             <h5 class="modal-title">
                                 <i class="bi bi-gear me-2"></i>
-                                Settings
+                                ${window._I18N?.Settings_Title || 'Settings'}
                             </h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body">
                             <div class="mb-3">
-                                <h6>Session Settings</h6>
+                                <h6>${window._I18N?.Settings_Session || 'Session Settings'}</h6>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="rememberMeSetting" ${localStorage.getItem('remember_me') ? 'checked' : ''}>
                                     <label class="form-check-label" for="rememberMeSetting">
-                                        Remember me on this device
+                                        ${window._I18N?.Settings_RememberDevice || 'Remember me on this device'}
                                     </label>
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <h6>Notifications</h6>
+                                <h6>${window._I18N?.Settings_Notifications || 'Notifications'}</h6>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="browserNotifications" checked>
                                     <label class="form-check-label" for="browserNotifications">
-                                        Enable browser notifications
+                                        ${window._I18N?.Settings_EnableBrowserNotifications || 'Enable browser notifications'}
                                     </label>
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <h6>Theme</h6>
+                                <h6>${window._I18N?.Settings_Theme || 'Theme'}</h6>
                                 <select class="form-select" id="themeSelect">
-                                    <option value="light">Light</option>
-                                    <option value="dark">Dark</option>
-                                    <option value="auto">Auto (System)</option>
+                                    <option value="light" ${currentTheme === 'light' ? 'selected' : ''}>${window._I18N?.Settings_ThemeLight || 'Light'}</option>
+                                    <option value="dark" ${currentTheme === 'dark' ? 'selected' : ''}>${window._I18N?.Settings_ThemeDark || 'Dark'}</option>
+                                    <option value="auto" ${currentTheme === 'auto' ? 'selected' : ''}>${window._I18N?.Settings_ThemeAuto || 'Auto (System)'}</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <h6>${window._I18N?.Settings_Currency || 'Currency'}</h6>
+                                <select class="form-select" id="currencySelect">
+                                    <option value="EUR" ${currentCurrency === 'EUR' ? 'selected' : ''}>EUR (€)</option>
+                                    <option value="USD" ${currentCurrency === 'USD' ? 'selected' : ''}>USD ($)</option>
+                                    <option value="GBP" ${currentCurrency === 'GBP' ? 'selected' : ''}>GBP (£)</option>
                                 </select>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${window._I18N?.Common_Close || 'Close'}</button>
                             <button type="button" class="btn btn-primary" id="saveSettingsBtn">
                                 <i class="bi bi-check-lg me-1"></i>
-                                Save Settings
+                                ${window._I18N?.Settings_Save || 'Save Settings'}
                             </button>
                         </div>
                     </div>
@@ -1183,14 +1218,20 @@ class AuthManager {
         // Handle save settings
         document.getElementById('saveSettingsBtn').addEventListener('click', () => {
             const rememberMe = document.getElementById('rememberMeSetting').checked;
+            const theme = document.getElementById('themeSelect').value;
+            const currency = document.getElementById('currencySelect').value;
             if (rememberMe) {
                 localStorage.setItem('remember_me', 'true');
             } else {
                 localStorage.removeItem('remember_me');
             }
+            localStorage.setItem(this.themeKey, theme);
+            localStorage.setItem(this.currencyKey, currency);
+            localStorage.setItem(this.localeKey, window.__hotelLocale || 'en-US');
+            this.applyAppearanceSettings();
             
             modal.hide();
-            UI.showSuccess('Settings saved successfully');
+            UI.showSuccess(window._I18N?.Settings_Saved || 'Settings saved successfully');
         });
 
         // Clean up when modal is hidden

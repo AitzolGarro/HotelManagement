@@ -284,6 +284,14 @@ class UIManager {
     }
 
     // Utility functions
+    getPreferredLocale() {
+        return localStorage.getItem('app_locale') || window.__hotelLocale || 'en-US';
+    }
+
+    getPreferredCurrency() {
+        return localStorage.getItem('app_currency') || 'EUR';
+    }
+
     formatDate(date, options = {}) {
         const defaultOptions = {
             year: 'numeric',
@@ -291,18 +299,18 @@ class UIManager {
             day: 'numeric'
         };
         
-        return new Date(date).toLocaleDateString('en-US', { ...defaultOptions, ...options });
+        return new Date(date).toLocaleDateString(this.getPreferredLocale(), { ...defaultOptions, ...options });
     }
 
-    formatCurrency(amount, currency = 'USD') {
-        return new Intl.NumberFormat('en-US', {
+    formatCurrency(amount, currency = null) {
+        return new Intl.NumberFormat(this.getPreferredLocale(), {
             style: 'currency',
-            currency: currency
+            currency: currency || this.getPreferredCurrency()
         }).format(amount);
     }
 
     formatNumber(number, options = {}) {
-        return new Intl.NumberFormat('en-US', options).format(number);
+        return new Intl.NumberFormat(this.getPreferredLocale(), options).format(number);
     }
 
     // Animation helpers
