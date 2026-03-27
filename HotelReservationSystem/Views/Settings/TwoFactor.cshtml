@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "Two-Factor Authentication Setup";
+    ViewData["Title"] = L["TwoFactor_Title"].Value;
 }
 
 <div class="container py-4" style="max-width: 640px;">
@@ -7,43 +7,43 @@
         <div class="card-header bg-primary text-white">
             <h5 class="mb-0">
                 <i class="bi bi-shield-lock me-2"></i>
-                Two-Factor Authentication (2FA)
+                @L["TwoFactor_Heading"]
             </h5>
         </div>
         <div class="card-body">
 
             <!-- Step 1: Scan QR code -->
             <div id="step-setup">
-                <p class="text-muted">Scan the QR code below with your authenticator app (Google Authenticator, Authy, etc.), then enter the verification code to enable 2FA.</p>
+                <p class="text-muted">@L["TwoFactor_SetupIntro"]</p>
 
                 <div class="text-center my-4">
                     <div id="qrcode" class="d-inline-block p-2 border rounded"></div>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-semibold">Manual Entry Key</label>
+                    <label class="form-label fw-semibold">@L["TwoFactor_ManualEntryKey"]</label>
                     <div class="input-group">
                         <input type="text" class="form-control font-monospace" id="manualEntryKey" readonly>
-                        <button class="btn btn-outline-secondary" type="button" id="copyKeyBtn" title="Copy to clipboard">
+                        <button class="btn btn-outline-secondary" type="button" id="copyKeyBtn" title="@L["TwoFactor_CopyToClipboard"]">
                             <i class="bi bi-clipboard"></i>
                         </button>
                     </div>
-                    <div class="form-text">Enter this key manually in your authenticator app if you cannot scan the QR code.</div>
+                    <div class="form-text">@L["TwoFactor_ManualEntryHelp"]</div>
                 </div>
 
                 <hr>
 
                 <div class="mb-3">
-                    <label for="verificationCode" class="form-label fw-semibold">Verification Code</label>
+                    <label for="verificationCode" class="form-label fw-semibold">@L["TwoFactor_VerificationCode"]</label>
                     <input type="text" class="form-control" id="verificationCode" maxlength="6"
-                           placeholder="Enter 6-digit code" inputmode="numeric" autocomplete="one-time-code">
+                           placeholder="@L["TwoFactor_CodePlaceholder"]" inputmode="numeric" autocomplete="one-time-code">
                     <div class="invalid-feedback" id="codeError"></div>
-                    <div class="form-text">Enter the 6-digit code shown in your authenticator app to confirm setup.</div>
+                    <div class="form-text">@L["TwoFactor_CodeHelp"]</div>
                 </div>
 
                 <div class="d-grid">
                     <button type="button" class="btn btn-success btn-lg" id="enableBtn">
-                        <i class="bi bi-shield-check me-2"></i>Enable Two-Factor Authentication
+                        <i class="bi bi-shield-check me-2"></i>@L["TwoFactor_Enable"]
                     </button>
                 </div>
             </div>
@@ -53,8 +53,8 @@
                 <div class="alert alert-warning d-flex gap-2" role="alert">
                     <i class="bi bi-exclamation-triangle-fill flex-shrink-0 mt-1"></i>
                     <div>
-                        <strong>Save these recovery codes!</strong><br>
-                        These codes are shown only once. Store them in a safe place. Each code can be used once to access your account if you lose your authenticator device.
+                        <strong>@L["TwoFactor_SaveRecoveryCodes"]</strong><br>
+                        @L["TwoFactor_RecoveryCodesHelp"]
                     </div>
                 </div>
 
@@ -62,16 +62,16 @@
 
                 <div class="d-flex gap-2 mb-4">
                     <button type="button" class="btn btn-outline-secondary btn-sm" id="copyCodesBtn">
-                        <i class="bi bi-clipboard me-1"></i>Copy All
+                        <i class="bi bi-clipboard me-1"></i>@L["TwoFactor_CopyAll"]
                     </button>
                     <button type="button" class="btn btn-outline-secondary btn-sm" id="downloadCodesBtn">
-                        <i class="bi bi-download me-1"></i>Download
+                        <i class="bi bi-download me-1"></i>@L["TwoFactor_Download"]
                     </button>
                 </div>
 
                 <div class="d-grid">
                     <a href="/" class="btn btn-primary">
-                        <i class="bi bi-check-circle me-2"></i>Done — Go to Dashboard
+                        <i class="bi bi-check-circle me-2"></i>@L["TwoFactor_DoneGoDashboard"]
                     </a>
                 </div>
             </div>
@@ -79,14 +79,14 @@
             <!-- Loading state -->
             <div id="step-loading" style="display:none;" class="text-center py-4">
                 <div class="spinner-border text-primary" role="status"></div>
-                <div class="mt-2 text-muted">Loading setup information...</div>
+                <div class="mt-2 text-muted">@L["TwoFactor_LoadingSetup"]</div>
             </div>
 
             <!-- Error state -->
             <div id="step-error" style="display:none;" class="text-center py-4">
                 <i class="bi bi-exclamation-triangle text-danger" style="font-size: 2rem;"></i>
-                <div class="mt-2 text-danger" id="setupErrorMessage">Failed to load 2FA setup information.</div>
-                <button type="button" class="btn btn-outline-primary mt-3" id="retryBtn">Retry</button>
+                <div class="mt-2 text-danger" id="setupErrorMessage">@L["TwoFactor_LoadError"]</div>
+                <button type="button" class="btn btn-outline-primary mt-3" id="retryBtn">@L["TwoFactor_Retry"]</button>
             </div>
 
         </div>

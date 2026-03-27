@@ -12,7 +12,7 @@
 
 <!-- Loading -->
 <div id="detailLoading" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading…</span></div>
+    <div class="spinner-border text-primary" role="status"><span class="visually-hidden">@L["GP_Detail_Loading"]</span></div>
 </div>
 
 <!-- Not found -->
@@ -83,7 +83,7 @@
                     <p id="detailSpecialRequests" class="text-muted mb-3">@L["GP_Detail_NoSpecialRequests"]</p>
                     <div id="specialRequestForm" class="d-none">
                         <textarea class="form-control mb-2" id="specialRequestInput" rows="3"
-                                  placeholder="e.g. High floor, extra pillows, late check-in…" maxlength="1000"></textarea>
+                                  placeholder="@L["GP_Detail_SpecialRequestPlaceholder"]" maxlength="1000"></textarea>
                         <div class="d-flex gap-2">
                             <button class="btn btn-primary btn-sm" id="saveSpecialReqBtn">
                                 <i class="bi bi-check me-1"></i>@L["GP_Detail_SaveRequest"]
@@ -147,9 +147,21 @@
 const _gpDetailI18n = {
     noSpecialRequests: '@Html.Raw(L["GP_Detail_NoSpecialRequests"].Value)',
     provideReason:     '@Html.Raw(L["GP_Res_ProvideReason"].Value)',
-    selectDates:       'Please select both dates.',
-    checkOutAfter:     'Check-out must be after check-in.',
-    error:             '@Html.Raw(L["Common_Error"].Value)'
+    selectDates:       '@Html.Raw(L["GP_Detail_SelectDates"].Value)',
+    checkOutAfter:     '@Html.Raw(L["GP_Detail_CheckOutAfter"].Value)',
+    error:             '@Html.Raw(L["Common_Error"].Value)',
+    pending:           '@Html.Raw(L["GP_Detail_Status_Pending"].Value)',
+    confirmed:         '@Html.Raw(L["GP_Detail_Status_Confirmed"].Value)',
+    checkedIn:         '@Html.Raw(L["GP_Detail_Status_CheckedIn"].Value)',
+    checkedOut:        '@Html.Raw(L["GP_Detail_Status_CheckedOut"].Value)',
+    cancelled:         '@Html.Raw(L["GP_Detail_Status_Cancelled"].Value)',
+    noShow:            '@Html.Raw(L["GP_Detail_Status_NoShow"].Value)',
+    unknown:           '@Html.Raw(L["GP_Detail_Status_Unknown"].Value)',
+    notAvailable:      '@Html.Raw(L["GP_Detail_NotAvailable"].Value)',
+    night:             '@Html.Raw(L["GP_Detail_Night"].Value)',
+    nights:            '@Html.Raw(L["GP_Detail_Nights"].Value)',
+    currencyLocale:    '@Html.Raw(L["GP_Detail_CurrencyLocale"].Value)',
+    dateLocale:        '@Html.Raw(L["GP_Detail_DateLocale"].Value)'
 };
 (function () {
     const token = localStorage.getItem('guestToken');
@@ -160,18 +172,18 @@ const _gpDetailI18n = {
 
     function statusBadge(status) {
         const map = {
-            0: ['Pending','status-pending'],
-            1: ['Confirmed','status-confirmed'],
-            2: ['Checked In','status-checkedin'],
-            3: ['Checked Out','status-checkedout'],
-            4: ['Cancelled','status-cancelled'],
-            5: ['No Show','status-cancelled']
+            0: [_gpDetailI18n.pending,'status-pending'],
+            1: [_gpDetailI18n.confirmed,'status-confirmed'],
+            2: [_gpDetailI18n.checkedIn,'status-checkedin'],
+            3: [_gpDetailI18n.checkedOut,'status-checkedout'],
+            4: [_gpDetailI18n.cancelled,'status-cancelled'],
+            5: [_gpDetailI18n.noShow,'status-cancelled']
         };
-        const [label, cls] = map[status] || ['Unknown','status-pending'];
+        const [label, cls] = map[status] || [_gpDetailI18n.unknown,'status-pending'];
         return `<span class="status-badge ${cls}">${label}</span>`;
     }
 
-    function fmt(d) { return new Date(d).toLocaleDateString('en-US', { weekday:'short', month:'long', day:'numeric', year:'numeric' }); }
+    function fmt(d) { return new Date(d).toLocaleDateString(_gpDetailI18n.dateLocale || 'en-US', { weekday:'short', month:'long', day:'numeric', year:'numeric' }); }
     function toInputDate(d) { return new Date(d).toISOString().split('T')[0]; }
 
     async function loadDetail() {
@@ -187,14 +199,14 @@ const _gpDetailI18n = {
             const canAct = reservation.status === 0 || reservation.status === 1;
 
             document.getElementById('detailStatusBadge').innerHTML = statusBadge(reservation.status);
-            document.getElementById('detailRef').textContent = reservation.bookingReference || 'N/A';
+            document.getElementById('detailRef').textContent = reservation.bookingReference || _gpDetailI18n.notAvailable;
             document.getElementById('detailHotel').textContent = reservation.hotelName;
             document.getElementById('detailRoom').textContent = `${reservation.roomNumber} (${reservation.roomType})`;
             document.getElementById('detailCheckIn').textContent = fmt(reservation.checkInDate);
             document.getElementById('detailCheckOut').textContent = fmt(reservation.checkOutDate);
-            document.getElementById('detailNights').textContent = `${nights} night${nights !== 1 ? 's' : ''}`;
+            document.getElementById('detailNights').textContent = `${nights} ${nights !== 1 ? _gpDetailI18n.nights : _gpDetailI18n.night}`;
             document.getElementById('detailGuests').textContent = reservation.numberOfGuests;
-            document.getElementById('detailAmount').textContent = `$${reservation.totalAmount.toFixed(2)}`;
+            document.getElementById('detailAmount').textContent = new Intl.NumberFormat(_gpDetailI18n.currencyLocale || 'en-US', { style: 'currency', currency: 'EUR' }).format(reservation.totalAmount);
             document.getElementById('detailCreated').textContent = fmt(reservation.createdAt);
             document.getElementById('detailSpecialRequests').textContent = reservation.specialRequests || _gpDetailI18n.noSpecialRequests;
             document.getElementById('specialRequestInput').value = reservation.specialRequests || '';

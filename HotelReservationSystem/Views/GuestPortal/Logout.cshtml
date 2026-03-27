@@ -1,14 +1,14 @@
 @{
     Layout = "~/Views/Shared/_GuestPortalLayout.cshtml";
-    ViewData["Title"] = "Signing Out";
+    ViewData["Title"] = L["GP_Logout_Title"].Value;
 }
 
 <div class="min-vh-100 d-flex align-items-center justify-content-center" style="margin: -24px;">
     <div class="text-center">
         <div class="spinner-border text-primary mb-3" role="status">
-            <span class="visually-hidden">Signing out…</span>
+            <span class="visually-hidden">@L["GP_Logout_SigningOut"]</span>
         </div>
-        <p class="text-muted">Signing you out…</p>
+        <p class="text-muted">@L["GP_Logout_SigningYouOut"]</p>
     </div>
 </div>
 

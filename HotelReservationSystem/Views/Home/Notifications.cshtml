@@ -50,7 +50,7 @@
 <div class="card border-0 shadow-sm mb-3">
     <div class="card-body py-2 px-3">
         <div class="d-flex flex-wrap gap-2 align-items-center">
-            <div class="d-flex gap-1" role="group" aria-label="Filter notifications">
+            <div class="d-flex gap-1" role="group" aria-label="@L["Notif_FilterNotifications"]">
                 <button class="btn btn-sm btn-primary notif-page-tab" data-filter="all">@L["Notif_All"]</button>
                 <button class="btn btn-sm btn-outline-secondary notif-page-tab" data-filter="unread">@L["Notif_Unread"]</button>
                 <button class="btn btn-sm btn-outline-secondary notif-page-tab" data-filter="reservations">@L["Notif_Reservations"]</button>
@@ -59,15 +59,15 @@
             <div class="ms-auto d-flex gap-2 align-items-center">
                 <select id="typeFilter" class="form-select form-select-sm" style="width:auto;">
                     <option value="">@L["Notif_AllTypes"]</option>
-                    <option value="1">Info</option>
-                    <option value="2">Warning</option>
-                    <option value="3">Error</option>
-                    <option value="4">Success</option>
-                    <option value="5">Reservation Update</option>
-                    <option value="6">Conflict</option>
-                    <option value="7">System Alert</option>
+                    <option value="1">@L["Notif_Type_Info"]</option>
+                    <option value="2">@L["Notif_Type_Warning"]</option>
+                    <option value="3">@L["Notif_Type_Error"]</option>
+                    <option value="4">@L["Notif_Type_Success"]</option>
+                    <option value="5">@L["Notif_Type_ReservationUpdate"]</option>
+                    <option value="6">@L["Notif_Type_Conflict"]</option>
+                    <option value="7">@L["Notif_Type_SystemAlert"]</option>
                 </select>
-                <button id="refreshNotifBtn" class="btn btn-sm btn-outline-secondary" title="Refresh">
+                <button id="refreshNotifBtn" class="btn btn-sm btn-outline-secondary" title="@L["Notif_Refresh"]">
                     <i class="bi bi-arrow-clockwise"></i>
                 </button>
             </div>

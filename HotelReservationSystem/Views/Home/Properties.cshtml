@@ -7,11 +7,11 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3 mb-0">
                 <i class="bi bi-buildings"></i>
-                Properties Management
+                @L["Properties_Title"]
             </h1>
             <button type="button" class="btn btn-primary" data-role="admin">
                 <i class="bi bi-plus-circle"></i>
-                Add Hotel
+                @L["Properties_AddHotel"]
             </button>
         </div>
     </div>
@@ -24,7 +24,7 @@
             <div class="card-header">
                 <h5 class="mb-0">
                     <i class="bi bi-building"></i>
-                    Hotels
+                    @L["Properties_Hotels"]
                 </h5>
             </div>
             <div class="card-body">
@@ -32,20 +32,20 @@
                     <table class="table table-hover" id="hotelsTable">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Address</th>
-                                <th>Phone</th>
-                                <th>Email</th>
-                                <th>Rooms</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th>@L["Common_Name"]</th>
+                                <th>@L["GP_Prof_Address"]</th>
+                                <th>@L["Calendar_Phone"]</th>
+                                <th>@L["Calendar_Email"]</th>
+                                <th>@L["Properties_Hotels"]</th>
+                                <th>@L["Calendar_Status"]</th>
+                                <th>@L["Common_Actions"]</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td colspan="7" class="text-center text-muted py-4">
                                     <i class="bi bi-building fs-1"></i>
-                                    <p class="mt-2">Loading hotels...</p>
+                                    <p class="mt-2">@L["Properties_LoadingHotels"]</p>
                                 </td>
                             </tr>
                         </tbody>
@@ -63,11 +63,11 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
                     <i class="bi bi-door-closed"></i>
-                    Rooms - <span id="selectedHotelName"></span>
+                    @L["Properties_Rooms"] - <span id="selectedHotelName"></span>
                 </h5>
                 <button type="button" class="btn btn-primary btn-sm" data-role="manager">
                     <i class="bi bi-plus-circle"></i>
-                    Add Room
+                    @L["Properties_AddRoom"]
                 </button>
             </div>
             <div class="card-body">
@@ -75,12 +75,12 @@
                     <table class="table table-hover" id="roomsTable">
                         <thead>
                             <tr>
-                                <th>Room Number</th>
-                                <th>Type</th>
-                                <th>Capacity</th>
-                                <th>Base Rate</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th>@L["Properties_RoomNumber"]</th>
+                                <th>@L["Properties_Type"]</th>
+                                <th>@L["Properties_Capacity"]</th>
+                                <th>@L["Properties_BaseRate"]</th>
+                                <th>@L["Calendar_Status"]</th>
+                                <th>@L["Common_Actions"]</th>
                             </tr>
                         </thead>
                         <tbody>
