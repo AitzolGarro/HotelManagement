@@ -54,8 +54,10 @@ async function initializeSignalR() {
 function initializeGlobalModules() {
     // Initialize Auth module
     if (typeof AuthManager !== 'undefined') {
-        window.Auth = new AuthManager();
-        console.log('Auth module initialized');
+        if (!window.Auth || !(window.Auth instanceof AuthManager)) {
+            window.Auth = new AuthManager();
+            console.log('Auth module initialized');
+        }
     }
     
     // Initialize API client

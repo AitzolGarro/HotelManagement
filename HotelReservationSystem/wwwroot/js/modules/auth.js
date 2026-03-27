@@ -1313,7 +1313,7 @@ class AuthManager {
 }
 
 // Create global Auth instance
-window.Auth = new AuthManager();
+window.Auth = window.Auth instanceof AuthManager ? window.Auth : new AuthManager();
 
 // Initialize logout button when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
