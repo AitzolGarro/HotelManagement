@@ -7,7 +7,7 @@ async function _propLoadI18n() {
     if (window._I18N) return;
     try {
         const lang = window.__hotelLocale || 'en';
-        const res = await fetch('/api/i18n/strings?lang=' + lang);
+        const res = await fetch('/api/i18n/strings?lang=' + lang + '&v=20260327c');
         const data = await res.json();
         window._I18N = data.strings || {};
     } catch (_) {

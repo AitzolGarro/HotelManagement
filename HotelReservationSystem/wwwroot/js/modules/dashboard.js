@@ -10,7 +10,7 @@ let _I18N = {};
 async function loadI18n() {
     try {
         const lang = window.__hotelLocale || 'en';
-        const res = await fetch('/api/i18n/strings?lang=' + lang);
+        const res = await fetch('/api/i18n/strings?lang=' + lang + '&v=20260327c');
         const data = await res.json();
         _I18N = data.strings || {};
         window._I18N = _I18N;
