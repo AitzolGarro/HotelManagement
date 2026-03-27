@@ -366,20 +366,27 @@ class PropertiesManager {
                       <div class="mb-3"><label class="form-label">${_propT('Properties_RoomNumber', 'Room Number')}</label><input class="form-control" name="roomNumber" required maxlength="10"></div>
                       <div class="mb-3"><label class="form-label">${_propT('Properties_Type', 'Type')}</label>
                         <select class="form-select" name="type" required>
-                          <option value="0">${_propT('room_type_single','Single')}</option>
-                          <option value="1">${_propT('room_type_double','Double')}</option>
-                          <option value="2">${_propT('room_type_suite','Suite')}</option>
-                          <option value="3">${_propT('room_type_family','Family')}</option>
+                          <option value="1">${_propT('room_type_single','Single')}</option>
+                          <option value="2">${_propT('room_type_double','Double')}</option>
+                          <option value="3">${_propT('room_type_suite','Suite')}</option>
+                          <option value="4">${_propT('room_type_family','Family')}</option>
+                          <option value="5">${_propT('room_type_deluxe','Deluxe')}</option>
+                          <option value="6">${_propT('room_type_twin','Twin')}</option>
+                          <option value="7">${_propT('room_type_triple','Triple')}</option>
+                          <option value="8">${_propT('room_type_quad','Quad')}</option>
+                          <option value="9">${_propT('room_type_standard','Standard')}</option>
                         </select>
                       </div>
                       <div class="mb-3"><label class="form-label">${_propT('Properties_Capacity', 'Capacity')}</label><input type="number" min="1" max="20" class="form-control" name="capacity" required value="2"></div>
                       <div class="mb-3"><label class="form-label">${_propT('Properties_BaseRate', 'Base Rate')}</label><input type="number" min="0.01" step="0.01" class="form-control" name="baseRate" required value="100"></div>
                       <div class="mb-3"><label class="form-label">${_propT('Calendar_Status', 'Status')}</label>
                         <select class="form-select" name="status">
-                          <option value="0">${_propT('room_status_available','Available')}</option>
-                          <option value="1">${_propT('room_status_occupied','Occupied')}</option>
+                          <option value="1">${_propT('room_status_available','Available')}</option>
                           <option value="2">${_propT('room_status_maintenance','Maintenance')}</option>
-                          <option value="3">${_propT('room_status_out_of_order','Out of Order')}</option>
+                          <option value="3">${_propT('room_status_blocked','Blocked')}</option>
+                          <option value="4">${_propT('room_status_out_of_order','Out of Order')}</option>
+                          <option value="5">${_propT('room_status_occupied','Occupied')}</option>
+                          <option value="6">${_propT('room_status_cleaning','Cleaning')}</option>
                         </select>
                       </div>
                       <div class="mb-3"><label class="form-label">Description</label><textarea class="form-control" name="description" rows="3" maxlength="1000"></textarea></div>

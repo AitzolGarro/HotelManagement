@@ -99,6 +99,7 @@
                   <form id="userForm">
                     <div class="modal-body">
                       <div class="row g-3">
+                        <div class="col-12"><div class="alert alert-info py-2 mb-0 small">Password must be at least 8 characters and include uppercase, lowercase, number, and symbol.</div></div>
                         <div class="col-md-6"><label class="form-label">First name</label><input class="form-control" name="firstName" required></div>
                         <div class="col-md-6"><label class="form-label">Last name</label><input class="form-control" name="lastName" required></div>
                         <div class="col-md-6"><label class="form-label">Email</label><input type="email" class="form-control" name="email" required></div>
@@ -111,6 +112,7 @@
                         <div class="col-md-6"><label class="form-label">Accessible hotels</label>
                             <select class="form-select" name="hotelIds" multiple size="6">${hotelsOptions}</select>
                         </div>
+                        <div class="col-12"><div class="text-danger small" id="userFormError"></div></div>
                       </div>
                     </div>
                     <div class="modal-footer">
@@ -143,6 +145,7 @@
                 UI.showSuccess('User created successfully');
                 await loadUsers();
             } catch (err) {
+                document.getElementById('userFormError').textContent = err.message || 'Failed to create user';
                 UI.showError(err.message || 'Failed to create user');
             }
         });
